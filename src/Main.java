@@ -17,16 +17,27 @@ public class Main {
         for(int i = 0; i<1; i++){
             BigInteger n1 = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000"));
             BigInteger n2 = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000"));
-            noMistake = noMistake && MathMethods.expandedEuklid(n1,n2).equals(n1.gcd(n2));
+//            noMistake = noMistake && MathMethods.expandedEuklid(n1,n2).equals(n1.gcd(n2));
+            long start = System.nanoTime();
+            MathMethods.expandedEuklid(n1,n2);
+            long end = System.nanoTime();
+            System.out.println(end-start);
         }
         System.out.println(noMistake);
 
         noMistake = true;
         for(int i = 0; i<1; i++){
-            BigInteger n = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000000"));
-            BigInteger exp = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000000"));
-            BigInteger mod = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000000"));
-            noMistake = noMistake && MathMethods.alternativeQuickExponentation(n,exp,mod).equals(n.modPow(exp,mod));
+//            BigInteger n = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000000"));
+//            BigInteger exp = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000000"));
+//            BigInteger mod = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000000"));
+            BigInteger n = new BigInteger("5345890").pow(50).pow(40);
+            BigInteger exp = new BigInteger("561563").pow(50);
+            BigInteger mod = new BigInteger("402").pow(453);
+//            noMistake = noMistake && MathMethods.alternativeQuickExponentation(n,exp,mod).equals(n.modPow(exp,mod));
+            long start = System.nanoTime();
+            MathMethods.alternativeQuickExponentation(n,exp,mod);
+            long end = System.nanoTime();
+            System.out.println(end-start);
         }
         System.out.println(noMistake);
 

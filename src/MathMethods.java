@@ -2,22 +2,17 @@ import java.math.BigInteger;
 
 public class MathMethods {
 
-    public static BigInteger alternativeQuickExponentation(BigInteger num, BigInteger exp, BigInteger mod){
-        BigInteger returnValue = null;
-        if(exp.equals(BigInteger.ONE)){
-            returnValue = num;
-        } else if(exp.equals(BigInteger.TWO)){
-            returnValue = (num.multiply(num));
-        } else if(exp.mod(new BigInteger("2")).equals(new BigInteger("0"))){
-            BigInteger i = alternativeQuickExponentation(num, exp.divide(BigInteger.TWO),mod);
-            returnValue = i.multiply(i);
-        } else {
-            BigInteger i = alternativeQuickExponentation(num, (exp.subtract(BigInteger.ONE)).divide(BigInteger.TWO),mod);
-            returnValue = num.multiply(i.multiply(i));
-        }
-        return returnValue.mod(mod);
-    }
+    public static BigInteger alternativeQuickExponentation(BigInteger base, BigInteger exp, BigInteger mod) {
+        if (exp.equals(BigInteger.ONE)) return base.mod(mod);
 
+        // When the exponent is even
+        if (exp.and(BigInteger.ONE).equals(BigInteger.ZERO)) {
+            return alternativeQuickExponentation(base.multiply(base).mod(mod), exp.shiftRight(1), mod);
+        }
+
+        // When the exponent is odd
+        return base.multiply(alternativeQuickExponentation(base, exp.subtract(BigInteger.ONE), mod)).mod(mod);
+    }
     public static BigInteger expandedEuklid(BigInteger n1, BigInteger n2){
         /*if(n1.compareTo(n2) == -1){
             BigInteger temp = n1;
