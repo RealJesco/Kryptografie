@@ -3,15 +3,21 @@ import java.math.BigInteger;
 public class MathMethods {
 
     public static BigInteger alternativeQuickExponentation(BigInteger base, BigInteger exp, BigInteger mod) {
-        if (exp.equals(BigInteger.ONE)) return base.mod(mod);
+        BigInteger result = BigInteger.ONE;
+        base = base.mod(mod); // Modulo operation, to ensure the base is within mod range
 
-        // When the exponent is even
-        if (exp.and(BigInteger.ONE).equals(BigInteger.ZERO)) {
-            return alternativeQuickExponentation(base.multiply(base).mod(mod), exp.shiftRight(1), mod);
+        while (!exp.equals(BigInteger.ZERO)) {
+            // If the exponent is odd, multiply the result by base
+            if (exp.and(BigInteger.ONE).equals(BigInteger.ONE)) {
+                result = (result.multiply(base)).mod(mod);
+            }
+
+            // Square the base and halve the exponent for the next iteration
+            base = (base.multiply(base)).mod(mod);
+            exp = exp.shiftRight(1);
         }
 
-        // When the exponent is odd
-        return base.multiply(alternativeQuickExponentation(base, exp.subtract(BigInteger.ONE), mod)).mod(mod);
+        return result; // Return the accumulated result
     }
     public static BigInteger expandedEuklid(BigInteger n1, BigInteger n2){
         /*if(n1.compareTo(n2) == -1){
