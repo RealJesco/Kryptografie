@@ -48,9 +48,10 @@ public class Main {
         System.out.println(noMistake);
 
 
-        BigInteger n = new BigInteger("13");
+        BigInteger n = new BigInteger("12");
         System.out.println(MathMethods.millerRabinTest(n, 0.7));
-
+        BigInteger n1 = new BigInteger("13");
+        System.out.println(MathMethods.millerRabinTest(n1, 0.7));
         /*
         System.out.println(MathMethods.expandedEuklid(new BigInteger("6267"), new BigInteger("354")));
         System.out.println(MathMethods.expandedEuklid(new BigInteger("354"), new BigInteger("6267")));

@@ -20,6 +20,7 @@ public class MathMethods {
 
         return result; // Return the accumulated result
     }
+
     public static BigInteger[] extendedEuclidean(BigInteger a, BigInteger b) {
         if (b.equals(BigInteger.ZERO)) {
             return new BigInteger[] {a, BigInteger.ONE, BigInteger.ZERO};
@@ -31,6 +32,7 @@ public class MathMethods {
             return new BigInteger[] {gcd, x, y};
         }
     }
+
     public static BigInteger getRandomBigInteger(BigInteger upperLimit){
         BigInteger randomNumber;
         do {
@@ -38,6 +40,7 @@ public class MathMethods {
         } while (randomNumber.compareTo(upperLimit) >= 0);
         return randomNumber;
     }
+
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, double minimumCertainty){
         double numberOfTests = 0;
@@ -79,4 +82,31 @@ public class MathMethods {
         }
         return true;
     }
+
+//    //Block cipher algorithm for encrypting messages
+//    public String blockCipherEncrypt(String message, String key) {
+//        int blockSize = 64; // or 128, or whatever block size you want in bits
+//
+//        // Ensure the message length is a multiple of blockSize
+//        while (message.length() * 8 % blockSize != 0) {
+//            message += " "; // pad with spaces or another padding scheme
+//        }
+//
+//        String encryptedMessage = "";
+//        for (int i = 0; i < message.length(); i += blockSize / 8) {
+//            // Extract a block from the message
+//            String block = message.substring(i, i + blockSize / 8);
+//
+//            // Encrypt the block and append to the result
+//            String encryptedBlock = encryptBlock(block, key);
+//            encryptedMessage += encryptedBlock;
+//        }
+//
+//        return encryptedMessage;
+//    }
+
+//    private String encryptBlock(String block, String key) {
+//
+//    }
+
 }
