@@ -19,9 +19,15 @@ public class Main {
             BigInteger n2 = getRandomBigInteger(new BigInteger("5000000000000000000000000000000000000000000"));
 //            noMistake = noMistake && MathMethods.expandedEuklid(n1,n2).equals(n1.gcd(n2));
             long start = System.nanoTime();
-            MathMethods.expandedEuklid(n1,n2);
+            MathMethods.extendedEuclidean(n1,n2);
             long end = System.nanoTime();
             System.out.println(end-start);
+            BigInteger a = new BigInteger("56");
+            BigInteger b = new BigInteger("15");
+            BigInteger[] result = MathMethods.extendedEuclidean(a,b);
+            System.out.println(result[0].toString());
+            System.out.println(result[1].toString());
+            System.out.println(result[2].toString());
         }
         System.out.println(noMistake);
 
@@ -41,6 +47,9 @@ public class Main {
         }
         System.out.println(noMistake);
 
+
+        BigInteger n = new BigInteger("13");
+        System.out.println(MathMethods.millerRabinTest(n, 0.7));
 
         /*
         System.out.println(MathMethods.expandedEuklid(new BigInteger("6267"), new BigInteger("354")));
