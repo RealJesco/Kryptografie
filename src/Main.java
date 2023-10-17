@@ -7,8 +7,7 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        new Bob();
-
+        //new Communicator("Bob");
 
 
         System.out.println(MathMethods.alternativeQuickExponentation(new BigInteger("5"), new BigInteger("1"), new BigInteger("11")).toString());
