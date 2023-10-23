@@ -2,7 +2,6 @@ package Masks;
 
 import javax.swing.*;
 import java.awt.*;
-import java.math.BigInteger;
 
 public class Communicator extends JFrame {
     //BigInteger secretKey;
@@ -74,15 +73,36 @@ public class Communicator extends JFrame {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 1;
-        panel.add(signings,c);
+        JPanel j = new JPanel();
+        JTextField t = new JTextField("Eigene Signatur");
+        t.setPreferredSize(new Dimension(200,20));
+        t.setEditable(false);
+        j.add(t);
+        signings.setPreferredSize(new Dimension(200, 20));
+        j.add(signings);
+        panel.add(j,c);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 2;
-        panel.add(signingValid,c);
+        j = new JPanel();
+        t = new JTextField("Empfangene Signatur gültig");
+        t.setPreferredSize(new Dimension(200,20));
+        t.setEditable(false);
+        j.add(t);
+        signingValid.setPreferredSize(new Dimension(200, 20));
+        j.add(signingValid);
+        panel.add(j,c);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 3;
-        panel.add(secretField,c);
+        j = new JPanel();
+        t = new JTextField("Geheimer Schlüssel d");
+        t.setPreferredSize(new Dimension(200,20));
+        t.setEditable(false);
+        j.add(t);
+        secretField.setPreferredSize(new Dimension(200, 20));
+        j.add(secretField);
+        panel.add(j,c);
 
         add(panel);
         panel.updateUI();
