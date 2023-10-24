@@ -1,7 +1,10 @@
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MathMethods {
+
 
     public static BigInteger alternativeQuickExponentation(BigInteger base, BigInteger exp, BigInteger mod) {
         BigInteger result = BigInteger.ONE;
@@ -32,7 +35,13 @@ public class MathMethods {
             return new BigInteger[] {gcd, x, y};
         }
     }
+    public static BigInteger encrypt(BigInteger plaintext, BigInteger e, BigInteger n) {
+        return plaintext.modPow(e, n);
+    }
 
+    public static BigInteger decrypt(BigInteger ciphertext, BigInteger d, BigInteger n) {
+        return ciphertext.modPow(d, n);
+    }
     public static BigInteger getRandomBigInteger(BigInteger upperLimit){
         BigInteger randomNumber;
         do {
@@ -42,12 +51,12 @@ public class MathMethods {
     }
 
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
-    public static boolean millerRabinTest(BigInteger possiblePrime, double minimumCertainty){
-        double numberOfTests = 0;
-        double probabilityModifier = 0.25;
+    public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests){
+        System.out.println("Testing number: " + possiblePrime.toString());
         //probability = 1 - (probabilityModifier)^numberOfTests
         //check if the number is even
         if(possiblePrime.mod(BigInteger.TWO).equals(BigInteger.ZERO) || possiblePrime.equals(BigInteger.ONE)){
+            System.out.println("Number is even or 1");
             return false;
         }
         //find s and d so that possiblePrime-1 = 2^s * d
@@ -58,12 +67,12 @@ public class MathMethods {
             s++;
         }
         //repeat the test for the given certainty
-        while(1 - Math.pow(probabilityModifier,numberOfTests) < minimumCertainty){
+        while(numberOfTests > 0){
             //pick a random number a between 2 and possiblePrime-2
             BigInteger a = getRandomBigInteger(possiblePrime.subtract(BigInteger.TWO)).add(BigInteger.TWO);
             //check if a^d mod possiblePrime = 1
             if(alternativeQuickExponentation(a,d,possiblePrime).equals(BigInteger.ONE)){
-                numberOfTests++;
+                numberOfTests--;
                 continue;
             }
             //check if a^(2^r * d) mod possiblePrime = -1 for 0 <= r <= s-1
@@ -75,7 +84,7 @@ public class MathMethods {
                 }
             }
             if(isPrime){
-                numberOfTests++;
+                numberOfTests--;
                 continue;
             }
             return false;
@@ -83,30 +92,40 @@ public class MathMethods {
         return true;
     }
 
-//    //Block cipher algorithm for encrypting messages
-//    public String blockCipherEncrypt(String message, String key) {
-//        int blockSize = 64; // or 128, or whatever block size you want in bits
-//
-//        // Ensure the message length is a multiple of blockSize
-//        while (message.length() * 8 % blockSize != 0) {
-//            message += " "; // pad with spaces or another padding scheme
-//        }
-//
-//        String encryptedMessage = "";
-//        for (int i = 0; i < message.length(); i += blockSize / 8) {
-//            // Extract a block from the message
-//            String block = message.substring(i, i + blockSize / 8);
-//
-//            // Encrypt the block and append to the result
-//            String encryptedBlock = encryptBlock(block, key);
-//            encryptedMessage += encryptedBlock;
-//        }
-//
-//        return encryptedMessage;
-//    }
 
-//    private String encryptBlock(String block, String key) {
-//
-//    }
+    public static List<BigInteger> blockCipherEncrypt(List<Integer> message, int blocksize, int numberSystem){
+        // Divide message into blocks of size blocksize
+        List<List<Integer>> blocks = new ArrayList<>();
+
+        for(int i = 0; i < message.size(); i++){
+            if (i % blocksize == 0) {
+                blocks.add(new ArrayList<>()); // Initializing each block
+            }
+            blocks.get(i / blocksize).add(message.get(i));
+        }
+
+        List<BigInteger> encryptedBlocks = new ArrayList<>();
+
+        for(List<Integer> block : blocks) {
+            BigInteger blockValue = BigInteger.ZERO;
+
+            // For each block go through every character and convert it to a number
+            // in the number system with respect to its index
+            int exponent = blocksize - 1; // Start with the highest exponent
+            for (Integer integer : block) {
+                blockValue = blockValue.add(BigInteger.valueOf(integer).multiply(BigInteger.valueOf(numberSystem).pow(exponent)));
+                exponent--; // Decrease the exponent for the next iteration
+            }
+
+            // Add the block value to the encryptedBlocks list
+            encryptedBlocks.add(blockValue);
+        }
+
+        return encryptedBlocks;
+    }
+
+
+
+
 
 }
