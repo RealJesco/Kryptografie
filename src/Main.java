@@ -1,5 +1,3 @@
-import Masks.*;
-
 import javax.swing.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -9,9 +7,9 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        //new Communicator("Bob");
+        CommunicationPanel.getInstance();
 
-        //TODO @Mattis Replace all of the manual main testing with JUnit tests
+
         System.out.println(MathMethods.alternativeQuickExponentation(new BigInteger("5"), new BigInteger("1"), new BigInteger("11")).toString());
         System.out.print("\n");
         Boolean noMistake = true;
