@@ -1,3 +1,5 @@
+import Masks.*;
+
 import javax.swing.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         CommunicationPanel.getInstance();
 
-
+        //TODO @Mattis Replace all of the manual main testing with JUnit tests
         System.out.println(MathMethods.alternativeQuickExponentation(new BigInteger("5"), new BigInteger("1"), new BigInteger("11")).toString());
         System.out.print("\n");
         Boolean noMistake = true;
@@ -86,7 +88,7 @@ public class Main {
         codeMessage.add(12);
         codeMessage.add(0);
         codeMessage.add(19);
-        List<BigInteger> result = MathMethods.blockCipherEncrypt(codeMessage, 8, 47);
+        BigInteger result = MathMethods.prepareMessageForEncryption(codeMessage, 8, 47);
         System.out.println(result);
 
 
@@ -108,24 +110,37 @@ public class Main {
 //        get e from interval 1<e<phi(n). Use 65537 if that is smaller than phi(n). If that is too big use 3, else getRandomBigInteger that is prime and unequal phi(n)
         BigInteger e = BigInteger.valueOf(65537);
         System.out.println("phi: " + phi);
-        e = phi.subtract(BigInteger.ONE);
+        e = getRandomBigInteger(phi.subtract(BigInteger.ONE));
+//        e should be prime and smaller than phi and not have a common divisor with phi
+        while(e.compareTo(phi) >= 0 || !MathMethods.millerRabinTest(e, 3) || !MathMethods.extendedEuclidean(e, phi)[0].equals(BigInteger.ONE)){
+            e = getRandomBigInteger(phi);
+        }
 //        if(e > phi){
 //            e = BigInteger.valueOf(3);
 //        }
-        BigInteger d = MathMethods.extendedEuclidean(new BigInteger(String.valueOf(e)), phi)[1];
-        d = d.mod(phi); // This will ensure d is positive and less than phi(n)
+        BigInteger d = MathMethods.extendedEuclidean(e, phi)[1];
+        if(d.compareTo(BigInteger.ZERO) < 0){
+            d = d.multiply(BigInteger.valueOf(-1));
+        }
 
         // Example: Encrypting and Decrypting a message
         BigInteger message = new BigInteger("12345"); // Example message
         System.out.println("e: " + e);
         System.out.println("d: " + d);
         // Encryption
+        System.out.println("Message: " + message);
         BigInteger encryptedMessage = MathMethods.encrypt(message, e, n);
         System.out.println("Encrypted Message: " + encryptedMessage);
 
         // Decryption
         BigInteger decryptedMessage = MathMethods.decrypt(encryptedMessage, d, n);
         System.out.println("Decrypted Message: " + decryptedMessage);
+//        n = new BigInteger("791569306435939");
+//        e = new BigInteger("15485863");
+//        RSAencrypt
+        String encryptedMessageMathemat = MathMethods.rsaEncrypt("Mathemat", e, n);
+//        RSAdecrypt
+        MathMethods.rsaDecrypt(encryptedMessageMathemat, d, n);
     }
 
     public static BigInteger getRandomBigInteger(BigInteger upperLimit){

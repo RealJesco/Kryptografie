@@ -93,7 +93,7 @@ public class MathMethods {
     }
 
 
-    public static List<BigInteger> blockCipherEncrypt(List<Integer> message, int blocksize, int numberSystem){
+    public static BigInteger prepareMessageForEncryption(List<Integer> message, int blocksize, int numberSystem){
         // Divide message into blocks of size blocksize
         List<List<Integer>> blocks = new ArrayList<>();
 
@@ -104,7 +104,7 @@ public class MathMethods {
             blocks.get(i / blocksize).add(message.get(i));
         }
 
-        List<BigInteger> encryptedBlocks = new ArrayList<>();
+        BigInteger encryptedMessage = BigInteger.valueOf(0);
 
         for(List<Integer> block : blocks) {
             BigInteger blockValue = BigInteger.ZERO;
@@ -118,11 +118,94 @@ public class MathMethods {
             }
 
             // Add the block value to the encryptedBlocks list
-            encryptedBlocks.add(blockValue);
+            encryptedMessage = encryptedMessage.add(blockValue);
         }
 
-        return encryptedBlocks;
+        return encryptedMessage;
     }
+
+    public static List<Integer> prepareMessageForDecryption(BigInteger message, int blocksize, int numberSystem){
+        List<Integer> decryptedMessage = new ArrayList<>();
+
+        // Divide message into blocks of size blocksize
+        List<BigInteger> blocks = new ArrayList<>();
+
+        BigInteger numberSystemToThePowerOfBlocksize = BigInteger.valueOf(numberSystem).pow(blocksize);
+
+        while (!message.equals(BigInteger.ZERO)) {
+            blocks.add(message.mod(numberSystemToThePowerOfBlocksize));
+            message = message.divide(numberSystemToThePowerOfBlocksize);
+        }
+
+        for(BigInteger block : blocks) {
+            // For each block go through every character and convert it to a number
+            // in the number system with respect to its index
+            for (int i = blocksize - 1; i >= 0; i--) {
+                BigInteger numberSystemToThePowerOfI = BigInteger.valueOf(numberSystem).pow(i);
+                BigInteger blockValue = block.divide(numberSystemToThePowerOfI);
+                decryptedMessage.add(blockValue.intValue());
+                block = block.subtract(blockValue.multiply(numberSystemToThePowerOfI));
+            }
+        }
+
+        return decryptedMessage;
+    }
+    public static List<Integer> convertTextToUniCode(String text){
+        List<Integer> unicode = new ArrayList<>();
+        for(int i = 0; i < text.length(); i++){
+            unicode.add((int)text.charAt(i));
+        }
+        return unicode;
+    }
+    public static String convertUniCodeToText(List<Integer> unicode){
+        StringBuilder text = new StringBuilder();
+        for(int i = 0; i < unicode.size(); i++){
+            text.append((char)unicode.get(i).intValue());
+        }
+        return text.toString();
+    }
+    public static String rsaEncrypt(String message, BigInteger e, BigInteger n) {
+        System.out.println("n: " + n);
+        System.out.println("Message: " + message);
+        // Step 1: Convert text to Unicode
+        List<Integer> unicodeMessage = convertTextToUniCode(message);
+        System.out.println("Unicode: " + unicodeMessage);
+
+        // Step 2: Prepare message for encryption
+        BigInteger numericMessage = prepareMessageForEncryption(unicodeMessage, 8, 55296);
+        System.out.println("Numeric message: " + numericMessage);
+        // Step 3: Encrypt the numeric representation
+        BigInteger encryptedNumericMessage = encrypt(numericMessage, e, n);
+        System.out.println("Encrypted numeric message: " + encryptedNumericMessage);
+        // Step 4: Convert encrypted numeric message to UniCodeString
+        String encryptedNumericMessageStr = convertUniCodeToText(prepareMessageForDecryption(encryptedNumericMessage, 9, 55296));
+        System.out.println("Encrypted numeric message string: " + encryptedNumericMessageStr);
+        return encryptedNumericMessageStr;
+    }
+    public static List<Integer> getIndividualUnicodeValues(List<Integer> unicodeValues) {
+        // Step 2: Convert Unicode values to BigInteger
+        List<Integer> numericEncryptedMessage = new ArrayList<>();
+        for(Integer unicode : unicodeValues) {
+            numericEncryptedMessage = numericEncryptedMessage.multiply(BigInteger.valueOf(55296))
+                    .add(BigInteger.valueOf(unicode));
+
+            //divide by 55296 and add the remainder to the list
+            numericEncryptedMessage.add(unicode % 55296);
+        }
+        return numericEncryptedMessage;
+    }
+    public static String rsaDecrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
+       // THIS METHOD DECRYPTS
+        // Step 1: Convert encrypted numeric message to UniCodeString
+        List<Integer> encryptedNumericMessage = convertTextToUniCode(encryptedNumericMessageStr);
+        System.out.println("Encrypted numeric message string: " + encryptedNumericMessage);
+        // Step 2: Prepare message for decryption
+        List<Integer> numericMessage = getIndividualUnicodeValues(encryptedNumericMessage);
+        System.out.println("Numeric message: " + numericMessage);
+
+        return "";
+    }
+
 
 
 
