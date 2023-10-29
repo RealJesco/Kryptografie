@@ -7,8 +7,7 @@ public class Main {
     public static void main(String[] args) {
         CommunicationPanel.getInstance();
 
-        //TODO @Mattis Replace all of the manual main testing with JUnit tests
-        System.out.println(MathMethods.alternativeQuickExponentation(new BigInteger("5"), new BigInteger("1"), new BigInteger("11")).toString());
+        System.out.println(MathMethods.alternativeQuickExponentiation(new BigInteger("5"), new BigInteger("1"), new BigInteger("11")).toString());
         System.out.print("\n");
         Boolean noMistake = true;
         for(int i = 0; i<1; i++){
@@ -38,7 +37,7 @@ public class Main {
             BigInteger mod = new BigInteger("402").pow(453);
 //            noMistake = noMistake && MathMethods.alternativeQuickExponentation(n,exp,mod).equals(n.modPow(exp,mod));
             long start = System.nanoTime();
-            MathMethods.alternativeQuickExponentation(n,exp,mod);
+            MathMethods.alternativeQuickExponentiation(n,exp,mod);
             long end = System.nanoTime();
             System.out.println(end-start);
         }
