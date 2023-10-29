@@ -2,7 +2,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import java.util.LinkedList;
 public class MathMethods {
 
 
@@ -182,26 +182,28 @@ public class MathMethods {
         System.out.println("Encrypted numeric message string: " + encryptedNumericMessageStr);
         return encryptedNumericMessageStr;
     }
-    public static List<Integer> getIndividualUnicodeValues(List<Integer> unicodeValues) {
-        // Step 2: Convert Unicode values to BigInteger
-        List<Integer> numericEncryptedMessage = new ArrayList<>();
-        for(Integer unicode : unicodeValues) {
-            numericEncryptedMessage = numericEncryptedMessage.multiply(BigInteger.valueOf(55296))
-                    .add(BigInteger.valueOf(unicode));
 
-            //divide by 55296 and add the remainder to the list
-            numericEncryptedMessage.add(unicode % 55296);
-        }
-        return numericEncryptedMessage;
-    }
+//    public static List<Integer> getIndividualUnicodeValues(BigInteger numericEncryptedMessage) {
+//        LinkedList<Integer> result = new LinkedList<>();
+//        BigInteger unicodeLimit = BigInteger.valueOf(55296);
+//
+//        while (!numericEncryptedMessage.equals(BigInteger.ZERO)) {
+//            result.addFirst(numericEncryptedMessage.mod(unicodeLimit).intValue());
+//            numericEncryptedMessage = numericEncryptedMessage.divide(unicodeLimit);
+//        }
+//
+//        return result;
+//    }
+
+
     public static String rsaDecrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
        // THIS METHOD DECRYPTS
         // Step 1: Convert encrypted numeric message to UniCodeString
         List<Integer> encryptedNumericMessage = convertTextToUniCode(encryptedNumericMessageStr);
         System.out.println("Encrypted numeric message string: " + encryptedNumericMessage);
         // Step 2: Prepare message for decryption
-        List<Integer> numericMessage = getIndividualUnicodeValues(encryptedNumericMessage);
-        System.out.println("Numeric message: " + numericMessage);
+//        List<Integer> numericMessage = getIndividualUnicodeValues(encryptedNumericMessage);
+//        System.out.println("Numeric message: " + numericMessage);
 
         return "";
     }
