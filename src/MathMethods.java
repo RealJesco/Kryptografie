@@ -56,7 +56,10 @@ public class MathMethods {
         System.out.println("Testing number: " + possiblePrime.toString());
         //probability = 1 - (probabilityModifier)^numberOfTests
         //check if the number is even
-        if(possiblePrime.mod(BigInteger.TWO).equals(BigInteger.ZERO) || possiblePrime.equals(BigInteger.ONE)){
+        if (possiblePrime.equals(BigInteger.TWO)) {
+            return false;
+        }
+        if(!possiblePrime.testBit(0) || possiblePrime.equals(BigInteger.ONE)){
             System.out.println("Number is even or 1");
             return false;
         }
