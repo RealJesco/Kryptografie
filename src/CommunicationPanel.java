@@ -7,6 +7,7 @@ import java.math.BigInteger;
 public class CommunicationPanel extends JFrame {
     private static final CommunicationPanel singleton = new CommunicationPanel();
     private static JPanel panel;
+    private static JButton generateCommunicators;
     private static JTextField millerRabinStepsField;
     private static JTextField blocklengthField;
     private static JTextField lengthOfP1;
@@ -29,7 +30,7 @@ public class CommunicationPanel extends JFrame {
         panel.setLayout(new GridBagLayout());
         c = new GridBagConstraints();
 
-        JButton generateCommunicators = new JButton("Generiere Alice und Bob");
+        generateCommunicators = new JButton("Generiere Alice und Bob");
 
         millerRabinStepsField = getNewTextfield(0, "Miller-Rabin Schritte");
         blocklengthField = getNewTextfield(1, "Blocklänge");

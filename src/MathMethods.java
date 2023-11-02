@@ -1,16 +1,24 @@
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class MathMethods {
+    static BigInteger ZERO = BigInteger.ZERO;
+    static BigInteger ONE = BigInteger.ONE;
+    static BigInteger TWO = BigInteger.TWO;
+    static BigInteger TEN = BigInteger.TEN;
+    static BigInteger MINUSONE = ONE.negate();
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
-        BigInteger result = BigInteger.ONE;
+        BigInteger result = ONE;
         base = base.mod(mod); // Modulo operation, to ensure the base is within mod range
 
-        while (!exp.equals(BigInteger.ZERO)) {
+        while (!exp.equals(ZERO)) {
             // If the exponent is odd, multiply the result by base
-            if (exp.and(BigInteger.ONE).equals(BigInteger.ONE)) {
+            if (exp.and(ONE).equals(ONE)) {
                 result = (result.multiply(base)).mod(mod);
             }
 
@@ -24,8 +32,8 @@ public class MathMethods {
 
 //    TODO: @Adham: Habe ich das so richtig kommentert (und verstanden)?
     public static BigInteger[] extendedEuclidean(BigInteger a, BigInteger b) {
-        if (b.equals(BigInteger.ZERO)) {
-            return new BigInteger[] {a, BigInteger.ONE, BigInteger.ZERO};
+        if (b.equals(ZERO)) {
+            return new BigInteger[] {a, ONE, ZERO};
         } else {
             BigInteger[] ee = extendedEuclidean(b, a.mod(b)); // b ist der Teiler (im Skript der erste Faktor); a.mod(b) ist der Rest
             BigInteger gcd = ee[0]; // im Skript der erste Faktor
@@ -44,54 +52,54 @@ public class MathMethods {
     }
 
     public static BigInteger getRandomBigInteger(BigInteger upperLimit){
-        BigInteger randomNumber;
+        BigInteger randomNumber = null;
         do {
             randomNumber = new BigInteger(upperLimit.bitLength(), new Random());
         } while (randomNumber.compareTo(upperLimit) >= 0);
         return randomNumber;
     }
 
+    public static BigInteger getRandomBigInteger(int length, int m){
+        int maxShift = 500;
+        MathContext context = new MathContext(maxShift+length+10);
+        return (new BigDecimal(m)).sqrt(context).multiply(BigDecimal.TEN.pow(Math.abs(new SecureRandom().nextInt(maxShift))), context).divideAndRemainder(BigDecimal.ONE, context)[1].multiply(BigDecimal.TEN.pow(length)).toBigInteger();
+    }
+
+    public static BigInteger getRandomPrimeBigInteger(int length, int m, int primechecks){
+        int maxShift = 500;
+        MathContext context = new MathContext(maxShift+length+10);
+        BigDecimal mDec = new BigDecimal(m);
+        BigDecimal lengthDecimal = BigDecimal.TEN.pow(length);
+        BigInteger prime;
+        Random r = new SecureRandom();
+            do{
+                prime = (mDec).sqrt(context).multiply(BigDecimal.TEN.pow(Math.abs(r.nextInt(maxShift))), context).divideAndRemainder(BigDecimal.ONE, context)[1].multiply(lengthDecimal).toBigInteger();
+            } while(! millerRabinTest(prime, primechecks));
+
+        return prime;
+    }
+
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests){
-        System.out.println("Testing number: " + possiblePrime.toString());
-        //probability = 1 - (probabilityModifier)^numberOfTests
-        //check if the number is even
-        if (possiblePrime.equals(BigInteger.TWO)) {
+        possiblePrime = possiblePrime.abs();
+        if (numberOfTests == 0 || possiblePrime.equals(TWO)) {
+            return true;
+        }
+        if(!possiblePrime.testBit(0) || possiblePrime.equals(ONE)|| possiblePrime.equals(ZERO)){
             return false;
         }
-        if(!possiblePrime.testBit(0) || possiblePrime.equals(BigInteger.ONE)){
-            System.out.println("Number is even or 1");
-            return false;
-        }
-        //find s and d so that possiblePrime-1 = 2^s * d
-        BigInteger d = possiblePrime.subtract(BigInteger.ONE);
-        int s = 0;
-        while(d.mod(BigInteger.TWO).equals(BigInteger.ZERO)){
-            d = d.divide(BigInteger.TWO);
-            s++;
-        }
-        //repeat the test for the given certainty
-        while(numberOfTests > 0){
-            //pick a random number a between 2 and possiblePrime-2
-            BigInteger a = getRandomBigInteger(possiblePrime.subtract(BigInteger.TWO)).add(BigInteger.TWO);
-            //check if a^d mod possiblePrime = 1
-            if(alternativeQuickExponentiation(a,d,possiblePrime).equals(BigInteger.ONE)){
-                numberOfTests--;
-                continue;
+        BigInteger d = possiblePrime.clearBit(0);
+        int s = d.getLowestSetBit();
+
+        while(numberOfTests-- > 0){
+            BigInteger a = getRandomBigInteger(d);
+            boolean isPrime = alternativeQuickExponentiation(a,d,possiblePrime).equals(ONE);
+            while (!isPrime && --s>=0){
+                isPrime =alternativeQuickExponentiation(a,d.multiply(TWO.pow(s)),possiblePrime).equals(MINUSONE);
             }
-            //check if a^(2^r * d) mod possiblePrime = -1 for 0 <= r <= s-1
-            boolean isPrime = false;
-            for(int r = 0; r < s; r++){
-                if(alternativeQuickExponentiation(a,d.multiply(BigInteger.TWO.pow(r)),possiblePrime).equals(possiblePrime.subtract(BigInteger.ONE))){
-                    isPrime = true;
-                    break;
-                }
+            if(!isPrime){
+                return false;
             }
-            if(isPrime){
-                numberOfTests--;
-                continue;
-            }
-            return false;
         }
         return true;
     }
@@ -110,7 +118,7 @@ public class MathMethods {
         BigInteger encryptedMessage = BigInteger.valueOf(0);
 
         for(List<Integer> block : blocks) {
-            BigInteger blockValue = BigInteger.ZERO;
+            BigInteger blockValue = ZERO;
 
             // For each block go through every character and convert it to a number
             // in the number system with respect to its index
@@ -134,7 +142,7 @@ public class MathMethods {
 
         BigInteger numberSystemToThePowerOfBlockSize = BigInteger.valueOf(numberSystem).pow(blockSize);
 
-        while (!message.equals(BigInteger.ZERO)) {
+        while (!message.equals(ZERO)) {
             blocks.add(message.mod(numberSystemToThePowerOfBlockSize));
             message = message.divide(numberSystemToThePowerOfBlockSize);
         }
