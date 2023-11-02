@@ -66,6 +66,7 @@ public class MathMethods {
     }
 
     public static BigInteger getRandomPrimeBigInteger(int length, int m, int primechecks){
+        if(length==0)return ZERO;
         int maxShift = 500;
         MathContext context = new MathContext(maxShift+length+10);
         BigDecimal mDec = new BigDecimal(m);
