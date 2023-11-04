@@ -219,4 +219,9 @@ class MathMethodsTest {
 
         assertEquals(expected, MathMethods.prepareMessageForEncryption(codeMessage, 8, 47));
     }
+
+    @Test
+    void encryptToDecryptAlternativeQuickExponentiation(){
+        BigInteger message = new BigInteger("12345"); // Example message
+    }
 }

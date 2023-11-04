@@ -83,14 +83,14 @@ public class Main {
         codeMessage.add(12);
         codeMessage.add(0);
         codeMessage.add(19);
-        BigInteger result = MathMethods.prepareMessageForEncryption(codeMessage, 8, 47);
+        List<BigInteger> result = MathMethods.prepareMessageForEncryption(codeMessage, 8, 47);
         System.out.println(result);
 
 
 //        TODO @Mattis implement tests for the following logic. Encryption and decryption works, but needs tests. It is missing proper function implementation, block cipher and signature.
 //        TODO @Jesco this is how you will roughly implement the RSA encryption for the masks. You can use this as a reference. It is WIP!!! Subject to change.
 //        Create RSA encryption using MathMethods
-        BigInteger upperLimit = new BigInteger("10000000");
+        BigInteger upperLimit = new BigInteger("2").pow(64);
         BigInteger possibleP = getRandomBigInteger(upperLimit);
         BigInteger possibleQ = getRandomBigInteger(upperLimit);
         while(!MathMethods.millerRabinTest(possibleP, 3)){
@@ -100,6 +100,18 @@ public class Main {
             possibleQ = getRandomBigInteger(upperLimit);
         }
         BigInteger n = possibleP.multiply(possibleQ);
+//        n should be bigger than 55296^7
+        while(n.compareTo(new BigInteger("55296").pow(7)) < 0){
+            possibleP = getRandomBigInteger(upperLimit);
+            possibleQ = getRandomBigInteger(upperLimit);
+            while(!MathMethods.millerRabinTest(possibleP, 3)){
+                possibleP = getRandomBigInteger(upperLimit);
+            }
+            while(!MathMethods.millerRabinTest(possibleQ, 3)){
+                possibleQ = getRandomBigInteger(upperLimit);
+            }
+            n = possibleP.multiply(possibleQ);
+        }
         System.out.println("n: " + n);
         BigInteger phi = possibleP.subtract(BigInteger.ONE).multiply(possibleQ.subtract(BigInteger.ONE));
 //        get e from interval 1<e<phi(n). Use 65537 if that is smaller than phi(n). If that is too big use 3, else getRandomBigInteger that is prime and unequal phi(n)
@@ -124,16 +136,18 @@ public class Main {
         System.out.println("d: " + d);
         // Encryption
         System.out.println("Message: " + message);
-        BigInteger encryptedMessage = MathMethods.encrypt(message, e, n);
+//        BigInteger encryptedMessage = MathMethods.encrypt(message, e, n);
+        BigInteger encryptedMessage = MathMethods.alternativeQuickExponentiation(message, e, n);
         System.out.println("Encrypted Message: " + encryptedMessage);
 
         // Decryption
-        BigInteger decryptedMessage = MathMethods.decrypt(encryptedMessage, d, n);
+//        BigInteger decryptedMessage = MathMethods.decrypt(encryptedMessage, d, n);
+        BigInteger decryptedMessage = MathMethods.alternativeQuickExponentiation(encryptedMessage, d, n);
         System.out.println("Decrypted Message: " + decryptedMessage);
 //        n = new BigInteger("791569306435939");
 //        e = new BigInteger("15485863");
 //        RSAencrypt
-        String encryptedMessageMathemat = MathMethods.rsaEncrypt("Mathemat", e, n);
+        String encryptedMessageMathemat = MathMethods.rsaEncrypt("Mathematik", e, n);
 //        RSAdecrypt
         MathMethods.rsaDecrypt(encryptedMessageMathemat, d, n);
     }
