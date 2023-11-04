@@ -162,11 +162,8 @@ public class Main {
 //    }
 
     public static void main(String[] args) {
-        int bitLengthN = 128;
-//        log_55296(2^bitLengthN)
         // Calculate block size as the floor of the logarithm base 55296 of 2^bitLengthN using change of base formula
-        int blockSize = (int)(Math.log(Math.pow(2, bitLengthN)) / Math.log(55296));
-        RSA rsa = new RSA(100, blockSize, 55926);
+        RSA rsa = new RSA(3, 512, 55926);
         String message = "Mathematik ist spannend";
         RSA.generatePrimeNumbers();
         BigInteger n = rsa.getN();
