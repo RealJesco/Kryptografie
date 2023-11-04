@@ -245,6 +245,7 @@ public class MathMethods {
             encryptedBlocks.add(block);
         }
         System.out.println("Encrypted blocks: " + encryptedBlocks);
+//        Step 2: Convert the encrypted blocks to the correct format
         List<BigInteger> encryptedNumericMessages = new ArrayList<>();
         for (List<BigInteger> encryptedBlock : encryptedBlocks) {
             BigInteger sum = BigInteger.ZERO;
@@ -258,7 +259,7 @@ public class MathMethods {
             System.out.println("Sum: " + sum);
         }
 //        Encrypted blocks are now in the correct format
-
+//Step 3: Decrypt the numeric representation
         List<BigInteger> numericMessage = new ArrayList<>();
 //        Decrypt every encryptedNumericMessages block
         for(BigInteger block : encryptedNumericMessages) {
@@ -266,9 +267,9 @@ public class MathMethods {
             System.out.println("Block: " + block);
         }
         System.out.println("Numeric message: " + numericMessage);
-//        Convert the numeric message to a list of integers
+//        Step 4: Convert the numeric message to a list of integers
         List<Integer> decryptedMessage = new ArrayList<>();
-//prepareMessageForDecryption(numericMessage.get(0), 8, 55296) for every block
+//      prepareMessageForDecryption(numericMessage.get(0), 8, 55296) for every block
         for (BigInteger block : numericMessage) {
             decryptedMessage.addAll(prepareMessageForDecryption(block, 8, 55296));
         }

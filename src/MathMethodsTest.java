@@ -2,13 +2,14 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MathMethodsTest {
 
-//    TODO @Adham Die ersten beiden Fälle habe ich 1 zu 1 aus Main übernommen, brauchen wir die?
+    //    TODO @Adham Die ersten beiden Fälle habe ich 1 zu 1 aus Main übernommen, brauchen wir die?
     @Test
     void alternativeQuickExponentiationFromMainOne() {
         BigInteger base = new BigInteger("5");
@@ -97,7 +98,7 @@ class MathMethodsTest {
         BigInteger a = new BigInteger("56");
         BigInteger b = new BigInteger("15");
 
-        BigInteger[] expexted = new BigInteger[] {BigInteger.valueOf(1), BigInteger.valueOf(-4), BigInteger.valueOf(15)};
+        BigInteger[] expexted = new BigInteger[]{BigInteger.valueOf(1), BigInteger.valueOf(-4), BigInteger.valueOf(15)};
 
         assertArrayEquals(expexted, MathMethods.extendedEuclidean(a, b), "The extendedEuclidean method returned an incorrect result.");
     }
@@ -107,7 +108,7 @@ class MathMethodsTest {
         BigInteger a = new BigInteger("123456789");
         BigInteger b = new BigInteger("9876543210");
 
-        BigInteger[] expexted = new BigInteger[] {BigInteger.valueOf(9), BigInteger.valueOf(109739361), BigInteger.valueOf(-1371742)};
+        BigInteger[] expexted = new BigInteger[]{BigInteger.valueOf(9), BigInteger.valueOf(109739361), BigInteger.valueOf(-1371742)};
 
         assertArrayEquals(expexted, MathMethods.extendedEuclidean(a, b), "The extendedEuclidean method returned an incorrect result.");
     }
@@ -117,19 +118,19 @@ class MathMethodsTest {
         BigInteger a = new BigInteger("315");
         BigInteger b = new BigInteger("661643");
 
-        BigInteger[] expexted = new BigInteger[] {BigInteger.valueOf(315), BigInteger.valueOf(0), BigInteger.valueOf(1)};
+        BigInteger[] expexted = new BigInteger[]{BigInteger.valueOf(315), BigInteger.valueOf(0), BigInteger.valueOf(1)};
 
         assertArrayEquals(expexted, MathMethods.extendedEuclidean(a, a), "The extendedEuclidean method returned an incorrect result.");
 
-        expexted = new BigInteger[] {BigInteger.valueOf(1), BigInteger.valueOf(-319269), BigInteger.valueOf(152)};
+        expexted = new BigInteger[]{BigInteger.valueOf(1), BigInteger.valueOf(-319269), BigInteger.valueOf(152)};
 
         assertArrayEquals(expexted, MathMethods.extendedEuclidean(a, b), "The extendedEuclidean method returned an incorrect result.");
 
-        expexted = new BigInteger[] {BigInteger.valueOf(1), BigInteger.valueOf(152), BigInteger.valueOf(-319269)};
+        expexted = new BigInteger[]{BigInteger.valueOf(1), BigInteger.valueOf(152), BigInteger.valueOf(-319269)};
 
         assertArrayEquals(expexted, MathMethods.extendedEuclidean(b, a), "The extendedEuclidean method returned an incorrect result.");
 
-        expexted = new BigInteger[] {BigInteger.valueOf(661643), BigInteger.valueOf(0), BigInteger.valueOf(1)};
+        expexted = new BigInteger[]{BigInteger.valueOf(661643), BigInteger.valueOf(0), BigInteger.valueOf(1)};
 
         assertArrayEquals(expexted, MathMethods.extendedEuclidean(b, b), "The extendedEuclidean method returned an incorrect result.");
     }
@@ -221,7 +222,85 @@ class MathMethodsTest {
     }
 
     @Test
-    void encryptToDecryptAlternativeQuickExponentiation(){
+    void encryptToDecryptAlternativeQuickExponentiation() {
         BigInteger message = new BigInteger("12345"); // Example message
     }
+
+    @Test
+    void testMessagePreparationAndEncryptionDecryptionCycle() {
+        // Assuming we have a small RSA key pair for testing (not secure for real use)
+        BigInteger e = new BigInteger("18217281770421758450086481999749147637"); // public exponent
+        BigInteger d = new BigInteger("69856630177376283805385594524728944213"); // private exponent
+        BigInteger n = new BigInteger("152421106944440766760720109679329339863"); // modulus
+
+        String originalMessage = "Test RSA message!";
+        List<Integer> unicodeMessage = MathMethods.convertTextToUniCode(originalMessage);
+
+        // Preparing message for encryption
+        List<BigInteger> preparedBlocks = MathMethods.prepareMessageForEncryption(unicodeMessage, 2, 256);
+        List<BigInteger> encryptedBlocks = new ArrayList<>();
+        for (BigInteger block : preparedBlocks) {
+            encryptedBlocks.add(MathMethods.encrypt(block, e, n));
+        }
+
+        // Decrypting the message
+        List<BigInteger> decryptedBlocks = new ArrayList<>();
+        for (BigInteger block : encryptedBlocks) {
+            decryptedBlocks.add(MathMethods.decrypt(block, d, n));
+        }
+
+        // Preparing decrypted blocks for reading as a message
+        List<Integer> decryptedMessageCode = new ArrayList<>();
+        for (BigInteger block : decryptedBlocks) {
+            decryptedMessageCode.addAll(MathMethods.prepareMessageForDecryption(block, 2, 256));
+        }
+
+        String decryptedMessage = MathMethods.convertUniCodeToText(decryptedMessageCode);
+
+        // Remove the padding
+        decryptedMessage = decryptedMessage.substring(0, decryptedMessage.indexOf('\0'));
+        // The decrypted message should match the original message
+        assertEquals(originalMessage, decryptedMessage);
+    }
+
+    @Test
+    void testPrepareMessageForEncryptionDifferentLengths() {
+        List<Integer> shortMessage = Arrays.asList(65, 66); // 'AB'
+        List<Integer> exactBlockMessage = Arrays.asList(65, 66, 67, 68); // 'ABCD'
+        List<Integer> longMessage = Arrays.asList(65, 66, 67, 68, 69); // 'ABCDE'
+        int blockSize = 4;
+        int numberSystem = 256;
+
+        // Testing short message
+        List<BigInteger> shortMessageBlocks = MathMethods.prepareMessageForEncryption(shortMessage, blockSize, numberSystem);
+        assertEquals(1, shortMessageBlocks.size(), "There should be 1 block for a short message.");
+
+        // Testing exact block size message
+        List<BigInteger> exactBlockMessageBlocks = MathMethods.prepareMessageForEncryption(exactBlockMessage, blockSize, numberSystem);
+        assertEquals(1, exactBlockMessageBlocks.size(), "There should be 1 block for a message that exactly fits the block size.");
+
+        // Testing long message
+        List<BigInteger> longMessageBlocks = MathMethods.prepareMessageForEncryption(longMessage, blockSize, numberSystem);
+        assertEquals(2, longMessageBlocks.size(), "There should be 2 blocks for a long message.");
+    }
+
+    @Test
+    void testEncryptionDecryptionWithQuickExponentiation() {
+        BigInteger message = new BigInteger("12345"); // Example message
+        BigInteger e = new BigInteger("18217281770421758450086481999749147637"); // public exponent
+        BigInteger d = new BigInteger("69856630177376283805385594524728944213"); // private exponent
+        BigInteger n = new BigInteger("152421106944440766760720109679329339863"); // modulus
+
+        // Encrypting with alternativeQuickExponentiation
+        BigInteger encryptedMessage = MathMethods.alternativeQuickExponentiation(message, e, n);
+
+        // Decrypting
+        BigInteger decryptedMessage = MathMethods.alternativeQuickExponentiation(encryptedMessage, d, n);
+
+        // The decrypted message should match the original message
+        assertEquals(message,
+                decryptedMessage,
+                "The decrypted message should match the original message.");
+    }
+
 }
