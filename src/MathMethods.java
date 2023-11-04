@@ -198,16 +198,33 @@ public class MathMethods {
         }
         System.out.println("Encrypted numeric message: " + encryptedBlocks);
 //        Divide with remainder by 55296 to get the Unicode values
-        List<Integer> encryptedNumericMessageList = new ArrayList<>();
+        List<List<Integer>> encryptedNumericMessageList = new ArrayList<>();
         for(BigInteger block : encryptedBlocks) {
+            List<Integer> tempList = new ArrayList<>();
+
+            int count = 0;
             while (!block.equals(BigInteger.ZERO)) {
-                encryptedNumericMessageList.add(block.mod(BigInteger.valueOf(55296)).intValue());
+                tempList.add(0, block.mod(BigInteger.valueOf(55296)).intValue());
                 block = block.divide(BigInteger.valueOf(55296));
+                count++;
             }
+//            While loop is necessary to get the correct number of Unicode values
+            while (count < 9) {
+//                Add 0s to the beginning of the list
+                tempList.add(0, 0);
+                count++;
+            }
+            System.out.println("Count: " + count);
+            encryptedNumericMessageList.add(tempList);
         }
         System.out.println("Encrypted numeric message list: " + encryptedNumericMessageList);
 //        Make UniCodeString from the list
-        String encryptedNumericMessageStr = convertUniCodeToText(encryptedNumericMessageList);
+        String encryptedNumericMessageStr = "";
+//        For each list, get the unicodevalues and add them to the string
+        for (List<Integer> encryptedNumericMessage : encryptedNumericMessageList) {
+            encryptedNumericMessageStr += convertUniCodeToText(encryptedNumericMessage);
+        }
+
         System.out.println("Encrypted numeric message string: " + encryptedNumericMessageStr);
 
         return encryptedNumericMessageStr;
@@ -219,31 +236,50 @@ public class MathMethods {
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUniCode(encryptedNumericMessageStr);
         System.out.println("Unicode: " + unicodeMessage);
-        // Step 2: Split into blocks of size 9
-        List<List<Integer>> blocks = new ArrayList<>();
-        for (int i = 0; i < unicodeMessage.size(); i++) {
-            if (i % 9 == 0) {
-                blocks.add(new ArrayList<>()); // Initializing each block
+        List<List<BigInteger>> encryptedBlocks = new ArrayList<>();
+        for(int i = 0; i < unicodeMessage.size(); i+=9){
+            List<BigInteger> block = new ArrayList<>();
+            for(int j = 0; j < 9; j++){
+                block.add(BigInteger.valueOf(unicodeMessage.get(i+j)));
             }
-            blocks.get(i / 9).add(unicodeMessage.get(i));
+            encryptedBlocks.add(block);
         }
-        System.out.println("Blocks: " + blocks);
-        //        Step 3: Decrypt each block
-       List<BigInteger> decryptedBlocks = new ArrayList<>();
-       for(List<Integer> block : blocks) {
-           BigInteger blockValue = BigInteger.ZERO;
-           // For each block go through every character and convert it to a number
-           // in the number system with respect to its index
-           int exponent = 8; // Start with the highest exponent
-           for (Integer integer : block) {
-               blockValue = blockValue.add(BigInteger.valueOf(integer).multiply(BigInteger.valueOf(55296).pow(exponent)));
-               exponent--; // Decrease the exponent for the next iteration
-           }
-           // Add the block value to the encryptedBlocks list
-           decryptedBlocks.add(decrypt(blockValue, d, n));
-         }
-        System.out.println("Decrypted blocks: " + decryptedBlocks);
-        //        Step 4:
-        return "";
+        System.out.println("Encrypted blocks: " + encryptedBlocks);
+        List<BigInteger> encryptedNumericMessages = new ArrayList<>();
+        for (List<BigInteger> encryptedBlock : encryptedBlocks) {
+            BigInteger sum = BigInteger.ZERO;
+            for (int j = 0; j < encryptedBlock.size(); j++) {
+//                System.out.println("Encrypted block: " + encryptedBlock.get(encryptedBlock.size() - j - 1));
+                BigInteger temp = encryptedBlock.get(encryptedBlock.size() - j - 1).multiply(BigInteger.valueOf(55296).pow(j));
+//                System.out.println(encryptedBlock.get(encryptedBlock.size() - j - 1) + " * " + BigInteger.valueOf(55296).pow(j) + " = " + temp);
+               sum = sum.add(temp);
+            }
+            encryptedNumericMessages.add(sum);
+            System.out.println("Sum: " + sum);
+        }
+//        Encrypted blocks are now in the correct format
+
+        List<BigInteger> numericMessage = new ArrayList<>();
+//        Decrypt every encryptedNumericMessages block
+        for(BigInteger block : encryptedNumericMessages) {
+            numericMessage.add(decrypt(block, d, n));
+            System.out.println("Block: " + block);
+        }
+        System.out.println("Numeric message: " + numericMessage);
+//        Convert the numeric message to a list of integers
+        List<Integer> decryptedMessage = new ArrayList<>();
+//prepareMessageForDecryption(numericMessage.get(0), 8, 55296) for every block
+        for (BigInteger block : numericMessage) {
+            decryptedMessage.addAll(prepareMessageForDecryption(block, 8, 55296));
+        }
+        System.out.println("Decrypted message: " + decryptedMessage);
+//        Convert the list of integers to a string
+        String decryptedMessageStr = convertUniCodeToText(decryptedMessage);
+        System.out.println("Decrypted message string: " + decryptedMessageStr);
+//        Remove the padding from the string
+        decryptedMessageStr = decryptedMessageStr.substring(0, decryptedMessageStr.indexOf(0));
+        System.out.println("Decrypted message string without padding: " + decryptedMessageStr);
+
+        return decryptedMessageStr;
     }
 }

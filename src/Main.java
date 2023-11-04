@@ -90,6 +90,7 @@ public class Main {
 //        TODO @Mattis implement tests for the following logic. Encryption and decryption works, but needs tests. It is missing proper function implementation, block cipher and signature.
 //        TODO @Jesco this is how you will roughly implement the RSA encryption for the masks. You can use this as a reference. It is WIP!!! Subject to change.
 //        Create RSA encryption using MathMethods
+
         BigInteger upperLimit = new BigInteger("2").pow(64);
         BigInteger possibleP = getRandomBigInteger(upperLimit);
         BigInteger possibleQ = getRandomBigInteger(upperLimit);
@@ -100,8 +101,8 @@ public class Main {
             possibleQ = getRandomBigInteger(upperLimit);
         }
         BigInteger n = possibleP.multiply(possibleQ);
-//        n should be bigger than 55296^7
-        while(n.compareTo(new BigInteger("55296").pow(7)) < 0){
+        //Generated n needs to be bigger than 55296^8 and smaller than 55296^9
+        while(n.compareTo(new BigInteger("55296").pow(8)) < 0 || n.compareTo(new BigInteger("55296").pow(9)) >= 0){
             possibleP = getRandomBigInteger(upperLimit);
             possibleQ = getRandomBigInteger(upperLimit);
             while(!MathMethods.millerRabinTest(possibleP, 3)){
@@ -112,12 +113,16 @@ public class Main {
             }
             n = possibleP.multiply(possibleQ);
         }
+        // TODO: Remove this once the n generation is fixed
+        n = new BigInteger("152421106944440766760720109679329339863");
         System.out.println("n: " + n);
         BigInteger phi = possibleP.subtract(BigInteger.ONE).multiply(possibleQ.subtract(BigInteger.ONE));
 //        get e from interval 1<e<phi(n). Use 65537 if that is smaller than phi(n). If that is too big use 3, else getRandomBigInteger that is prime and unequal phi(n)
         BigInteger e = BigInteger.valueOf(65537);
         System.out.println("phi: " + phi);
         e = getRandomBigInteger(phi.subtract(BigInteger.ONE));
+        // TODO: Remove this once the n generation is fixed
+        e = new BigInteger("18217281770421758450086481999749147637");
 //        e should be prime and smaller than phi and not have a common divisor with phi
         while(e.compareTo(phi) >= 0 || !MathMethods.millerRabinTest(e, 3) || !MathMethods.extendedEuclidean(e, phi)[0].equals(BigInteger.ONE)){
             e = getRandomBigInteger(phi);
@@ -129,7 +134,8 @@ public class Main {
         if(d.compareTo(BigInteger.ZERO) < 0){
             d = d.multiply(BigInteger.valueOf(-1));
         }
-
+        // TODO: Remove this once the n generation is fixed
+        d = new BigInteger("69856630177376283805385594524728944213");
         // Example: Encrypting and Decrypting a message
         BigInteger message = new BigInteger("12345"); // Example message
         System.out.println("e: " + e);
@@ -147,7 +153,7 @@ public class Main {
 //        n = new BigInteger("791569306435939");
 //        e = new BigInteger("15485863");
 //        RSAencrypt
-        String encryptedMessageMathemat = MathMethods.rsaEncrypt("Mathematik", e, n);
+        String encryptedMessageMathemat = MathMethods.rsaEncrypt("Mathematik ist spannend", e, n);
 //        RSAdecrypt
         MathMethods.rsaDecrypt(encryptedMessageMathemat, d, n);
     }
