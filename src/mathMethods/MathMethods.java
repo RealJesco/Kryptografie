@@ -1,3 +1,5 @@
+package mathMethods;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,49 +54,56 @@ public class MathMethods {
     }
 
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
-    public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests){
+    public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests) {
         System.out.println("Testing number: " + possiblePrime.toString());
-        //probability = 1 - (probabilityModifier)^numberOfTests
-        //check if the number is even
+
+        if (possiblePrime.equals(BigInteger.ONE)) {
+            System.out.println("Number is 1");
+            return false;
+        }
         if (possiblePrime.equals(BigInteger.TWO)) {
+            return true;
+        }
+        if (!possiblePrime.testBit(0)) {
+            System.out.println("Number is even");
             return false;
         }
-        if(!possiblePrime.testBit(0) || possiblePrime.equals(BigInteger.ONE)){
-            System.out.println("Number is even or 1");
-            return false;
-        }
-        //find s and d so that possiblePrime-1 = 2^s * d
+
         BigInteger d = possiblePrime.subtract(BigInteger.ONE);
         int s = 0;
-        while(d.mod(BigInteger.TWO).equals(BigInteger.ZERO)){
-            d = d.divide(BigInteger.TWO);
+        while (d.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+            d = d.shiftRight(1); // More efficient division by 2
             s++;
         }
-        //repeat the test for the given certainty
-        while(numberOfTests > 0){
-            //pick a random number a between 2 and possiblePrime-2
-            BigInteger a = getRandomBigInteger(possiblePrime.subtract(BigInteger.TWO)).add(BigInteger.TWO);
-            //check if a^d mod possiblePrime = 1
-            if(alternativeQuickExponentiation(a,d,possiblePrime).equals(BigInteger.ONE)){
-                numberOfTests--;
+
+        for (int i = 0; i < numberOfTests; i++) {
+            BigInteger a = getRandomBigInteger(possiblePrime.subtract(BigInteger.valueOf(4))).add(BigInteger.TWO); // 'a' is in the range [2, possiblePrime - 2]
+
+            BigInteger x = alternativeQuickExponentiation(a, d, possiblePrime);
+
+            if (x.equals(BigInteger.ONE) || x.equals(possiblePrime.subtract(BigInteger.ONE))) {
                 continue;
             }
-            //check if a^(2^r * d) mod possiblePrime = -1 for 0 <= r <= s-1
-            boolean isPrime = false;
-            for(int r = 0; r < s; r++){
-                if(alternativeQuickExponentiation(a,d.multiply(BigInteger.TWO.pow(r)),possiblePrime).equals(possiblePrime.subtract(BigInteger.ONE))){
-                    isPrime = true;
+
+            int r;
+            for (r = 1; r < s; r++) {
+                x = x.modPow(BigInteger.TWO, possiblePrime);
+                if (x.equals(BigInteger.ONE)) {
+                    return false;
+                }
+                if (x.equals(possiblePrime.subtract(BigInteger.ONE))) {
                     break;
                 }
             }
-            if(isPrime){
-                numberOfTests--;
-                continue;
+
+            if (r == s) { // None of the steps made x equal to possiblePrime-1
+                return false;
             }
-            return false;
         }
+
         return true;
     }
+
 
     public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem){
         // Divide message into blocks of size blockSize

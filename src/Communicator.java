@@ -1,3 +1,5 @@
+import mathMethods.MathMethods;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -52,7 +54,7 @@ public class Communicator extends JFrame {
         startEncode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //MathMethods.blockCipherEncrypt(inputAndOutput.getText(), CommunicationPanel.getInstance().getBlockLength());
+                //mathMethods.MathMethods.blockCipherEncrypt(inputAndOutput.getText(), CommunicationPanel.getInstance().getBlockLength());
             }
         });
         startEncode.setPreferredSize(new Dimension(250,25));

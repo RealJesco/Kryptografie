@@ -1,7 +1,8 @@
+import mathMethods.MathMethods;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class CommunicationPanel extends JFrame {

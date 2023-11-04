@@ -1,3 +1,5 @@
+package mathMethods;
+
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -182,7 +184,7 @@ class MathMethodsTest {
 
         BigInteger expected = new BigInteger("6083869600275");
 
-        assertEquals(expected, MathMethods.prepareMessageForEncryption(codeMessage, 8, 47));
+        assertEquals(expected, MathMethods.prepareMessageForEncryption(codeMessage, 8, 47).get(0));
     }
 
     @Test
@@ -200,7 +202,7 @@ class MathMethodsTest {
 
         BigInteger expected = new BigInteger("6083869600276");
 
-        assertEquals(expected, MathMethods.prepareMessageForEncryption(codeMessage, 8, 47));
+        assertEquals(expected, MathMethods.prepareMessageForEncryption(codeMessage, 8, 47).get(0));
     }
 
     @Test
@@ -218,7 +220,7 @@ class MathMethodsTest {
 
         BigInteger expected = new BigInteger("6083869600322");
 
-        assertEquals(expected, MathMethods.prepareMessageForEncryption(codeMessage, 8, 47));
+        assertEquals(expected, MathMethods.prepareMessageForEncryption(codeMessage, 8, 47).get(0));
     }
 
     @Test
