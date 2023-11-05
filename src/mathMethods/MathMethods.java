@@ -39,15 +39,6 @@ public class MathMethods {
             return new BigInteger[] {gcd, x, y};
         }
     }
-
-    public static BigInteger encrypt(BigInteger plaintext, BigInteger e, BigInteger n) {
-        return plaintext.modPow(e, n);
-    }
-
-    public static BigInteger decrypt(BigInteger ciphertext, BigInteger d, BigInteger n) {
-        return ciphertext.modPow(d, n);
-    }
-
     public static BigInteger getRandomBigInteger(BigInteger upperLimit){
         BigInteger randomNumber;
         do {
@@ -90,7 +81,9 @@ public class MathMethods {
 
             int r;
             for (r = 1; r < s; r++) {
-                x = x.modPow(BigInteger.TWO, possiblePrime);
+//                x = x.modPow(BigInteger.TWO, possiblePrime);
+                // Do it with alternativeQuickExponentiation
+                x = alternativeQuickExponentiation(x, BigInteger.TWO, possiblePrime);
                 if (x.equals(BigInteger.ONE)) {
                     return false;
                 }
@@ -108,9 +101,9 @@ public class MathMethods {
     }
     // Parallel Miller-Rabin Test
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests) {
+        if (!possiblePrime.testBit(0)) return false;
         if (possiblePrime.equals(BigInteger.ONE)) return false;
         if (possiblePrime.equals(BigInteger.TWO)) return true;
-        if (!possiblePrime.testBit(0)) return false;
 
         BigInteger d = possiblePrime.subtract(BigInteger.ONE);
         int s = 0;
@@ -134,7 +127,8 @@ public class MathMethods {
                     }
 
                     for (int r = 0; r < finalS; r++) {
-                        x = x.modPow(BigInteger.TWO, possiblePrime);
+                        //x = x.modPow(BigInteger.TWO, possiblePrime);
+                        x = alternativeQuickExponentiation(x, BigInteger.TWO, possiblePrime);
                         if (x.equals(BigInteger.ONE)) return false;
                         if (x.equals(possiblePrime.subtract(BigInteger.ONE))) return true;
                     }
@@ -153,7 +147,6 @@ public class MathMethods {
             forkJoinPool.shutdown(); // Always remember to shutdown the pool
         }
     }
-
 
     public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem){
         // Divide message into blocks of size blockSize
@@ -212,6 +205,7 @@ public class MathMethods {
         return decryptedMessage;
     }
 
+    //TODO: Test diese kleinen Methoden
     public static List<Integer> convertTextToUniCode(String text){
         List<Integer> unicode = new ArrayList<>();
         for(int i = 0; i < text.length(); i++){
@@ -222,8 +216,8 @@ public class MathMethods {
 
     public static String convertUniCodeToText(List<Integer> unicode){
         StringBuilder text = new StringBuilder();
-        for(int i = 0; i < unicode.size(); i++){
-            text.append((char)unicode.get(i).intValue());
+        for (Integer integer : unicode) {
+            text.append((char) integer.intValue());
         }
         return text.toString();
     }

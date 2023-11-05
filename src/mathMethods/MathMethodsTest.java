@@ -242,13 +242,13 @@ class MathMethodsTest {
         List<BigInteger> preparedBlocks = MathMethods.prepareMessageForEncryption(unicodeMessage, 2, 256);
         List<BigInteger> encryptedBlocks = new ArrayList<>();
         for (BigInteger block : preparedBlocks) {
-            encryptedBlocks.add(MathMethods.encrypt(block, e, n));
+            encryptedBlocks.add(MathMethods.alternativeQuickExponentiation(block, e, n));
         }
 
         // Decrypting the message
         List<BigInteger> decryptedBlocks = new ArrayList<>();
         for (BigInteger block : encryptedBlocks) {
-            decryptedBlocks.add(MathMethods.decrypt(block, d, n));
+            decryptedBlocks.add(MathMethods.alternativeQuickExponentiation(block, d, n));
         }
 
         // Preparing decrypted blocks for reading as a message

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import mathMethods.MathMethods;
 
-import static mathMethods.MathMethods.getRandomBigInteger;
 
 public class RSA {
 
@@ -22,16 +21,18 @@ public class RSA {
     private static BigInteger q;
     private static int bitLengthN = 128;
     private static final SecureRandom random = new SecureRandom();
+    private static final BigInteger TWO = BigInteger.valueOf(2);
+    private static final BigInteger[] SMALL_PRIMES = { /* array of small prime BigIntegers */ };
 
     //    Constructor
     public RSA(int millerRabinSteps, int bitLengthN, int numberSystemBase) {
-        this.millerRabinSteps = millerRabinSteps;
-        this.bitLengthN = bitLengthN;
+        RSA.millerRabinSteps = millerRabinSteps;
+        RSA.bitLengthN = bitLengthN;
         System.out.println("bitLengthN: " + bitLengthN);
-        this.blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(55296)));
+        blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase)));
         System.out.println("blockSize: " + blockSize);
-        this.blockSizePlusOne = blockSize + 1;
-        this.numberSystemBase = numberSystemBase;
+        blockSizePlusOne = blockSize + 1;
+        RSA.numberSystemBase = numberSystemBase;
     }
 
     public BigInteger getN(){
@@ -57,31 +58,40 @@ public class RSA {
         int bitLengthPQ = bitLengthN / 2; // for p and q
 
         BigInteger lowerBound = BigInteger.ONE.shiftLeft(bitLengthPQ - 1);
-        BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ);
+        BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ).subtract(BigInteger.ONE);
 
         BigInteger p, q;
-
+        // Clock time for prime generation
+       long startTime = System.nanoTime();
+        // Optimize random prime generation
+        p = generateRandomPrime(lowerBound, upperBound);
         do {
-            p = generateRandomPrime(lowerBound, upperBound.subtract(BigInteger.ONE));
-        } while (p.bitLength() != bitLengthPQ);
-
-        do {
-            q = generateRandomPrime(lowerBound, upperBound.subtract(BigInteger.ONE));
-        } while (q.bitLength() != bitLengthPQ || p.equals(q));
-
+            q = generateRandomPrime(lowerBound, upperBound);
+        } while (p.equals(q)); // Loop only necessary to ensure p is not equal to q
+        long endTime = System.nanoTime();
+        System.out.println("Time for prime generation: " + (endTime - startTime) / 1000000 + " ms");
         n = p.multiply(q);
-
-//        System.out.println("Final p: " + p);
-//        System.out.println("Final q: " + q);
-//        System.out.println("n (p*q): " + n);
-
         phiN = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
 
-        // Generate public exponent e
-        e = getRandomBigInteger(phiN.subtract(BigInteger.ONE));
-        while(e.compareTo(phiN) >= 0 || !MathMethods.parallelMillerRabinTest(e, millerRabinSteps) || !MathMethods.extendedEuclidean(e, phiN)[0].equals(BigInteger.ONE)){
-         e = getRandomBigInteger(phiN);
-       }
+
+        // Initially try to use 65537 as the public exponent e
+        e = BigInteger.valueOf(65537);
+
+        // If 65537 is greater than or equal to phiN or not coprime with phiN, try using 3
+        if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(BigInteger.ONE)) {
+            e = BigInteger.valueOf(3);
+
+            // If 3 is also not coprime with phiN, then generate a new prime for e
+            if (!e.gcd(phiN).equals(BigInteger.ONE)) {
+                BigInteger lowerBoundForE = BigInteger.TWO; // e must be greater than 1
+                BigInteger upperBoundForE = phiN.subtract(BigInteger.ONE); // e must be less than phiN
+
+                // Generate a prime e that is coprime with phiN
+                do {
+                    e = generateRandomPrime(lowerBoundForE, upperBoundForE);
+                } while (!e.gcd(phiN).equals(BigInteger.ONE));
+            }
+        }
 
         // Generate private exponent d
         d = MathMethods.extendedEuclidean(e, phiN)[1].mod(phiN);
@@ -98,36 +108,49 @@ public class RSA {
      * @param upperBound  the upper bound for the generated prime number.
      * @return a prime number within the specified range.
      */
+
+
     private static BigInteger generateRandomPrime(BigInteger lowerBound, BigInteger upperBound) {
-        BigInteger primeCandidate;
         SecureRandom random = new SecureRandom();
+        int bitLength = upperBound.subtract(lowerBound).bitLength();
+        BigInteger primeCandidate;
 
         while (true) {
-            // Generate a random BigInteger within the range of lowerBound and upperBound
-            int bitLength = upperBound.subtract(lowerBound).bitLength();
-            BigInteger randomNumber = new BigInteger(bitLength, random);
+            // Generate a random odd BigInteger within the range
+            BigInteger randomNumber = new BigInteger(bitLength, random).setBit(0);
             primeCandidate = lowerBound.add(randomNumber);
 
-            // If the generated number is out of range, adjust it to be within the range
+            // If the generated number is out of range, retry
             if (primeCandidate.compareTo(upperBound) >= 0) {
-                primeCandidate = primeCandidate.mod(upperBound.subtract(lowerBound)).add(lowerBound);
+                continue;
             }
 
-            // If the primeCandidate is even, make it odd to increase the chance of being prime
-            if (primeCandidate.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+            // Fast check against small primes
+            boolean divisible = false;
+            for (BigInteger smallPrime : SMALL_PRIMES) {
+                if (primeCandidate.mod(smallPrime).equals(BigInteger.ZERO)) {
+                    divisible = true;
+                    break;
+                }
+            }
+            if (divisible) {
+                continue;
+            }
+
+            // If primeCandidate is even (it can only be even if it's equal to the lower bound), make it odd
+            if (primeCandidate.mod(TWO).equals(BigInteger.ZERO)) {
                 primeCandidate = primeCandidate.add(BigInteger.ONE);
             }
-            // Check if the primeCandidate is a prime number
+
+            // Expensive primality check
             if (MathMethods.parallelMillerRabinTest(primeCandidate, millerRabinSteps)) {
-                // If a prime number is found, break out of the loop
-//                System.out.println("I AM BREAKING OUT OF THE LOOP");
-                break;
+                break; // Prime is found
             }
             // Otherwise, loop again and generate a new primeCandidate
         }
-//        System.out.println("I AM RETURNING THE PRIME CANDIDATE");
         return primeCandidate;
     }
+
 
 
 
@@ -164,8 +187,8 @@ public class RSA {
          testElsnerMessage.add(19);
          System.out.println("Test Elsner: " + prepareMessageForEncryption(testElsnerMessage, 8, 47));
          **/
-        // Step 2: Prepare message for encryption
-        List<BigInteger> numericMessage = MathMethods.prepareMessageForEncryption(unicodeMessage, blockSize, 55296);
+        // Step 2: Prepare message for encryption (Block cipher)
+        List<BigInteger> numericMessage = MathMethods.prepareMessageForEncryption(unicodeMessage, blockSize, numberSystemBase);
         System.out.println("Numeric message: " + numericMessage);
 //        // Step 3: Encrypt the numeric representation
         List<BigInteger> encryptedBlocks = new ArrayList<>();
@@ -173,15 +196,14 @@ public class RSA {
             encryptedBlocks.add(MathMethods.alternativeQuickExponentiation(block, e, n));
         }
         System.out.println("Encrypted numeric message: " + encryptedBlocks);
-//        Divide with remainder by 55296 to get the Unicode values
+//        Divide with remainder by numberSystemBase to get the Unicode values
         List<List<Integer>> encryptedNumericMessageList = new ArrayList<>();
         for(BigInteger block : encryptedBlocks) {
             List<Integer> tempList = new ArrayList<>();
-
             int count = 0;
             while (!block.equals(BigInteger.ZERO)) {
-                tempList.add(0, block.mod(BigInteger.valueOf(55296)).intValue());
-                block = block.divide(BigInteger.valueOf(55296));
+                tempList.add(0, block.mod(BigInteger.valueOf(numberSystemBase)).intValue());
+                block = block.divide(BigInteger.valueOf(numberSystemBase));
                 count++;
             }
 //            While loop is necessary to get the correct number of Unicode values
@@ -200,7 +222,6 @@ public class RSA {
         for (List<Integer> encryptedNumericMessage : encryptedNumericMessageList) {
             encryptedNumericMessageStr.append(MathMethods.convertUniCodeToText(encryptedNumericMessage));
         }
-
         System.out.println("Encrypted numeric message string: " + encryptedNumericMessageStr);
 
         return encryptedNumericMessageStr.toString();
@@ -231,8 +252,8 @@ public class RSA {
             BigInteger sum = BigInteger.ZERO;
             for (int j = 0; j < encryptedBlock.size(); j++) {
 //                System.out.println("Encrypted block: " + encryptedBlock.get(encryptedBlock.size() - j - 1));
-                BigInteger temp = encryptedBlock.get(encryptedBlock.size() - j - 1).multiply(BigInteger.valueOf(55296).pow(j));
-//                System.out.println(encryptedBlock.get(encryptedBlock.size() - j - 1) + " * " + BigInteger.valueOf(55296).pow(j) + " = " + temp);
+                BigInteger temp = encryptedBlock.get(encryptedBlock.size() - j - 1).multiply(BigInteger.valueOf(numberSystemBase).pow(j));
+//                System.out.println(encryptedBlock.get(encryptedBlock.size() - j - 1) + " * " + BigInteger.valueOf(numberSystemBase).pow(j) + " = " + temp);
                 sum = sum.add(temp);
             }
             encryptedNumericMessages.add(sum);
@@ -249,9 +270,9 @@ public class RSA {
         System.out.println("Numeric message: " + numericMessage);
 //        Step 4: Convert the numeric message to a list of integers
         List<Integer> decryptedMessage = new ArrayList<>();
-//      prepareMessageForDecryption(numericMessage.get(0), 8, 55296) for every block
+//      prepareMessageForDecryption(numericMessage.get(0), 8, numberSystemBase) for every block
         for (BigInteger block : numericMessage) {
-            decryptedMessage.addAll(MathMethods.prepareMessageForDecryption(block, blockSize, 55296));
+            decryptedMessage.addAll(MathMethods.prepareMessageForDecryption(block, blockSize, numberSystemBase));
         }
         System.out.println("Decrypted message: " + decryptedMessage);
 //        Convert the list of integers to a string
