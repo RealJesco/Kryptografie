@@ -18,9 +18,11 @@ public class Main {
         long start = System.nanoTime();
         RSA.generatePrimeNumbers();
         long end = System.nanoTime();
-        System.out.println("2Time to generate prime numbers: " + (end-start));
+        System.out.println("Time to generate prime numbers: " + (end-start));
         BigInteger n = rsa.getN();
-//        System.out.println("n: " + n);
+        System.out.println("n: " + n);
+        BigInteger p = rsa.getP();
+        System.out.println("p: " + p);
         BigInteger e = rsa.getE();
 //        System.out.println("e: " + e);
         String encryptedMessage = RSA.encrypt(message, e, n);
