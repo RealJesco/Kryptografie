@@ -58,17 +58,17 @@ public class MathMethods {
 
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests) {
-        System.out.println("Testing number: " + possiblePrime.toString());
+//        System.out.println("Testing number: " + possiblePrime.toString());
 
         if (possiblePrime.equals(BigInteger.ONE)) {
-            System.out.println("Number is 1");
+//            System.out.println("Number is 1");
             return false;
         }
         if (possiblePrime.equals(BigInteger.TWO)) {
             return true;
         }
         if (!possiblePrime.testBit(0)) {
-            System.out.println("Number is even");
+//            System.out.println("Number is even");
             return false;
         }
 
@@ -119,10 +119,9 @@ public class MathMethods {
             s++;
         }
 
-        // Use an ExecutorService to manage threads
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        // ForkJoinPool can potentially be more efficient for certain tasks
+        ForkJoinPool forkJoinPool = new ForkJoinPool();
 
-        // Submit all tasks to the executor and collect them into a list of Future objects
         BigInteger finalD = d;
         int finalS = s;
         List<Callable<Boolean>> tasks = IntStream.range(0, numberOfTests)
@@ -144,20 +143,17 @@ public class MathMethods {
                 .collect(Collectors.toList());
 
         try {
-            // Wait for all tasks to complete and check the results
-            for (Future<Boolean> result : executor.invokeAll(tasks)) {
-                if (!result.get()) { // If any of the tasks return false, the number is not prime
-                    return false;
-                }
-            }
+            // Use the invokeAny method which returns the result of the fastest callable
+            // and cancels all other tasks if one returns false
+            return forkJoinPool.invokeAny(tasks);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            return false;
         } finally {
-            executor.shutdown(); // Always remember to shutdown the executor
+            forkJoinPool.shutdown(); // Always remember to shutdown the pool
         }
-
-        return true;
     }
+
 
     public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem){
         // Divide message into blocks of size blockSize
