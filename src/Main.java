@@ -2,6 +2,7 @@ import mathMethods.MathMethods;
 import rsa.RSA;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,16 +10,28 @@ import java.util.Random;
 public class Main {
 
     public static void main(String[] args) {
-        CommunicationPanel.getInstance();
+        //CommunicationPanel.getInstance();
 
         // Calculate block size as the floor of the logarithm base 55296 of 2^bitLengthN using change of base formula
-        RSA rsa = new RSA(40, 3320, 55926);
-        String message = "Mathematik ist spannend";
 //        Clock time
-        long start = System.nanoTime();
-        RSA.generatePrimeNumbers();
-        long end = System.nanoTime();
-        System.out.println("Time to generate prime numbers: " + (end-start));
+        RSA rsa = new RSA(40, 3323, 55926);
+        double timer1 = 0;
+        double timer2 = 0;
+        int i;
+        Random random = new SecureRandom();
+        for(i = 0; i<5; i++){
+            long start = System.currentTimeMillis();
+            System.out.println(MathMethods.getRandomPrimeBigInteger(1000,50, 40, random));
+            long end = System.currentTimeMillis();
+            timer1 = end-start;
+            start = System.currentTimeMillis();
+            System.out.println(RSA.generateRandomPrime(BigInteger.ZERO,BigInteger.TEN.pow(1001).subtract(BigInteger.ONE)));
+            end = System.currentTimeMillis();
+            timer2 = end-start;
+        }
+        System.out.println(timer1/i);
+        System.out.println(timer2/i);
+        /*
         BigInteger n = rsa.getN();
         System.out.println("n: " + n);
         BigInteger p = rsa.getP();
@@ -30,12 +43,11 @@ public class Main {
 //        System.out.println("d: " + d);
         String decryptedMessage = RSA.decrypt(encryptedMessage, d, n);
         System.out.println("Message: " + decryptedMessage);
+
+         */
     }
-    public static BigInteger getRandomBigInteger(BigInteger upperLimit){
-        BigInteger randomNumber;
-        do {
-            randomNumber = new BigInteger(upperLimit.bitLength(), new Random());
-        } while (randomNumber.compareTo(upperLimit) >= 0);
-        return randomNumber;
-    }
+
+
+
+
 }

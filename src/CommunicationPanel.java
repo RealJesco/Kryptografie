@@ -4,10 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Random;
 
 public class CommunicationPanel extends JFrame {
     private static final CommunicationPanel singleton = new CommunicationPanel();
     private static JPanel panel;
+    private static JButton generateCommunicators;
+    private static JTextField randomNumberM;
     private static JTextField millerRabinStepsField;
     private static JTextField blocklengthField;
     private static JTextField lengthOfP1;
@@ -19,9 +23,11 @@ public class CommunicationPanel extends JFrame {
     private static Communicator Alice = null;
     private static Communicator Bob = null;
     private static GridBagConstraints c = null;
+    private static Random random;
 
     private CommunicationPanel() {
         super("CommunicationPanel");
+        random = new SecureRandom();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(650, 500));
         setSize(new Dimension(650, 500));
@@ -30,16 +36,17 @@ public class CommunicationPanel extends JFrame {
         panel.setLayout(new GridBagLayout());
         c = new GridBagConstraints();
 
-        JButton generateCommunicators = new JButton("Generiere Alice und Bob");
-
-        millerRabinStepsField = getNewTextfield(0, "Miller-Rabin Schritte");
-        blocklengthField = getNewTextfield(1, "Blocklänge");
-        lengthOfP1 = getNewTextfield(2, "Länge von p1");
-        lengthOfP2 = getNewTextfield(3, "Länge von p2");
-        alicePublicKeyField = getNewTextArea(4, "Öffentlicher Schlüssel e von Alice");
-        alicePublicNField = getNewTextArea(5, "Öffentlicher Schlüssel n von Alice");
-        bobPublicKeyField = getNewTextArea(6, "Öffentlicher Schlüssel e von Bob");
-        bobPublicNField = getNewTextArea(7, "Öffentlicher Schlüssel n von Bob");
+        generateCommunicators = new JButton("Generiere Alice und Bob");
+        int i = 0;
+        randomNumberM = getNewTextfield(i++, "Nicht-Quadratzahl m");
+        millerRabinStepsField = getNewTextfield(i++, "Miller-Rabin Schritte");
+        blocklengthField = getNewTextfield(i++, "Blocklänge");
+        lengthOfP1 = getNewTextfield(i++, "Länge von p1");
+        lengthOfP2 = getNewTextfield(i++, "Länge von p2");
+        alicePublicKeyField = getNewTextArea(i++, "Öffentlicher Schlüssel e von Alice");
+        alicePublicNField = getNewTextArea(i++, "Öffentlicher Schlüssel n von Alice");
+        bobPublicKeyField = getNewTextArea(i++, "Öffentlicher Schlüssel e von Bob");
+        bobPublicNField = getNewTextArea(i++, "Öffentlicher Schlüssel n von Bob");
 
         millerRabinStepsField.setText("10");
         onlyAllowNumbers(millerRabinStepsField);
@@ -62,19 +69,17 @@ public class CommunicationPanel extends JFrame {
                 } catch (Exception f) {
                 }
                 //Übergang für random Prime
-                BigInteger TempP1;
+                BigInteger TempP1 = MathMethods.getRandomPrimeBigInteger(Integer.parseInt(lengthOfP1.getText()),Integer.parseInt(randomNumberM.getText()),Integer.parseInt(millerRabinStepsField.getText()),random);
                 BigInteger TempP2;
-                do{
-                    TempP1 = MathMethods.getRandomBigInteger(BigInteger.TEN.pow(Integer.parseInt(lengthOfP1.getText())));
-                }while (! MathMethods.millerRabinTest(TempP1, Integer.parseInt(millerRabinStepsField.getText())));
-                do{
-                    TempP2 = MathMethods.getRandomBigInteger(BigInteger.TEN.pow(Integer.parseInt(lengthOfP2.getText())));
-                }while (! MathMethods.millerRabinTest(TempP2, Integer.parseInt(millerRabinStepsField.getText())));
+                do {
+                    TempP2 = MathMethods.getRandomPrimeBigInteger(Integer.parseInt(lengthOfP2.getText()),Integer.parseInt(randomNumberM.getText()),Integer.parseInt(millerRabinStepsField.getText()),random);
+                }while (TempP1.equals(TempP2));
+
                 BigInteger n = TempP1.multiply(TempP2);
-                Alice = new Communicator("Alice", TempP1, TempP2, new Point(900, 0));
+                Alice = new Communicator("Alice", TempP1, TempP2, random, new Point(900, 0));
+                Bob = new Communicator("Bob", TempP1, TempP2, random, new Point(900, 400));
                 alicePublicKeyField.setText(Alice.e.toString());
                 alicePublicNField.setText(Alice.n.toString());
-                Bob = new Communicator("Bob", TempP1, TempP2, new Point(900, 400));
                 bobPublicKeyField.setText(Bob.e.toString());
                 bobPublicNField.setText(Bob.n.toString());
             }
@@ -82,7 +87,7 @@ public class CommunicationPanel extends JFrame {
 
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
-        c.gridy = 8;
+        c.gridy = i++;
         panel.add(generateCommunicators, c);
         add(panel);
         panel.updateUI();
@@ -142,13 +147,5 @@ public class CommunicationPanel extends JFrame {
         j.add(scrollPane);
         panel.add(j, c);
         return field;
-    }
-
-    public int getMillerRabinSteps() {
-        return Integer.parseInt(millerRabinStepsField.getText());
-    }
-
-    public int getBlockLength(){
-        return Integer.parseInt(blocklengthField.getText());
     }
 }

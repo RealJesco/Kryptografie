@@ -110,7 +110,7 @@ public class RSA {
      */
 
 
-    private static BigInteger generateRandomPrime(BigInteger lowerBound, BigInteger upperBound) {
+    public static BigInteger generateRandomPrime(BigInteger lowerBound, BigInteger upperBound) {
         SecureRandom random = new SecureRandom();
         int bitLength = upperBound.subtract(lowerBound).bitLength();
         BigInteger primeCandidate;
@@ -143,7 +143,7 @@ public class RSA {
             }
 
             // Expensive primality check
-            if (MathMethods.parallelMillerRabinTest(primeCandidate, millerRabinSteps)) {
+            if (MathMethods.parallelMillerRabinTest(primeCandidate, millerRabinSteps,random)) {
                 break; // Prime is found
             }
             // Otherwise, loop again and generate a new primeCandidate

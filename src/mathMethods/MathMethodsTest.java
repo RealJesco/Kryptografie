@@ -3,9 +3,11 @@ package mathMethods;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -140,32 +142,37 @@ class MathMethodsTest {
 
     @Test
     void millerRabinOne() {
+        Random r = new SecureRandom();
         BigInteger number = new BigInteger("12");
-        assertFalse(MathMethods.millerRabinTest(number, 100));
+        assertFalse(MathMethods.millerRabinTest(number, 100,r));
     }
 
     @Test
     void millerRabinTwo() {
+        Random r = new SecureRandom();
         BigInteger number = new BigInteger("13");
-        assertTrue(MathMethods.millerRabinTest(number, 100));
+        assertTrue(MathMethods.millerRabinTest(number, 100,r));
     }
 
     @Test
     void millerRabinThree() {
+        Random r = new SecureRandom();
         BigInteger number = new BigInteger("2147483249");
-        assertTrue(MathMethods.millerRabinTest(number, 100));
+        assertTrue(MathMethods.millerRabinTest(number, 100,r));
     }
 
     @Test
     void millerRabinFour() {
+        Random r = new SecureRandom();
         BigInteger number = new BigInteger("685082020225370353384144714523");
-        assertTrue(MathMethods.millerRabinTest(number, 100));
+        assertTrue(MathMethods.millerRabinTest(number, 100,r));
     }
 
     @Test
     void millerRabinFive() {
+        Random r = new SecureRandom();
         BigInteger number = new BigInteger("685082020225370353384144714529"); // = 7 * 21827453 * 19154510483 * 234083288753
-        assertFalse(MathMethods.millerRabinTest(number, 100));
+        assertFalse(MathMethods.millerRabinTest(number, 100,r));
     }
 
 

@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigInteger;
+import java.util.Random;
 
 public class Communicator extends JFrame {
     public BigInteger n;
@@ -21,14 +22,16 @@ public class Communicator extends JFrame {
     private JTextField signingValid;
     private JButton clearEverything;
     private static GridBagConstraints c;
+    private Random random;
 
-    public Communicator(String name, BigInteger p1, BigInteger p2, Point point){
+    public Communicator(String name, BigInteger p1, BigInteger p2, Random random, Point point){
         super(name);
+        this.random = random;
         this.n = p1.multiply(p2);
         //berechne inverse zu d -> e
         BigInteger p0p1 = p1.subtract(BigInteger.ONE).multiply(p2.subtract(BigInteger.ONE));
         do{
-            this.e = MathMethods.getRandomBigInteger(p0p1);
+            this.e = MathMethods.getRandomBigIntegerUpperLimit(p0p1,random);
         } while(MathMethods.extendedEuclidean(e,p0p1)[0].compareTo(BigInteger.ONE)==0);
         this.d=e;
 
