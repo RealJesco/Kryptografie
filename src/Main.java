@@ -14,20 +14,24 @@ public class Main {
 
         // Calculate block size as the floor of the logarithm base 55296 of 2^bitLengthN using change of base formula
 //        Clock time
-        RSA rsa = new RSA(40, 3323, 55926);
+        int primelength = 500;
+        int bitLength = BigInteger.TEN.pow(primelength).subtract(BigInteger.ONE).bitLength();
+        RSA rsa = new RSA(40, bitLength, 55926);
         double timer1 = 0;
         double timer2 = 0;
         int i;
         Random random = new SecureRandom();
-        for(i = 0; i<5; i++){
+        for(i = 0; i<10; i++){
             long start = System.currentTimeMillis();
-            System.out.println(MathMethods.getRandomPrimeBigInteger(1000,50, 40, random));
+            System.out.println(MathMethods.getRandomPrimeBigInteger(primelength,50, 40, random));
             long end = System.currentTimeMillis();
-            timer1 = end-start;
+            timer1 += end-start;
+            System.out.println("t1: " +timer1);
             start = System.currentTimeMillis();
-            System.out.println(RSA.generateRandomPrime(BigInteger.ZERO,BigInteger.TEN.pow(1001).subtract(BigInteger.ONE)));
+            System.out.println(RSA.generateRandomPrime(BigInteger.ZERO,BigInteger.TEN.pow(primelength).subtract(BigInteger.ONE)));
             end = System.currentTimeMillis();
-            timer2 = end-start;
+            timer2 += end-start;
+            System.out.println("t2: " +timer2);
         }
         System.out.println(timer1/i);
         System.out.println(timer2/i);

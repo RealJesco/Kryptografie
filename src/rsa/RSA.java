@@ -59,7 +59,6 @@ public class RSA {
 
         BigInteger lowerBound = BigInteger.ONE.shiftLeft(bitLengthPQ - 1);
         BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ).subtract(BigInteger.ONE);
-
         BigInteger p, q;
         // Clock time for prime generation
        long startTime = System.nanoTime();
@@ -114,10 +113,11 @@ public class RSA {
         SecureRandom random = new SecureRandom();
         int bitLength = upperBound.subtract(lowerBound).bitLength();
         BigInteger primeCandidate;
-
+        int length = upperBound.toString().length();
         while (true) {
             // Generate a random odd BigInteger within the range
-            BigInteger randomNumber = new BigInteger(bitLength, random).setBit(0);
+            //BigInteger randomNumber = new BigInteger(bitLength, random).setBit(0);
+            BigInteger randomNumber = MathMethods.getRandomBigInteger(length,50,random);
             primeCandidate = lowerBound.add(randomNumber);
 
             // If the generated number is out of range, retry
@@ -149,24 +149,6 @@ public class RSA {
             // Otherwise, loop again and generate a new primeCandidate
         }
         return primeCandidate;
-    }
-
-
-
-
-    /**
-     * Generates a random BigInteger within the range of [0, upperLimit).
-     *
-     * @param upperLimit the upper limit for random number generation.
-     * @return a random BigInteger within the specified range.
-     */
-    private static BigInteger getRandomBigInteger(BigInteger upperLimit) {
-        BigInteger randomNumber;
-        do {
-            randomNumber = new BigInteger(upperLimit.bitLength(), random);
-        } while (randomNumber.compareTo(upperLimit) >= 0 || randomNumber.compareTo(BigInteger.ONE) <= 0);
-
-        return randomNumber;
     }
 
     public static String encrypt(String message, BigInteger e, BigInteger n) {
