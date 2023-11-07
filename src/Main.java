@@ -15,10 +15,24 @@ public class Main {
         RSA rsa = new RSA(40, 3320, 55926);
         String message = "Mathematik ist spannend";
 //        Clock time
-        long start = System.nanoTime();
-        RSA.generatePrimeNumbers();
-        long end = System.nanoTime();
-        System.out.println("Time to generate prime numbers: " + (end-start));
+        long timeTotal = 0;
+//            long start = System.nanoTime();
+
+//        for(int i = 0; i < 6; i++){
+//            long start = System.nanoTime();
+//            RSA.generatePrimeNumbers();
+//            long end = System.nanoTime();
+//            timeTotal += (end-start);
+//            System.out.println("Time to generate prime numbers: " + (end-start));
+//        }
+//            long end = System.nanoTime();
+RSA.generatePrimeNumbers();
+//        System.out.println("Average time to generate prime numbers: " + timeTotal/6);
+        System.out.println("Time to generate prime numbers: " + timeTotal);
+//        long start = System.nanoTime();
+//        RSA.generatePrimeNumbers();
+//        long end = System.nanoTime();
+//        System.out.println("Time to generate prime numbers: " + (end-start));
         BigInteger n = rsa.getN();
         System.out.println("n: " + n);
         BigInteger p = rsa.getP();
@@ -29,7 +43,7 @@ public class Main {
         BigInteger d = rsa.getD();
 //        System.out.println("d: " + d);
         String decryptedMessage = RSA.decrypt(encryptedMessage, d, n);
-        System.out.println("Message: " + decryptedMessage);
+        System.out.println("Decrypted message: " + decryptedMessage);
     }
     public static BigInteger getRandomBigInteger(BigInteger upperLimit){
         BigInteger randomNumber;

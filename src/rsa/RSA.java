@@ -22,7 +22,44 @@ public class RSA {
     private static int bitLengthN = 128;
     private static final SecureRandom random = new SecureRandom();
     private static final BigInteger TWO = BigInteger.valueOf(2);
-    private static final BigInteger[] SMALL_PRIMES = { /* array of small prime BigIntegers */ };
+    private static final BigInteger[] SMALL_PRIMES = {
+            BigInteger.valueOf(2),
+            BigInteger.valueOf(3),
+            BigInteger.valueOf(5),
+            BigInteger.valueOf(7),
+            BigInteger.valueOf(11),
+            BigInteger.valueOf(13),
+            BigInteger.valueOf(17),
+            BigInteger.valueOf(19),
+            BigInteger.valueOf(23),
+            BigInteger.valueOf(29),
+            BigInteger.valueOf(31),
+            BigInteger.valueOf(37),
+            BigInteger.valueOf(41),
+            BigInteger.valueOf(43),
+            BigInteger.valueOf(47),
+            BigInteger.valueOf(53),
+            BigInteger.valueOf(59),
+            BigInteger.valueOf(61),
+            BigInteger.valueOf(67),
+            BigInteger.valueOf(71),
+            BigInteger.valueOf(73),
+            BigInteger.valueOf(79),
+            BigInteger.valueOf(83),
+            BigInteger.valueOf(89),
+            BigInteger.valueOf(97),
+            BigInteger.valueOf(101),
+            BigInteger.valueOf(103),
+            BigInteger.valueOf(107),
+            BigInteger.valueOf(109),
+            BigInteger.valueOf(113),
+            BigInteger.valueOf(127),
+            BigInteger.valueOf(131),
+            BigInteger.valueOf(137),
+            BigInteger.valueOf(139),
+
+
+    };
 
     //    Constructor
     public RSA(int millerRabinSteps, int bitLengthN, int numberSystemBase) {
@@ -47,60 +84,84 @@ public class RSA {
     public BigInteger getP(){
         return p;
     }
-
-    /**
-     * Generates two prime numbers suitable for RSA encryption with bit length of 128 and calculates n and phi(n), as well as e and d.
-     *
-     * @return an array containing two prime numbers.
-     */
-    // Maybe split up into functions for better readability
-    public static void generatePrimeNumbers() {
-        int bitLengthPQ = bitLengthN / 2; // for p and q
-
-        BigInteger lowerBound = BigInteger.ONE.shiftLeft(bitLengthPQ - 1);
-        BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ).subtract(BigInteger.ONE);
-
-        BigInteger p, q;
-        // Clock time for prime generation
-       long startTime = System.nanoTime();
-        // Optimize random prime generation
-        p = generateRandomPrime(lowerBound, upperBound);
-        do {
-            q = generateRandomPrime(lowerBound, upperBound);
-        } while (p.equals(q)); // Loop only necessary to ensure p is not equal to q
-        long endTime = System.nanoTime();
-        System.out.println("Time for prime generation: " + (endTime - startTime) / 1000000 + " ms");
+    public static BigInteger getQ(){
+        return q;
+    }
+    public static BigInteger setN(BigInteger n){
+        return RSA.n = n;
+    }
+    public static BigInteger setE(BigInteger e){
+        return RSA.e = e;
+    }
+    public static BigInteger setD(BigInteger d){
+        return RSA.d = d;
+    }
+    public static BigInteger setP(BigInteger p){
+        return RSA.p = p;
+    }
+    public static BigInteger setQ(BigInteger q){
+        return RSA.q = q;
+    }
+    public static void calculateN(BigInteger p, BigInteger q){
         n = p.multiply(q);
+    }
+    public static void calculatePhiN(BigInteger p, BigInteger q){
         phiN = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
-
-
-        // Initially try to use 65537 as the public exponent e
+    }
+    // Initially try to use 65537 as the public exponent e
+    public static void calculateE(BigInteger phiN){
         e = BigInteger.valueOf(65537);
-
-        // If 65537 is greater than or equal to phiN or not coprime with phiN, try using 3
         if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(BigInteger.ONE)) {
             e = BigInteger.valueOf(3);
-
-            // If 3 is also not coprime with phiN, then generate a new prime for e
             if (!e.gcd(phiN).equals(BigInteger.ONE)) {
                 BigInteger lowerBoundForE = BigInteger.TWO; // e must be greater than 1
                 BigInteger upperBoundForE = phiN.subtract(BigInteger.ONE); // e must be less than phiN
-
-                // Generate a prime e that is coprime with phiN
                 do {
                     e = generateRandomPrime(lowerBoundForE, upperBoundForE);
                 } while (!e.gcd(phiN).equals(BigInteger.ONE));
             }
         }
+    }
 
-        // Generate private exponent d
+    public static void calculateD(BigInteger e, BigInteger phiN){
         d = MathMethods.extendedEuclidean(e, phiN)[1].mod(phiN);
+    }
+    public static void calculateP(BigInteger bitLengthPQ){
+        BigInteger lowerBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue() - 1);
+        BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue()).subtract(BigInteger.ONE);
+        BigInteger possibleP;
+        do {
+            possibleP = generateRandomPrime(lowerBound, upperBound);
+        } while (possibleP.equals(q));
+        p = possibleP;
+    }
+    public static void calculateQ(BigInteger bitLengthPQ){
+        BigInteger lowerBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue() - 1);
+        BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue()).subtract(BigInteger.ONE);
+        BigInteger possibleQ;
+        do {
+            possibleQ = generateRandomPrime(lowerBound, upperBound);
+        } while (possibleQ.equals(p));
+        q = possibleQ;
+    }
 
-        // Outputs for verification
-//        System.out.println("n: " + n);
-//        System.out.println("phi: " + phiN);
-//        System.out.println("e: " + e);
-//        System.out.println("d: " + d);
+    /**
+     * Generates two prime numbers suitable for RSA encryption with bit length of 128 and calculates n and phi(n), as well as e and d.
+     *
+     */
+    // Maybe split up into functions for better readability
+    public static void generatePrimeNumbers() {
+        // Calculate bit length of p and q
+        int bitLengthPQ = bitLengthN / 2;
+        long startTime = System.nanoTime();
+        calculateP(BigInteger.valueOf(bitLengthPQ));
+        calculateQ(BigInteger.valueOf(bitLengthPQ));
+        long endTime = System.nanoTime();
+        System.out.println("Time for prime generation: " + (endTime - startTime) / 1000000 + " ms");
+        calculateN(p, q);
+        calculatePhiN(p, q);
+        calculateE(phiN);
+        calculateD(e, phiN);
     }
     /**
      * Generates a random prime number within specified limits and checks that it is within a certain range.
@@ -171,117 +232,146 @@ public class RSA {
 
     public static String encrypt(String message, BigInteger e, BigInteger n) {
         System.out.println("n: " + n);
-        System.out.println("Message: " + message);
+        System.out.println("Input message: " + message);
+
         // Step 1: Convert text to Unicode
-        List<Integer> unicodeMessage = MathMethods.convertTextToUniCode(message);
-        System.out.println("Unicode: " + unicodeMessage);
-        /** TODO: @Adham: Use this as a test case for the prepareMessageForEncryption method
-         List<Integer> testElsnerMessage = new ArrayList<>();
-         testElsnerMessage.add(12);
-         testElsnerMessage.add(0);
-         testElsnerMessage.add(19);
-         testElsnerMessage.add(7);
-         testElsnerMessage.add(4);
-         testElsnerMessage.add(12);
-         testElsnerMessage.add(0);
-         testElsnerMessage.add(19);
-         System.out.println("Test Elsner: " + prepareMessageForEncryption(testElsnerMessage, 8, 47));
-         **/
+        List<Integer> unicodeMessage = convertTextToUnicode(message);
+        System.out.println("Unicode message: " + unicodeMessage);
         // Step 2: Prepare message for encryption (Block cipher)
-        List<BigInteger> numericMessage = MathMethods.prepareMessageForEncryption(unicodeMessage, blockSize, numberSystemBase);
+        List<BigInteger> numericMessage = prepareMessageForEncryption(unicodeMessage);
         System.out.println("Numeric message: " + numericMessage);
-//        // Step 3: Encrypt the numeric representation
+        // Step 3: Encrypt the numeric representation
+        List<BigInteger> encryptedBlocks = encryptNumericBlocks(numericMessage, e, n);
+        System.out.println("Encrypted blocks: " + encryptedBlocks);
+        // Step 4: Process the encrypted blocks into a string representation
+
+        return processEncryptedBlocksToString(encryptedBlocks);
+    }
+
+    private static List<Integer> convertTextToUnicode(String message) {
+        // Implementation of text to Unicode conversion
+        return MathMethods.convertTextToUniCode(message);
+    }
+
+    private static List<BigInteger> prepareMessageForEncryption(List<Integer> unicodeMessage) {
+        // Implementation of preparing message for encryption
+        return MathMethods.prepareMessageForEncryption(unicodeMessage, blockSize, numberSystemBase);
+    }
+
+    private static List<BigInteger> encryptNumericBlocks(List<BigInteger> numericMessage, BigInteger e, BigInteger n) {
+        // Implementation of encrypting numeric blocks
         List<BigInteger> encryptedBlocks = new ArrayList<>();
-        for(BigInteger block : numericMessage) {
+        for (BigInteger block : numericMessage) {
             encryptedBlocks.add(MathMethods.alternativeQuickExponentiation(block, e, n));
         }
-        System.out.println("Encrypted numeric message: " + encryptedBlocks);
-//        Divide with remainder by numberSystemBase to get the Unicode values
-        List<List<Integer>> encryptedNumericMessageList = new ArrayList<>();
-        for(BigInteger block : encryptedBlocks) {
-            List<Integer> tempList = new ArrayList<>();
-            int count = 0;
-            while (!block.equals(BigInteger.ZERO)) {
-                tempList.add(0, block.mod(BigInteger.valueOf(numberSystemBase)).intValue());
-                block = block.divide(BigInteger.valueOf(numberSystemBase));
-                count++;
-            }
-//            While loop is necessary to get the correct number of Unicode values
-            while (count < blockSizePlusOne) {
-//                Add 0s to the beginning of the list
-                tempList.add(0, 0);
-                count++;
-            }
-            System.out.println("Count: " + count);
-            encryptedNumericMessageList.add(tempList);
-        }
-        System.out.println("Encrypted numeric message list: " + encryptedNumericMessageList);
-//        Make UniCodeString from the list
-        StringBuilder encryptedNumericMessageStr = new StringBuilder();
-//        For each list, get the unicodevalues and add them to the string
-        for (List<Integer> encryptedNumericMessage : encryptedNumericMessageList) {
-            encryptedNumericMessageStr.append(MathMethods.convertUniCodeToText(encryptedNumericMessage));
-        }
-        System.out.println("Encrypted numeric message string: " + encryptedNumericMessageStr);
+        return encryptedBlocks;
+    }
 
+    private static String processEncryptedBlocksToString(List<BigInteger> encryptedBlocks) {
+        // Implementation of processing encrypted blocks into string
+        StringBuilder encryptedNumericMessageStr = new StringBuilder();
+        for (BigInteger block : encryptedBlocks) {
+            encryptedNumericMessageStr.append(convertBlockToString(block));
+        }
         return encryptedNumericMessageStr.toString();
     }
+
+    private static String convertBlockToString(BigInteger block) {
+        // Convert a single encrypted block into a string representation
+        List<Integer> tempList = convertBlockToNumberList(block);
+        return MathMethods.convertUniCodeToText(tempList);
+    }
+
+    private static List<Integer> convertBlockToNumberList(BigInteger block) {
+        // Convert a single encrypted block into a list of numbers
+        List<Integer> numberList = new ArrayList<>();
+        int count = 0;
+        while (!block.equals(BigInteger.ZERO)) {
+            numberList.add(0, block.mod(BigInteger.valueOf(numberSystemBase)).intValue());
+            block = block.divide(BigInteger.valueOf(numberSystemBase));
+            count++;
+        }
+        while (count < blockSizePlusOne) {
+            numberList.add(0, 0);
+            count++;
+        }
+        return numberList;
+    }
     public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
-        // THIS METHOD DECRYPTS
         // Step 1: Convert text to Unicode
-        List<Integer> unicodeMessage = MathMethods.convertTextToUniCode(encryptedNumericMessageStr);
-        System.out.println("Unicode: " + unicodeMessage);
+        List<Integer> unicodeMessage = convertTextToUnicode(encryptedNumericMessageStr);
+        System.out.println("Decrypting Unicode to encrypted blocks: " + unicodeMessage);
+        // Step 2: Create encrypted blocks from Unicode
+        List<List<BigInteger>> encryptedBlocks = createEncryptedBlocksFromUnicode(unicodeMessage);
+        System.out.println("Encrypted blocks: " + encryptedBlocks);
+        // Step 3: Convert the encrypted blocks to BigInteger format
+        List<BigInteger> encryptedNumericMessages = convertBlocksToBigIntegers(encryptedBlocks);
+        System.out.println("Encrypted numeric messages: " + encryptedNumericMessages);
+        // Step 4: Decrypt the numeric representation
+        List<BigInteger> numericMessage = decryptNumericMessages(encryptedNumericMessages, d, n);
+        System.out.println("Numeric message: " + numericMessage);
+        // Step 5: Convert the numeric message to a list of integers
+        List<Integer> decryptedMessage = convertNumericMessageToIntegers(numericMessage);
+        System.out.println("Decrypted message in Unicode integer values: " + decryptedMessage);
+        // Step 6: Convert the list of integers to a string
+        String decryptedMessageStr = convertIntegersToText(decryptedMessage);
+        System.out.println("Decrypted message string: " + decryptedMessageStr);
+        // Step 7: Remove padding from the decrypted string
+        return removePadding(decryptedMessageStr);
+    }
+
+
+    private static List<List<BigInteger>> createEncryptedBlocksFromUnicode(List<Integer> unicodeMessage) {
         List<List<BigInteger>> encryptedBlocks = new ArrayList<>();
-        for(int i = 0; i < unicodeMessage.size(); i+=blockSizePlusOne){
+        for (int i = 0; i < unicodeMessage.size(); i += blockSizePlusOne) {
             List<BigInteger> block = new ArrayList<>();
-            for(int j = 0; j < blockSizePlusOne; j++){
+            for (int j = 0; j < blockSizePlusOne; j++) {
                 if (i + j < unicodeMessage.size()) {
                     block.add(BigInteger.valueOf(unicodeMessage.get(i + j)));
                 } else {
-                    // If there's padding needed, add it here, otherwise break
-                    block.add(BigInteger.ZERO); // Assuming padding with zeros is acceptable
-                    // break; // If you don't want to pad and instead just process what's available
+                    block.add(BigInteger.ZERO);
                 }
             }
             encryptedBlocks.add(block);
         }
-        System.out.println("Encrypted blocks: " + encryptedBlocks);
-//        Step 2: Convert the encrypted blocks to the correct format
+        return encryptedBlocks;
+    }
+
+    private static List<BigInteger> convertBlocksToBigIntegers(List<List<BigInteger>> encryptedBlocks) {
         List<BigInteger> encryptedNumericMessages = new ArrayList<>();
         for (List<BigInteger> encryptedBlock : encryptedBlocks) {
             BigInteger sum = BigInteger.ZERO;
             for (int j = 0; j < encryptedBlock.size(); j++) {
-//                System.out.println("Encrypted block: " + encryptedBlock.get(encryptedBlock.size() - j - 1));
                 BigInteger temp = encryptedBlock.get(encryptedBlock.size() - j - 1).multiply(BigInteger.valueOf(numberSystemBase).pow(j));
-//                System.out.println(encryptedBlock.get(encryptedBlock.size() - j - 1) + " * " + BigInteger.valueOf(numberSystemBase).pow(j) + " = " + temp);
                 sum = sum.add(temp);
             }
             encryptedNumericMessages.add(sum);
-            System.out.println("Sum: " + sum);
         }
-//        Encrypted blocks are now in the correct format
-//Step 3: Decrypt the numeric representation
+        return encryptedNumericMessages;
+    }
+
+    private static List<BigInteger> decryptNumericMessages(List<BigInteger> encryptedNumericMessages, BigInteger d, BigInteger n) {
         List<BigInteger> numericMessage = new ArrayList<>();
-//        Decrypt every encryptedNumericMessages block
-        for(BigInteger block : encryptedNumericMessages) {
+        for (BigInteger block : encryptedNumericMessages) {
             numericMessage.add(MathMethods.alternativeQuickExponentiation(block, d, n));
-//            System.out.println("Block: " + block);
         }
-        System.out.println("Numeric message: " + numericMessage);
-//        Step 4: Convert the numeric message to a list of integers
+        return numericMessage;
+    }
+
+    private static List<Integer> convertNumericMessageToIntegers(List<BigInteger> numericMessage) {
         List<Integer> decryptedMessage = new ArrayList<>();
-//      prepareMessageForDecryption(numericMessage.get(0), 8, numberSystemBase) for every block
         for (BigInteger block : numericMessage) {
             decryptedMessage.addAll(MathMethods.prepareMessageForDecryption(block, blockSize, numberSystemBase));
         }
-        System.out.println("Decrypted message: " + decryptedMessage);
-//        Convert the list of integers to a string
-        String decryptedMessageStr = MathMethods.convertUniCodeToText(decryptedMessage);
-        System.out.println("Decrypted message string: " + decryptedMessageStr);
-//        Remove the padding from the string
-        decryptedMessageStr = decryptedMessageStr.substring(0, decryptedMessageStr.indexOf(0));
-        System.out.println("Decrypted message string without padding: " + decryptedMessageStr);
+        return decryptedMessage;
+    }
 
-        return decryptedMessageStr;
+    private static String convertIntegersToText(List<Integer> decryptedMessage) {
+        return MathMethods.convertUniCodeToText(decryptedMessage);
+    }
+
+    private static String removePadding(String decryptedMessageStr) {
+        int paddingIndex = decryptedMessageStr.indexOf(0);
+        return paddingIndex >= 0 ? decryptedMessageStr.substring(0, paddingIndex) : decryptedMessageStr;
     }
 }
