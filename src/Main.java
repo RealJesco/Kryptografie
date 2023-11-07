@@ -44,6 +44,7 @@ RSA.generatePrimeNumbers();
 //        System.out.println("d: " + d);
         String decryptedMessage = RSA.decrypt(encryptedMessage, d, n);
         System.out.println("Decrypted message: " + decryptedMessage);
+        RSA.calculateP(BigInteger.valueOf(9));
     }
     public static BigInteger getRandomBigInteger(BigInteger upperLimit){
         BigInteger randomNumber;

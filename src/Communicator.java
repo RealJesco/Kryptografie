@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Random;
 
 public class Communicator extends JFrame {
     public BigInteger n;
@@ -21,14 +23,16 @@ public class Communicator extends JFrame {
     private JTextField signingValid;
     private JButton clearEverything;
     private static GridBagConstraints c;
+    private SecureRandom random;
 
-    public Communicator(String name, BigInteger p1, BigInteger p2, Point point){
+    public Communicator(String name, BigInteger p1, BigInteger p2, SecureRandom random, Point point){
         super(name);
+        this.random = random;
         this.n = p1.multiply(p2);
         //berechne inverse zu d -> e
         BigInteger p0p1 = p1.subtract(BigInteger.ONE).multiply(p2.subtract(BigInteger.ONE));
         do{
-            this.e = MathMethods.getRandomBigInteger(p0p1);
+            this.e = MathMethods.getRandomBigIntegerUpperLimit(p0p1);
         } while(MathMethods.extendedEuclidean(e,p0p1)[0].compareTo(BigInteger.ONE)==0);
         this.d=e;
 
@@ -117,23 +121,23 @@ public class Communicator extends JFrame {
         panel.add(buttons,c);
         signings = getNewTextfield(1, "Eigene Signatur");
         signingValid = getNewTextfield(2, "Empfangene Signatur gültig");
-            secretField = new JTextArea();
-            secretField.setLineWrap(true);
-            secretField.setEditable(false);
-            secretField.setBackground(new Color(238,238,238));
-            c.fill = GridBagConstraints.HORIZONTAL;
-            c.gridx = 0;
-            c.gridy = 3;
-            JPanel j = new JPanel();
-            JTextField t = new JTextField("Geheimer Schlüssel d");
-            t.setPreferredSize(new Dimension(200, 60));
-            t.setEditable(false);
-            j.add(t);
-            scrollPane = new JScrollPane(secretField);
-            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setPreferredSize(new Dimension(450, 60));
-            j.add(scrollPane);
-            panel.add(j, c);
+        secretField = new JTextArea();
+        secretField.setLineWrap(true);
+        secretField.setEditable(false);
+        secretField.setBackground(new Color(238,238,238));
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 3;
+        JPanel j = new JPanel();
+        JTextField t = new JTextField("Geheimer Schlüssel d");
+        t.setPreferredSize(new Dimension(200, 60));
+        t.setEditable(false);
+        j.add(t);
+        scrollPane = new JScrollPane(secretField);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(450, 60));
+        j.add(scrollPane);
+        panel.add(j, c);
         secretField.setText(this.d.toString());
 
         add(panel);

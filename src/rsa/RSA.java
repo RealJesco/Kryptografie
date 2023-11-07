@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import mathMethods.MathMethods;
 
+import static mathMethods.MathMethods.generateRandomPrime;
+
 
 public class RSA {
 
@@ -19,6 +21,7 @@ public class RSA {
     private static BigInteger d;
     private static BigInteger p;
     private static BigInteger q;
+    private static int m;
     private static int bitLengthN = 128;
     private static final SecureRandom random = new SecureRandom();
     private static final BigInteger TWO = BigInteger.valueOf(2);
@@ -57,6 +60,140 @@ public class RSA {
             BigInteger.valueOf(131),
             BigInteger.valueOf(137),
             BigInteger.valueOf(139),
+            BigInteger.valueOf(149),
+            BigInteger.valueOf(151),
+            BigInteger.valueOf(157),
+            BigInteger.valueOf(163),
+            BigInteger.valueOf(167),
+            BigInteger.valueOf(173),
+            BigInteger.valueOf(179),
+            BigInteger.valueOf(181),
+            BigInteger.valueOf(191),
+            BigInteger.valueOf(193),
+            BigInteger.valueOf(197),
+            BigInteger.valueOf(199),
+            BigInteger.valueOf(211),
+            BigInteger.valueOf(223),
+            BigInteger.valueOf(227),
+            BigInteger.valueOf(229),
+            BigInteger.valueOf(233),
+            BigInteger.valueOf(239),
+            BigInteger.valueOf(241),
+            BigInteger.valueOf(251),
+            BigInteger.valueOf(257),
+            BigInteger.valueOf(263),
+            BigInteger.valueOf(269),
+            BigInteger.valueOf(271),
+            BigInteger.valueOf(277),
+            BigInteger.valueOf(281),
+            BigInteger.valueOf(283),
+            BigInteger.valueOf(293),
+            BigInteger.valueOf(307),
+            BigInteger.valueOf(311),
+            BigInteger.valueOf(313),
+            BigInteger.valueOf(317),
+            BigInteger.valueOf(331),
+            BigInteger.valueOf(337),
+            BigInteger.valueOf(347),
+            BigInteger.valueOf(349),
+            BigInteger.valueOf(353),
+            BigInteger.valueOf(359),
+            BigInteger.valueOf(367),
+            BigInteger.valueOf(373),
+            BigInteger.valueOf(379),
+            BigInteger.valueOf(383),
+            BigInteger.valueOf(389),
+            BigInteger.valueOf(397),
+            BigInteger.valueOf(401),
+            BigInteger.valueOf(409),
+            BigInteger.valueOf(419),
+            BigInteger.valueOf(421),
+            BigInteger.valueOf(431),
+            BigInteger.valueOf(433),
+            BigInteger.valueOf(439),
+            BigInteger.valueOf(443),
+            BigInteger.valueOf(449),
+            BigInteger.valueOf(457),
+            BigInteger.valueOf(461),
+            BigInteger.valueOf(463),
+            BigInteger.valueOf(467),
+            BigInteger.valueOf(479),
+            BigInteger.valueOf(487),
+            BigInteger.valueOf(491),
+            BigInteger.valueOf(499),
+            BigInteger.valueOf(503),
+            BigInteger.valueOf(509),
+            BigInteger.valueOf(521),
+            BigInteger.valueOf(523),
+            BigInteger.valueOf(541),
+            BigInteger.valueOf(547),
+            BigInteger.valueOf(557),
+            BigInteger.valueOf(563),
+            BigInteger.valueOf(569),
+            BigInteger.valueOf(571),
+            BigInteger.valueOf(577),
+            BigInteger.valueOf(587),
+            BigInteger.valueOf(593),
+            BigInteger.valueOf(599),
+            BigInteger.valueOf(601),
+            BigInteger.valueOf(607),
+            BigInteger.valueOf(613),
+            BigInteger.valueOf(617),
+            BigInteger.valueOf(619),
+            BigInteger.valueOf(631),
+            BigInteger.valueOf(641),
+            BigInteger.valueOf(643),
+            BigInteger.valueOf(647),
+            BigInteger.valueOf(653),
+            BigInteger.valueOf(659),
+            BigInteger.valueOf(661),
+            BigInteger.valueOf(673),
+            BigInteger.valueOf(677),
+            BigInteger.valueOf(683),
+            BigInteger.valueOf(691),
+            BigInteger.valueOf(701),
+            BigInteger.valueOf(709),
+            BigInteger.valueOf(719),
+            BigInteger.valueOf(727),
+            BigInteger.valueOf(733),
+            BigInteger.valueOf(739),
+            BigInteger.valueOf(743),
+            BigInteger.valueOf(751),
+            BigInteger.valueOf(757),
+            BigInteger.valueOf(761),
+            BigInteger.valueOf(769),
+            BigInteger.valueOf(773),
+            BigInteger.valueOf(787),
+            BigInteger.valueOf(797),
+            BigInteger.valueOf(809),
+            BigInteger.valueOf(811),
+            BigInteger.valueOf(821),
+            BigInteger.valueOf(823),
+            BigInteger.valueOf(827),
+            BigInteger.valueOf(829),
+            BigInteger.valueOf(839),
+            BigInteger.valueOf(853),
+            BigInteger.valueOf(857),
+            BigInteger.valueOf(859),
+            BigInteger.valueOf(863),
+            BigInteger.valueOf(877),
+            BigInteger.valueOf(881),
+            BigInteger.valueOf(883),
+            BigInteger.valueOf(887),
+            BigInteger.valueOf(907),
+            BigInteger.valueOf(911),
+            BigInteger.valueOf(919),
+            BigInteger.valueOf(929),
+            BigInteger.valueOf(937),
+            BigInteger.valueOf(941),
+            BigInteger.valueOf(947),
+            BigInteger.valueOf(953),
+            BigInteger.valueOf(967),
+            BigInteger.valueOf(971),
+            BigInteger.valueOf(977),
+            BigInteger.valueOf(983),
+            BigInteger.valueOf(991),
+            BigInteger.valueOf(997)
 
 
     };
@@ -102,6 +239,24 @@ public class RSA {
     public static BigInteger setQ(BigInteger q){
         return RSA.q = q;
     }
+    public static void setBitLengthN(int bitLengthN){
+        RSA.bitLengthN = bitLengthN;
+    }
+    public static void setMillerRabinSteps(int millerRabinSteps){
+        RSA.millerRabinSteps = millerRabinSteps;
+    }
+    public static void setNumberSystemBase(int numberSystemBase){
+        RSA.numberSystemBase = numberSystemBase;
+    }
+    public static void setBlockSize(int blockSize){
+        RSA.blockSize = blockSize;
+    }
+    public static void setBlockSizePlusOne(int blockSizePlusOne){
+        RSA.blockSizePlusOne = blockSizePlusOne;
+    }
+    public static void setM(int m){
+        RSA.m = m;
+    }
     public static void calculateN(BigInteger p, BigInteger q){
         n = p.multiply(q);
     }
@@ -117,7 +272,7 @@ public class RSA {
                 BigInteger lowerBoundForE = BigInteger.TWO; // e must be greater than 1
                 BigInteger upperBoundForE = phiN.subtract(BigInteger.ONE); // e must be less than phiN
                 do {
-                    e = generateRandomPrime(lowerBoundForE, upperBoundForE);
+                    e = generateRandomPrime(lowerBoundForE, upperBoundForE, millerRabinSteps);
                 } while (!e.gcd(phiN).equals(BigInteger.ONE));
             }
         }
@@ -131,7 +286,7 @@ public class RSA {
         BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue()).subtract(BigInteger.ONE);
         BigInteger possibleP;
         do {
-            possibleP = generateRandomPrime(lowerBound, upperBound);
+            possibleP = generateRandomPrime(lowerBound, upperBound, millerRabinSteps);
         } while (possibleP.equals(q));
         p = possibleP;
     }
@@ -140,7 +295,7 @@ public class RSA {
         BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue()).subtract(BigInteger.ONE);
         BigInteger possibleQ;
         do {
-            possibleQ = generateRandomPrime(lowerBound, upperBound);
+            possibleQ = generateRandomPrime(lowerBound, upperBound, millerRabinSteps);
         } while (possibleQ.equals(p));
         q = possibleQ;
     }
@@ -163,72 +318,13 @@ public class RSA {
         calculateE(phiN);
         calculateD(e, phiN);
     }
-    /**
-     * Generates a random prime number within specified limits and checks that it is within a certain range.
-     *
-     * @param upperBound  the upper bound for the generated prime number.
-     * @return a prime number within the specified range.
-     */
-
-
-    private static BigInteger generateRandomPrime(BigInteger lowerBound, BigInteger upperBound) {
-        SecureRandom random = new SecureRandom();
-        int bitLength = upperBound.subtract(lowerBound).bitLength();
-        BigInteger primeCandidate;
-
-        while (true) {
-            // Generate a random odd BigInteger within the range
-            BigInteger randomNumber = new BigInteger(bitLength, random).setBit(0);
-            primeCandidate = lowerBound.add(randomNumber);
-
-            // If the generated number is out of range, retry
-            if (primeCandidate.compareTo(upperBound) >= 0) {
-                continue;
-            }
-
-            // Fast check against small primes
-            boolean divisible = false;
-            for (BigInteger smallPrime : SMALL_PRIMES) {
-                if (primeCandidate.mod(smallPrime).equals(BigInteger.ZERO)) {
-                    divisible = true;
-                    break;
-                }
-            }
-            if (divisible) {
-                continue;
-            }
-
-            // If primeCandidate is even (it can only be even if it's equal to the lower bound), make it odd
-            if (primeCandidate.mod(TWO).equals(BigInteger.ZERO)) {
-                primeCandidate = primeCandidate.add(BigInteger.ONE);
-            }
-
-            // Expensive primality check
-            if (MathMethods.parallelMillerRabinTest(primeCandidate, millerRabinSteps)) {
-                break; // Prime is found
-            }
-            // Otherwise, loop again and generate a new primeCandidate
-        }
-        return primeCandidate;
-    }
 
 
 
 
-    /**
-     * Generates a random BigInteger within the range of [0, upperLimit).
-     *
-     * @param upperLimit the upper limit for random number generation.
-     * @return a random BigInteger within the specified range.
-     */
-    private static BigInteger getRandomBigInteger(BigInteger upperLimit) {
-        BigInteger randomNumber;
-        do {
-            randomNumber = new BigInteger(upperLimit.bitLength(), random);
-        } while (randomNumber.compareTo(upperLimit) >= 0 || randomNumber.compareTo(BigInteger.ONE) <= 0);
 
-        return randomNumber;
-    }
+
+
 
     public static String encrypt(String message, BigInteger e, BigInteger n) {
         System.out.println("n: " + n);

@@ -1,6 +1,9 @@
 package mathMethods;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -8,12 +11,187 @@ import java.util.concurrent.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static java.math.BigInteger.ZERO;
+
 public class MathMethods {
+    private static final BigInteger[] SMALL_PRIMES = {
+            BigInteger.valueOf(2),
+            BigInteger.valueOf(3),
+            BigInteger.valueOf(5),
+            BigInteger.valueOf(7),
+            BigInteger.valueOf(11),
+            BigInteger.valueOf(13),
+            BigInteger.valueOf(17),
+            BigInteger.valueOf(19),
+            BigInteger.valueOf(23),
+            BigInteger.valueOf(29),
+            BigInteger.valueOf(31),
+            BigInteger.valueOf(37),
+            BigInteger.valueOf(41),
+            BigInteger.valueOf(43),
+            BigInteger.valueOf(47),
+            BigInteger.valueOf(53),
+            BigInteger.valueOf(59),
+            BigInteger.valueOf(61),
+            BigInteger.valueOf(67),
+            BigInteger.valueOf(71),
+            BigInteger.valueOf(73),
+            BigInteger.valueOf(79),
+            BigInteger.valueOf(83),
+            BigInteger.valueOf(89),
+            BigInteger.valueOf(97),
+            BigInteger.valueOf(101),
+            BigInteger.valueOf(103),
+            BigInteger.valueOf(107),
+            BigInteger.valueOf(109),
+            BigInteger.valueOf(113),
+            BigInteger.valueOf(127),
+            BigInteger.valueOf(131),
+            BigInteger.valueOf(137),
+            BigInteger.valueOf(139),
+            BigInteger.valueOf(149),
+            BigInteger.valueOf(151),
+            BigInteger.valueOf(157),
+            BigInteger.valueOf(163),
+            BigInteger.valueOf(167),
+            BigInteger.valueOf(173),
+            BigInteger.valueOf(179),
+            BigInteger.valueOf(181),
+            BigInteger.valueOf(191),
+            BigInteger.valueOf(193),
+            BigInteger.valueOf(197),
+            BigInteger.valueOf(199),
+            BigInteger.valueOf(211),
+            BigInteger.valueOf(223),
+            BigInteger.valueOf(227),
+            BigInteger.valueOf(229),
+            BigInteger.valueOf(233),
+            BigInteger.valueOf(239),
+            BigInteger.valueOf(241),
+            BigInteger.valueOf(251),
+            BigInteger.valueOf(257),
+            BigInteger.valueOf(263),
+            BigInteger.valueOf(269),
+            BigInteger.valueOf(271),
+            BigInteger.valueOf(277),
+            BigInteger.valueOf(281),
+            BigInteger.valueOf(283),
+            BigInteger.valueOf(293),
+            BigInteger.valueOf(307),
+            BigInteger.valueOf(311),
+            BigInteger.valueOf(313),
+            BigInteger.valueOf(317),
+            BigInteger.valueOf(331),
+            BigInteger.valueOf(337),
+            BigInteger.valueOf(347),
+            BigInteger.valueOf(349),
+            BigInteger.valueOf(353),
+            BigInteger.valueOf(359),
+            BigInteger.valueOf(367),
+            BigInteger.valueOf(373),
+            BigInteger.valueOf(379),
+            BigInteger.valueOf(383),
+            BigInteger.valueOf(389),
+            BigInteger.valueOf(397),
+            BigInteger.valueOf(401),
+            BigInteger.valueOf(409),
+            BigInteger.valueOf(419),
+            BigInteger.valueOf(421),
+            BigInteger.valueOf(431),
+            BigInteger.valueOf(433),
+            BigInteger.valueOf(439),
+            BigInteger.valueOf(443),
+            BigInteger.valueOf(449),
+            BigInteger.valueOf(457),
+            BigInteger.valueOf(461),
+            BigInteger.valueOf(463),
+            BigInteger.valueOf(467),
+            BigInteger.valueOf(479),
+            BigInteger.valueOf(487),
+            BigInteger.valueOf(491),
+            BigInteger.valueOf(499),
+            BigInteger.valueOf(503),
+            BigInteger.valueOf(509),
+            BigInteger.valueOf(521),
+            BigInteger.valueOf(523),
+            BigInteger.valueOf(541),
+            BigInteger.valueOf(547),
+            BigInteger.valueOf(557),
+            BigInteger.valueOf(563),
+            BigInteger.valueOf(569),
+            BigInteger.valueOf(571),
+            BigInteger.valueOf(577),
+            BigInteger.valueOf(587),
+            BigInteger.valueOf(593),
+            BigInteger.valueOf(599),
+            BigInteger.valueOf(601),
+            BigInteger.valueOf(607),
+            BigInteger.valueOf(613),
+            BigInteger.valueOf(617),
+            BigInteger.valueOf(619),
+            BigInteger.valueOf(631),
+            BigInteger.valueOf(641),
+            BigInteger.valueOf(643),
+            BigInteger.valueOf(647),
+            BigInteger.valueOf(653),
+            BigInteger.valueOf(659),
+            BigInteger.valueOf(661),
+            BigInteger.valueOf(673),
+            BigInteger.valueOf(677),
+            BigInteger.valueOf(683),
+            BigInteger.valueOf(691),
+            BigInteger.valueOf(701),
+            BigInteger.valueOf(709),
+            BigInteger.valueOf(719),
+            BigInteger.valueOf(727),
+            BigInteger.valueOf(733),
+            BigInteger.valueOf(739),
+            BigInteger.valueOf(743),
+            BigInteger.valueOf(751),
+            BigInteger.valueOf(757),
+            BigInteger.valueOf(761),
+            BigInteger.valueOf(769),
+            BigInteger.valueOf(773),
+            BigInteger.valueOf(787),
+            BigInteger.valueOf(797),
+            BigInteger.valueOf(809),
+            BigInteger.valueOf(811),
+            BigInteger.valueOf(821),
+            BigInteger.valueOf(823),
+            BigInteger.valueOf(827),
+            BigInteger.valueOf(829),
+            BigInteger.valueOf(839),
+            BigInteger.valueOf(853),
+            BigInteger.valueOf(857),
+            BigInteger.valueOf(859),
+            BigInteger.valueOf(863),
+            BigInteger.valueOf(877),
+            BigInteger.valueOf(881),
+            BigInteger.valueOf(883),
+            BigInteger.valueOf(887),
+            BigInteger.valueOf(907),
+            BigInteger.valueOf(911),
+            BigInteger.valueOf(919),
+            BigInteger.valueOf(929),
+            BigInteger.valueOf(937),
+            BigInteger.valueOf(941),
+            BigInteger.valueOf(947),
+            BigInteger.valueOf(953),
+            BigInteger.valueOf(967),
+            BigInteger.valueOf(971),
+            BigInteger.valueOf(977),
+            BigInteger.valueOf(983),
+            BigInteger.valueOf(991),
+            BigInteger.valueOf(997)
+
+
+    };
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
         BigInteger result = BigInteger.ONE;
         base = base.mod(mod); // Modulo operation, to ensure the base is within mod range
 
-        while (!exp.equals(BigInteger.ZERO)) {
+        while (!exp.equals(ZERO)) {
             // If the exponent is odd, multiply the result by base
             if (exp.and(BigInteger.ONE).equals(BigInteger.ONE)) {
                 result = (result.multiply(base)).mod(mod);
@@ -29,8 +207,8 @@ public class MathMethods {
 
 //    TODO: @Adham: Habe ich das so richtig kommentert (und verstanden)?
     public static BigInteger[] extendedEuclidean(BigInteger a, BigInteger b) {
-        if (b.equals(BigInteger.ZERO)) {
-            return new BigInteger[] {a, BigInteger.ONE, BigInteger.ZERO};
+        if (b.equals(ZERO)) {
+            return new BigInteger[] {a, BigInteger.ONE, ZERO};
         } else {
             BigInteger[] ee = extendedEuclidean(b, a.mod(b)); // b ist der Teiler (im Skript der erste Faktor); a.mod(b) ist der Rest
             BigInteger gcd = ee[0]; // im Skript der erste Faktor
@@ -39,14 +217,85 @@ public class MathMethods {
             return new BigInteger[] {gcd, x, y};
         }
     }
-    public static BigInteger getRandomBigInteger(BigInteger upperLimit){
+    public static BigInteger getRandomBigInteger(int length, int m, Random random){
+        if(length==0)return ZERO;
+        int maxShift = length*100;
+        MathContext context = new MathContext(maxShift+3*length+10);
+        int a = random.nextInt(maxShift);
+        return (BigDecimal.valueOf(m)).sqrt(context).multiply(BigDecimal.TEN.pow(Math.abs(a)), context).divideAndRemainder(BigDecimal.ONE, context)[1].multiply(BigDecimal.TEN.pow(length)).toBigInteger();
+    }
+
+    public static BigInteger getRandomBigIntegerUpperLimit(BigInteger upperLimit){
+        SecureRandom random = new SecureRandom();
         BigInteger randomNumber;
         do {
-            randomNumber = new BigInteger(upperLimit.bitLength(), new Random());
+            randomNumber = new BigInteger(upperLimit.bitLength(), random);
         } while (randomNumber.compareTo(upperLimit) >= 0);
         return randomNumber;
     }
+    public static BigInteger generateRandomPrime(BigInteger lowerBound, BigInteger upperBound, int millerRabinSteps) {
+        SecureRandom random = new SecureRandom();
+        BigInteger primeCandidate;
+        int bitLength = upperBound.bitLength();
 
+        while (true) {
+            // Generate a random odd BigInteger within the range
+            primeCandidate = new BigInteger(bitLength, random).setBit(0); // Ensure it's odd
+
+            // Ensure the number is within the specified range
+            if (primeCandidate.compareTo(lowerBound) < 0) {
+                primeCandidate = primeCandidate.add(lowerBound);
+            }
+            if (primeCandidate.compareTo(upperBound) >= 0) {
+                continue;
+            }
+
+            // Fast check against small primes
+            boolean isComposite = false;
+            for (BigInteger smallPrime : SMALL_PRIMES) {
+                if (primeCandidate.equals(smallPrime)) {
+                    return  primeCandidate; // Prime is found
+                } else if (primeCandidate.mod(smallPrime).equals(BigInteger.ZERO)) {
+                    isComposite = true;
+                    break;
+                }
+            }
+            if (isComposite) {
+                continue; // Skip to the next candidate
+            }
+
+            // Perform the expensive primality check
+            if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, random)) {
+                break; // Prime is found
+            }
+            // Otherwise, loop again and generate a new primeCandidate
+        }
+        System.out.println("Prime candidate: " + primeCandidate);
+        return primeCandidate;
+    }
+    public static BigInteger getRandomPrimeBigInteger(int length, int m, int millerRabinSteps, SecureRandom random){
+        if(length==0)return ZERO;
+        int maxShift = length*100;
+        MathContext context = new MathContext(maxShift+3*length);
+        BigDecimal lengthDecimal = BigDecimal.TEN.pow(length);
+        BigDecimal mRoot = BigDecimal.valueOf(m).sqrt(context).multiply(lengthDecimal);
+        BigInteger prime;
+        boolean isNoMultipleOfSmallPrime;
+        do{
+            isNoMultipleOfSmallPrime = true;
+            prime = mRoot.multiply(BigDecimal.TEN.pow(Math.abs(random.nextInt(maxShift))), context).divideAndRemainder(lengthDecimal, context)[1].toBigInteger();
+            for(BigInteger small : SMALL_PRIMES){
+                if(prime.mod(small).equals(ZERO)){
+                    if(prime.equals(small)){
+                        return prime;
+                    }
+                    isNoMultipleOfSmallPrime = false;
+                    break;
+                }
+            }
+        } while(!isNoMultipleOfSmallPrime || !parallelMillerRabinTest(prime, millerRabinSteps, random));
+        return prime;
+    }
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests) {
 //        System.out.println("Testing number: " + possiblePrime.toString());
@@ -65,13 +314,13 @@ public class MathMethods {
 
         BigInteger d = possiblePrime.subtract(BigInteger.ONE);
         int s = 0;
-        while (d.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+        while (d.mod(BigInteger.TWO).equals(ZERO)) {
             d = d.shiftRight(1); // More efficient division by 2
             s++;
         }
 
         for (int i = 0; i < numberOfTests; i++) {
-            BigInteger a = getRandomBigInteger(possiblePrime.subtract(BigInteger.valueOf(4))).add(BigInteger.TWO); // 'a' is in the range [2, possiblePrime - 2]
+            BigInteger a = getRandomBigIntegerUpperLimit(possiblePrime.subtract(BigInteger.valueOf(4))).add(BigInteger.TWO); // 'a' is in the range [2, possiblePrime - 2]
 
             BigInteger x = alternativeQuickExponentiation(a, d, possiblePrime);
 
@@ -100,37 +349,40 @@ public class MathMethods {
         return true;
     }
     // Parallel Miller-Rabin Test
-    public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests) {
+    public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, SecureRandom random) {
+        if (possiblePrime.equals(BigInteger.TWO)) return true;
         if (!possiblePrime.testBit(0)) return false;
         if (possiblePrime.equals(BigInteger.ONE)) return false;
-        if (possiblePrime.equals(BigInteger.TWO)) return true;
 
-        BigInteger d = possiblePrime.subtract(BigInteger.ONE);
-        int s = 0;
-        while (d.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
-            d = d.shiftRight(1);
-            s++;
-        }
-
+//        BigInteger d = possiblePrime.subtract(BigInteger.ONE);
+////        int s = 0;
+//        while (d.mod(BigInteger.TWO).equals(ZERO)) {
+//            d = d.shiftRight(1);
+//            s++;
+//        }
+        int s = possiblePrime.subtract(BigInteger.ONE).getLowestSetBit();
+        BigInteger finalD = possiblePrime.subtract(BigInteger.ONE).shiftRight(s);
         // ForkJoinPool can potentially be more efficient for certain tasks
         ForkJoinPool forkJoinPool = new ForkJoinPool();
 
-        BigInteger finalD = d;
+//        BigInteger finalD = d;
         int finalS = s;
+        BigInteger possiblePrimeMinusFour = possiblePrime.subtract(BigInteger.valueOf(4));
+        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(BigInteger.ONE);
         List<Callable<Boolean>> tasks = IntStream.range(0, numberOfTests)
                 .mapToObj(i -> (Callable<Boolean>) () -> {
-                    BigInteger a = getRandomBigInteger(possiblePrime.subtract(BigInteger.valueOf(4))).add(BigInteger.TWO);
+                    BigInteger a = getRandomBigIntegerUpperLimit(possiblePrimeMinusFour).add(BigInteger.TWO);
                     BigInteger x = alternativeQuickExponentiation(a, finalD, possiblePrime);
 
-                    if (x.equals(BigInteger.ONE) || x.equals(possiblePrime.subtract(BigInteger.ONE))) {
+                    if (x.equals(BigInteger.ONE) || x.equals(possiblePrimeMinusOne)) {
                         return true;
                     }
 
                     for (int r = 0; r < finalS; r++) {
                         //x = x.modPow(BigInteger.TWO, possiblePrime);
                         x = alternativeQuickExponentiation(x, BigInteger.TWO, possiblePrime);
-                        if (x.equals(BigInteger.ONE)) return false;
-                        if (x.equals(possiblePrime.subtract(BigInteger.ONE))) return true;
+//                        if (x.equals(BigInteger.ONE)) return false;
+                        if (x.equals(possiblePrimeMinusOne)) return true;
                     }
                     return false;
                 })
@@ -162,7 +414,7 @@ public class MathMethods {
         List<BigInteger> encryptedBlocks = new ArrayList<>();
 
         for (List<Integer> block : blocks) {
-            BigInteger blockValue = BigInteger.ZERO;
+            BigInteger blockValue = ZERO;
 
             // For each block go through every character and convert it to a number
             // in the number system with respect to its index
@@ -186,7 +438,7 @@ public class MathMethods {
 
         BigInteger numberSystemToThePowerOfBlockSize = BigInteger.valueOf(numberSystem).pow(blockSize);
 
-        while (!message.equals(BigInteger.ZERO)) {
+        while (!message.equals(ZERO)) {
             blocks.add(message.mod(numberSystemToThePowerOfBlockSize));
             message = message.divide(numberSystemToThePowerOfBlockSize);
         }
