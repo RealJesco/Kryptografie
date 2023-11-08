@@ -1,5 +1,7 @@
 package mathMethods;
 
+import rsa.RSA;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
 
 public class MathMethods {
@@ -233,23 +236,34 @@ public class MathMethods {
         } while (randomNumber.compareTo(upperLimit) >= 0);
         return randomNumber;
     }
-    public static BigInteger generateRandomPrime(BigInteger lowerBound, BigInteger upperBound, int millerRabinSteps) {
+    //m is random seed, n is incremental seed shift, a is lower bound, b is upper bound
+    public static BigInteger randomElsner(BigInteger m, BigInteger n, BigInteger a, BigInteger b){
+        BigDecimal decimalM = new BigDecimal(m);
+        BigDecimal decimalN = new BigDecimal(n);
+        BigDecimal decimalA = new BigDecimal(a);
+        BigDecimal decimalB = new BigDecimal(b);
+        BigDecimal decimalOne = new BigDecimal(ONE);
+        BigDecimal range = decimalB.subtract(decimalA).add(decimalOne);
+        BigDecimal mathContextRange = range.add(decimalN);
+        int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
+        MathContext context = new MathContext(decadicLogarithm);
+        BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context));
+        BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
+        return a.add(randomSeedNumberOffset.toBigInteger());
+    }
+    public static BigInteger generateRandomPrime(BigInteger m, BigInteger a, BigInteger b, int millerRabinSteps) {
         SecureRandom random = new SecureRandom();
         BigInteger primeCandidate;
-        int bitLength = upperBound.bitLength();
-
+//        int bitLength = upperBound.bitLength();
+        BigInteger copyOfCountOfN = RSA.getCountOfN();
         while (true) {
+            System.out.println("b: " + b);
+            System.out.println("a: " + a);
+            System.out.println("m: " + m);
+            System.out.println("countOfN: " + copyOfCountOfN);
             // Generate a random odd BigInteger within the range
-            primeCandidate = new BigInteger(bitLength, random).setBit(0); // Ensure it's odd
-
-            // Ensure the number is within the specified range
-            if (primeCandidate.compareTo(lowerBound) < 0) {
-                primeCandidate = primeCandidate.add(lowerBound);
-            }
-            if (primeCandidate.compareTo(upperBound) >= 0) {
-                continue;
-            }
-
+            primeCandidate = randomElsner(m, copyOfCountOfN, a, b).setBit(0); // Ensure it's odd
+            System.out.println("TEST: " + primeCandidate);
             // Fast check against small primes
             boolean isComposite = false;
             for (BigInteger smallPrime : SMALL_PRIMES) {
@@ -261,6 +275,7 @@ public class MathMethods {
                 }
             }
             if (isComposite) {
+                copyOfCountOfN = copyOfCountOfN.add(ONE);
                 continue; // Skip to the next candidate
             }
 
@@ -268,8 +283,10 @@ public class MathMethods {
             if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, random)) {
                 break; // Prime is found
             }
+            copyOfCountOfN = copyOfCountOfN.add(ONE);
             // Otherwise, loop again and generate a new primeCandidate
         }
+        RSA.setCountOfN(copyOfCountOfN.add(ONE));
         System.out.println("Prime candidate: " + primeCandidate);
         return primeCandidate;
     }
@@ -354,18 +371,11 @@ public class MathMethods {
         if (!possiblePrime.testBit(0)) return false;
         if (possiblePrime.equals(BigInteger.ONE)) return false;
 
-//        BigInteger d = possiblePrime.subtract(BigInteger.ONE);
-////        int s = 0;
-//        while (d.mod(BigInteger.TWO).equals(ZERO)) {
-//            d = d.shiftRight(1);
-//            s++;
-//        }
         int s = possiblePrime.subtract(BigInteger.ONE).getLowestSetBit();
         BigInteger finalD = possiblePrime.subtract(BigInteger.ONE).shiftRight(s);
         // ForkJoinPool can potentially be more efficient for certain tasks
         ForkJoinPool forkJoinPool = new ForkJoinPool();
 
-//        BigInteger finalD = d;
         int finalS = s;
         BigInteger possiblePrimeMinusFour = possiblePrime.subtract(BigInteger.valueOf(4));
         BigInteger possiblePrimeMinusOne = possiblePrime.subtract(BigInteger.ONE);

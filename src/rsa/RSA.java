@@ -21,7 +21,10 @@ public class RSA {
     private static BigInteger d;
     private static BigInteger p;
     private static BigInteger q;
-    private static int m;
+    private static BigInteger m;
+    private static BigInteger a;
+    private static BigInteger b;
+    private static BigInteger countOfN = BigInteger.valueOf(1);
     private static int bitLengthN = 128;
     private static final SecureRandom random = new SecureRandom();
     private static final BigInteger TWO = BigInteger.valueOf(2);
@@ -199,14 +202,15 @@ public class RSA {
     };
 
     //    Constructor
-    public RSA(int millerRabinSteps, int bitLengthN, int numberSystemBase) {
+    public RSA(int millerRabinSteps, int bitLengthN, int numberSystemBase, BigInteger m) {
         RSA.millerRabinSteps = millerRabinSteps;
         RSA.bitLengthN = bitLengthN;
         System.out.println("bitLengthN: " + bitLengthN);
-        blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase)));
+        blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase))) + 1;
         System.out.println("blockSize: " + blockSize);
         blockSizePlusOne = blockSize + 1;
         RSA.numberSystemBase = numberSystemBase;
+        RSA.m = m;
     }
 
     public BigInteger getN(){
@@ -220,6 +224,9 @@ public class RSA {
     }
     public BigInteger getP(){
         return p;
+    }
+    public static BigInteger getCountOfN(){
+        return countOfN;
     }
     public static BigInteger getQ(){
         return q;
@@ -254,11 +261,18 @@ public class RSA {
     public static void setBlockSizePlusOne(int blockSizePlusOne){
         RSA.blockSizePlusOne = blockSizePlusOne;
     }
-    public static void setM(int m){
+    public static void setM(BigInteger m){
         RSA.m = m;
     }
+    public static void setCountOfN(BigInteger countOfN){
+        RSA.countOfN = countOfN;
+    }
+
     public static void calculateN(BigInteger p, BigInteger q){
+        System.out.println("pppp: " + p);
+        System.out.println("qqqq: " + q);
         n = p.multiply(q);
+        System.out.println("nnn: " + n);
     }
     public static void calculatePhiN(BigInteger p, BigInteger q){
         phiN = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
@@ -272,7 +286,7 @@ public class RSA {
                 BigInteger lowerBoundForE = BigInteger.TWO; // e must be greater than 1
                 BigInteger upperBoundForE = phiN.subtract(BigInteger.ONE); // e must be less than phiN
                 do {
-                    e = generateRandomPrime(lowerBoundForE, upperBoundForE, millerRabinSteps);
+                    e = generateRandomPrime(m, lowerBoundForE, upperBoundForE, millerRabinSteps);
                 } while (!e.gcd(phiN).equals(BigInteger.ONE));
             }
         }
@@ -281,21 +295,22 @@ public class RSA {
     public static void calculateD(BigInteger e, BigInteger phiN){
         d = MathMethods.extendedEuclidean(e, phiN)[1].mod(phiN);
     }
-    public static void calculateP(BigInteger bitLengthPQ){
-        BigInteger lowerBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue() - 1);
-        BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue()).subtract(BigInteger.ONE);
+    public static void calculateP(BigInteger bitLengthP){
         BigInteger possibleP;
+        a = TWO.pow(bitLengthP.intValue() - 1);
+        b = TWO.pow(bitLengthP.intValue());
+        System.out.println("a: " + a);
         do {
-            possibleP = generateRandomPrime(lowerBound, upperBound, millerRabinSteps);
+            possibleP = generateRandomPrime(m,a, b, millerRabinSteps);
         } while (possibleP.equals(q));
         p = possibleP;
     }
-    public static void calculateQ(BigInteger bitLengthPQ){
-        BigInteger lowerBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue() - 1);
-        BigInteger upperBound = BigInteger.ONE.shiftLeft(bitLengthPQ.intValue()).subtract(BigInteger.ONE);
+    public static void calculateQ(BigInteger bitLengthQ){
         BigInteger possibleQ;
+        a = TWO.pow(bitLengthQ.intValue() -1);
+        b = TWO.pow(bitLengthQ.intValue());
         do {
-            possibleQ = generateRandomPrime(lowerBound, upperBound, millerRabinSteps);
+            possibleQ = generateRandomPrime(m,a, b, millerRabinSteps);
         } while (possibleQ.equals(p));
         q = possibleQ;
     }
@@ -308,6 +323,7 @@ public class RSA {
     public static void generatePrimeNumbers() {
         // Calculate bit length of p and q
         int bitLengthPQ = bitLengthN / 2;
+        System.out.println("bitLengthPQ: " + bitLengthPQ);
         long startTime = System.nanoTime();
         calculateP(BigInteger.valueOf(bitLengthPQ));
         calculateQ(BigInteger.valueOf(bitLengthPQ));
@@ -318,13 +334,6 @@ public class RSA {
         calculateE(phiN);
         calculateD(e, phiN);
     }
-
-
-
-
-
-
-
 
     public static String encrypt(String message, BigInteger e, BigInteger n) {
         System.out.println("n: " + n);
