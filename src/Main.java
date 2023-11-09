@@ -10,11 +10,10 @@ public class Main {
 
     public static void main(String[] args) {
         CommunicationPanel.getInstance();
-//        MathMethods.generateRandomPrime(BigInteger.valueOf(13), BigInteger.valueOf(1), BigInteger.valueOf(997), 5);
         // Calculate block size as the floor of the logarithm base 55296 of 2^bitLengthN using change of base formula
-        //        //        Clock time
+        // Clock time
         long start = System.nanoTime();
-        RSA rsa = new RSA(40, 3320, 55926, BigInteger.valueOf(13));
+        RSA rsa = new RSA(40, 3320, 55926, BigInteger.valueOf(844));
         RSA.generatePrimeNumbers();
         System.out.println("Time needed only to generate primes: " + (System.nanoTime()-start));
         System.out.println("p: " + rsa.getP());
@@ -27,11 +26,5 @@ public class Main {
         System.out.println(decryptedMsg);
         System.out.println("Time needed to generate and encrypt and decrypt: " + (System.nanoTime()-start));
     }
-    public static BigInteger getRandomBigInteger(BigInteger upperLimit){
-        BigInteger randomNumber;
-        do {
-            randomNumber = new BigInteger(upperLimit.bitLength(), new Random());
-        } while (randomNumber.compareTo(upperLimit) >= 0);
-        return randomNumber;
-    }
+
 }

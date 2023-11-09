@@ -208,7 +208,7 @@ public class RSA {
         System.out.println("bitLengthN: " + bitLengthN);
         blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase))) + 1;
         System.out.println("blockSize: " + blockSize);
-        blockSizePlusOne = blockSize + 1;
+        blockSizePlusOne = blockSize;
         RSA.numberSystemBase = numberSystemBase;
         RSA.m = m;
     }
@@ -245,6 +245,24 @@ public class RSA {
     }
     public static BigInteger setQ(BigInteger q){
         return RSA.q = q;
+    }
+    public static BigInteger getM(){
+        return m;
+    }
+    public static BigInteger getA(){
+        return a;
+    }
+    public static BigInteger getB(){
+        return b;
+    }
+    public static BigInteger getPhiN(){
+        return phiN;
+    }
+    public static int getBitLengthN(){
+        return bitLengthN;
+    }
+    public static int getMillerRabinSteps(){
+        return millerRabinSteps;
     }
     public static void setBitLengthN(int bitLengthN){
         RSA.bitLengthN = bitLengthN;

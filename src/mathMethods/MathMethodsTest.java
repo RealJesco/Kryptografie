@@ -71,6 +71,17 @@ class MathMethodsTest {
 
         assertEquals(expectedResult, actualResult, "The alternativeQuickExponentiation method returned an incorrect result.");
     }
+    @Test
+    void alternativeQuickExponentiationNegativeExponent() {
+    BigInteger base = new BigInteger("2");
+    BigInteger exp = new BigInteger("-2");
+    BigInteger mod = new BigInteger("5");
+
+    assertThrows(IllegalArgumentException.class, () -> {
+        MathMethods.alternativeQuickExponentiation(base, exp, mod);
+    }, "The alternativeQuickExponentiation method should throw an IllegalArgumentException when the exponent is negative.");
+}
+
 
     @Test
     void alternativeQuickExponentiation_edgeCases() {
@@ -141,31 +152,31 @@ class MathMethodsTest {
     @Test
     void millerRabinOne() {
         BigInteger number = new BigInteger("12");
-        assertFalse(MathMethods.millerRabinTest(number, 100));
+        assertFalse(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
     void millerRabinTwo() {
         BigInteger number = new BigInteger("13");
-        assertTrue(MathMethods.millerRabinTest(number, 100));
+        assertTrue(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
     void millerRabinThree() {
         BigInteger number = new BigInteger("2147483249");
-        assertTrue(MathMethods.millerRabinTest(number, 100));
+        assertTrue(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
     void millerRabinFour() {
         BigInteger number = new BigInteger("685082020225370353384144714523");
-        assertTrue(MathMethods.millerRabinTest(number, 100));
+        assertTrue(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
     void millerRabinFive() {
         BigInteger number = new BigInteger("685082020225370353384144714529"); // = 7 * 21827453 * 19154510483 * 234083288753
-        assertFalse(MathMethods.millerRabinTest(number, 100));
+        assertFalse(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
 
@@ -305,4 +316,76 @@ class MathMethodsTest {
                 "The decrypted message should match the original message.");
     }
 
+
+
+    @Test
+    void testRandomElsner() {
+        BigInteger m = new BigInteger("10");
+        BigInteger n = new BigInteger("5");
+        BigInteger a = new BigInteger("1");
+        BigInteger b = new BigInteger("100");
+
+        BigInteger result = MathMethods.randomElsner(m, n, a, b);
+
+        assertTrue(result.compareTo(a) >= 0 && result.compareTo(b) <= 0, "The randomElsner method should return a BigInteger within the range [a, b].");
+    }
+
+    @Test
+    void testGenerateRandomPrime() {
+        BigInteger m = new BigInteger("10");
+        BigInteger a = new BigInteger("1");
+        BigInteger b = new BigInteger("100");
+        int millerRabinSteps = 20;
+
+        BigInteger result = MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
+        System.out.println(result);
+        //test countOfN from 0 to 100 and check if true, if not true print countOfN
+//        for (int i = 100000; i < 100000000; i++) {
+//            if (!MathMethods.millerRabinTest(result, millerRabinSteps, m, BigInteger.valueOf(i))) {
+//                System.out.println(i);
+//            }
+//        }
+        assertTrue(MathMethods.millerRabinTest(result, millerRabinSteps, m, BigInteger.valueOf(5)), "The generateRandomPrime method should return a probable prime number.");
+    }
+
+    @Test
+    void testPrepareMessageForEncryption() {
+        List<Integer> message = Arrays.asList(65, 66, 67, 68, 69); // 'ABCDE'
+        int blockSize = 4;
+        int numberSystem = 256;
+
+        List<BigInteger> result = MathMethods.prepareMessageForEncryption(message, blockSize, numberSystem);
+
+        assertEquals(2, result.size(), "The prepareMessageForEncryption method should divide the message into blocks of the specified size.");
+    }
+
+    @Test
+    void testPrepareMessageForDecryption() {
+        BigInteger message = new BigInteger("1234567890");
+        int blockSize = 4;
+        int numberSystem = 256;
+
+        List<Integer> result = MathMethods.prepareMessageForDecryption(message, blockSize, numberSystem);
+
+        assertEquals(blockSize, result.size(), "The prepareMessageForDecryption method should divide the message into blocks of the specified size.");
+    }
+
+    @Test
+    void testConvertTextToUniCode() {
+        String text = "Test";
+
+        List<Integer> result = MathMethods.convertTextToUniCode(text);
+
+        assertEquals(Arrays.asList(84, 101, 115, 116), result, "The convertTextToUniCode method should correctly convert the text to Unicode.");
+    }
+
+    @Test
+    void testConvertUniCodeToText() {
+        List<Integer> unicode = Arrays.asList(84, 101, 115, 116); // 'Test'
+
+        String result = MathMethods.convertUniCodeToText(unicode);
+
+        assertEquals("Test", result, "The convertUniCodeToText method should correctly convert the Unicode to text.");
+    }
 }
+

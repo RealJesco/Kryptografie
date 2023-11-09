@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.math.BigInteger.ONE;
-import static java.math.BigInteger.ZERO;
-
+import static java.math.BigInteger.*;
+/**
+ * This class contains various mathematical methods used in the RSA encryption process.
+ */
 public class MathMethods {
     private static final BigInteger[] SMALL_PRIMES = {
             BigInteger.valueOf(2),
@@ -190,7 +191,16 @@ public class MathMethods {
 
 
     };
+
+    /**
+     * Performs modular exponentiation using the "square-and-multiply" algorithm.
+     * @param base the base number
+     * @param exp the exponent
+     * @param mod the modulus
+     * @return the result of raising the base to the exponent power, modulo the modulus
+     */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
+        if(exp.compareTo(ZERO) < 0) throw new IllegalArgumentException("Exponent must be positive");
         BigInteger result = BigInteger.ONE;
         base = base.mod(mod); // Modulo operation, to ensure the base is within mod range
 
@@ -209,6 +219,13 @@ public class MathMethods {
     }
 
 //    TODO: @Adham: Habe ich das so richtig kommentert (und verstanden)?
+    /**
+     * Performs the Extended Euclidean Algorithm to find the greatest common divisor of two numbers.
+     * @param a the first number
+     * @param b the second number
+     * @return an array of BigIntegers where the first element is the greatest common divisor of a and b,
+     *         the second element is the coefficient of a, and the third element is the coefficient of b
+     */
     public static BigInteger[] extendedEuclidean(BigInteger a, BigInteger b) {
         if (b.equals(ZERO)) {
             return new BigInteger[] {a, BigInteger.ONE, ZERO};
@@ -220,14 +237,12 @@ public class MathMethods {
             return new BigInteger[] {gcd, x, y};
         }
     }
-    public static BigInteger getRandomBigInteger(int length, int m, Random random){
-        if(length==0)return ZERO;
-        int maxShift = length*100;
-        MathContext context = new MathContext(maxShift+3*length+10);
-        int a = random.nextInt(maxShift);
-        return (BigDecimal.valueOf(m)).sqrt(context).multiply(BigDecimal.TEN.pow(Math.abs(a)), context).divideAndRemainder(BigDecimal.ONE, context)[1].multiply(BigDecimal.TEN.pow(length)).toBigInteger();
-    }
 
+    /**
+     * Generates a random BigInteger less than a given upper limit.
+     * @param upperLimit the upper limit for the random number
+     * @return a random BigInteger less than the upper limit
+     */
     public static BigInteger getRandomBigIntegerUpperLimit(BigInteger upperLimit){
         SecureRandom random = new SecureRandom();
         BigInteger randomNumber;
@@ -236,7 +251,14 @@ public class MathMethods {
         } while (randomNumber.compareTo(upperLimit) >= 0);
         return randomNumber;
     }
-    //m is random seed, n is incremental seed shift, a is lower bound, b is upper bound
+    /**
+     * Generates a random BigInteger within a specified range using the Elsner method.
+     * @param m the random seed
+     * @param n the incremental seed shift
+     * @param a the lower bound
+     * @param b the upper bound
+     * @return a random BigInteger within the range [a, b]
+     */
     public static BigInteger randomElsner(BigInteger m, BigInteger n, BigInteger a, BigInteger b){
         BigDecimal decimalM = new BigDecimal(m);
         BigDecimal decimalN = new BigDecimal(n);
@@ -247,14 +269,20 @@ public class MathMethods {
         BigDecimal mathContextRange = range.add(decimalN);
         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
         MathContext context = new MathContext(decadicLogarithm);
-        BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context));
+        BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context).divideAndRemainder(decimalOne, context)[1]);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         return a.add(randomSeedNumberOffset.toBigInteger());
     }
+    /**
+     * Generates a random prime number within a specified range.
+     * @param m the random seed
+     * @param a the lower bound
+     * @param b the upper bound
+     * @param millerRabinSteps the number of iterations for the Miller-Rabin primality test
+     * @return a probable prime number within the range [a, b]
+     */
     public static BigInteger generateRandomPrime(BigInteger m, BigInteger a, BigInteger b, int millerRabinSteps) {
-        SecureRandom random = new SecureRandom();
         BigInteger primeCandidate;
-//        int bitLength = upperBound.bitLength();
         BigInteger copyOfCountOfN = RSA.getCountOfN();
         while (true) {
             System.out.println("b: " + b);
@@ -278,9 +306,8 @@ public class MathMethods {
                 copyOfCountOfN = copyOfCountOfN.add(ONE);
                 continue; // Skip to the next candidate
             }
-
             // Perform the expensive primality check
-            if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, random)) {
+            if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, m, copyOfCountOfN)) {
                 break; // Prime is found
             }
             copyOfCountOfN = copyOfCountOfN.add(ONE);
@@ -310,18 +337,18 @@ public class MathMethods {
                     break;
                 }
             }
-        } while(!isNoMultipleOfSmallPrime || !parallelMillerRabinTest(prime, millerRabinSteps, random));
+        } while(!isNoMultipleOfSmallPrime || !parallelMillerRabinTest(prime,millerRabinSteps, BigInteger.valueOf(m), BigInteger.valueOf(random.nextInt(m))));
         return prime;
     }
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
-    public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests) {
+    public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
 //        System.out.println("Testing number: " + possiblePrime.toString());
 
         if (possiblePrime.equals(BigInteger.ONE)) {
 //            System.out.println("Number is 1");
             return false;
         }
-        if (possiblePrime.equals(BigInteger.TWO)) {
+        if (possiblePrime.equals(TWO)) {
             return true;
         }
         if (!possiblePrime.testBit(0)) {
@@ -330,14 +357,16 @@ public class MathMethods {
         }
 
         BigInteger d = possiblePrime.subtract(BigInteger.ONE);
+        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
+
         int s = 0;
-        while (d.mod(BigInteger.TWO).equals(ZERO)) {
+        while (d.mod(TWO).equals(ZERO)) {
             d = d.shiftRight(1); // More efficient division by 2
             s++;
         }
-
         for (int i = 0; i < numberOfTests; i++) {
-            BigInteger a = getRandomBigIntegerUpperLimit(possiblePrime.subtract(BigInteger.valueOf(4))).add(BigInteger.TWO); // 'a' is in the range [2, possiblePrime - 2]
+            BigInteger modifiedCountOfN = countOfN.add(BigInteger.valueOf(i));
+            BigInteger a = randomElsner(m, modifiedCountOfN, TWO, possiblePrimeMinusTwo);
 
             BigInteger x = alternativeQuickExponentiation(a, d, possiblePrime);
 
@@ -349,7 +378,7 @@ public class MathMethods {
             for (r = 1; r < s; r++) {
 //                x = x.modPow(BigInteger.TWO, possiblePrime);
                 // Do it with alternativeQuickExponentiation
-                x = alternativeQuickExponentiation(x, BigInteger.TWO, possiblePrime);
+                x = alternativeQuickExponentiation(x, TWO, possiblePrime);
                 if (x.equals(BigInteger.ONE)) {
                     return false;
                 }
@@ -366,8 +395,8 @@ public class MathMethods {
         return true;
     }
     // Parallel Miller-Rabin Test
-    public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, SecureRandom random) {
-        if (possiblePrime.equals(BigInteger.TWO)) return true;
+    public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
+        if (possiblePrime.equals(TWO)) return true;
         if (!possiblePrime.testBit(0)) return false;
         if (possiblePrime.equals(BigInteger.ONE)) return false;
 
@@ -375,23 +404,21 @@ public class MathMethods {
         BigInteger finalD = possiblePrime.subtract(BigInteger.ONE).shiftRight(s);
         // ForkJoinPool can potentially be more efficient for certain tasks
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-
         int finalS = s;
-        BigInteger possiblePrimeMinusFour = possiblePrime.subtract(BigInteger.valueOf(4));
         BigInteger possiblePrimeMinusOne = possiblePrime.subtract(BigInteger.ONE);
+        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
         List<Callable<Boolean>> tasks = IntStream.range(0, numberOfTests)
                 .mapToObj(i -> (Callable<Boolean>) () -> {
-                    BigInteger a = getRandomBigIntegerUpperLimit(possiblePrimeMinusFour).add(BigInteger.TWO);
+                    BigInteger modifiedCountOfN = countOfN.add(BigInteger.valueOf(i));
+                    BigInteger a = randomElsner(m, modifiedCountOfN, TWO, possiblePrimeMinusTwo);
                     BigInteger x = alternativeQuickExponentiation(a, finalD, possiblePrime);
 
-                    if (x.equals(BigInteger.ONE) || x.equals(possiblePrimeMinusOne)) {
+                    if (x.equals(ONE) || x.equals(possiblePrimeMinusOne)) {
                         return true;
                     }
 
                     for (int r = 0; r < finalS; r++) {
-                        //x = x.modPow(BigInteger.TWO, possiblePrime);
-                        x = alternativeQuickExponentiation(x, BigInteger.TWO, possiblePrime);
-//                        if (x.equals(BigInteger.ONE)) return false;
+                        x = alternativeQuickExponentiation(x, TWO, possiblePrime);
                         if (x.equals(possiblePrimeMinusOne)) return true;
                     }
                     return false;
@@ -399,17 +426,14 @@ public class MathMethods {
                 .collect(Collectors.toList());
 
         try {
-            // Use the invokeAny method which returns the result of the fastest callable
-            // and cancels all other tasks if one returns false
             return forkJoinPool.invokeAny(tasks);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return false;
         } finally {
-            forkJoinPool.shutdown(); // Always remember to shutdown the pool
+            forkJoinPool.shutdown();
         }
     }
-
     public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem){
         // Divide message into blocks of size blockSize
         List<List<Integer>> blocks = new ArrayList<>();
