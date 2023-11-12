@@ -208,14 +208,17 @@ public class RSA {
     public RSA(int millerRabinSteps, int bitLengthN, int numberSystemBase, BigInteger m) {
         RSA.millerRabinSteps = millerRabinSteps;
         RSA.bitLengthN = bitLengthN;
-        System.out.println("bitLengthN: " + bitLengthN);
-        blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase)));
-        System.out.println("blockSize: " + blockSize);
-        blockSizePlusOne = blockSize + 1;
+        calculateAndSetBlockSizes(bitLengthN, numberSystemBase);
         RSA.numberSystemBase = numberSystemBase;
         RSA.m = m;
     }
-
+    private static int calculateBlockSize(int bitLengthN, int numberSystemBase){
+        return (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase)));
+    }
+    private static void calculateAndSetBlockSizes(int bitLengthN, int numberSystemBase){
+        blockSize = calculateBlockSize(bitLengthN, numberSystemBase);
+        blockSizePlusOne = blockSize + 1;
+    }
     public static BigInteger getN(){
         return n;
     }
@@ -225,7 +228,7 @@ public class RSA {
     public static BigInteger getD(){
         return d;
     }
-    public BigInteger getP(){
+    public static BigInteger getP(){
         return p;
     }
     public static BigInteger getCountOfN(){
@@ -269,15 +272,15 @@ public class RSA {
     }
     public static void setBitLengthN(int bitLengthN){
         RSA.bitLengthN = bitLengthN;
+        //change blockSize
+        calculateAndSetBlockSizes(bitLengthN, numberSystemBase);
     }
     public static void setMillerRabinSteps(int millerRabinSteps){
         RSA.millerRabinSteps = millerRabinSteps;
     }
     public static void setNumberSystemBase(int numberSystemBase){
         RSA.numberSystemBase = numberSystemBase;
-        blockSize = (int)Math.ceil(bitLengthN / Math.log(numberSystemBase) / Math.log(2));
-        System.out.println("blockSize: " + blockSize);
-        blockSizePlusOne = blockSize + 1;
+        calculateAndSetBlockSizes(bitLengthN, numberSystemBase);
     }
     public static void setBlockSize(int blockSize){
         RSA.blockSize = blockSize;
@@ -449,7 +452,7 @@ public class RSA {
         System.out.println("Decrypted message in Unicode integer values: " + decryptedMessage);
         // Step 6: Convert the list of integers to a string
         String decryptedMessageStr = convertIntegersToText(decryptedMessage);
-        System.out.println("Decrypted message string: " + decryptedMessageStr);
+        System.out.println("Decrypted message string with padding: " + decryptedMessageStr);
         // Step 7: Remove padding from the decrypted string
         return removePadding(decryptedMessageStr);
     }
