@@ -1,6 +1,9 @@
 package rsa;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -206,20 +209,20 @@ public class RSA {
         RSA.millerRabinSteps = millerRabinSteps;
         RSA.bitLengthN = bitLengthN;
         System.out.println("bitLengthN: " + bitLengthN);
-        blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase))) + 1;
+        blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase)));
         System.out.println("blockSize: " + blockSize);
-        blockSizePlusOne = blockSize;
+        blockSizePlusOne = blockSize + 1;
         RSA.numberSystemBase = numberSystemBase;
         RSA.m = m;
     }
 
-    public BigInteger getN(){
+    public static BigInteger getN(){
         return n;
     }
-    public BigInteger getE(){
+    public static BigInteger getE(){
         return e;
     }
-    public BigInteger getD(){
+    public static BigInteger getD(){
         return d;
     }
     public BigInteger getP(){
@@ -272,6 +275,9 @@ public class RSA {
     }
     public static void setNumberSystemBase(int numberSystemBase){
         RSA.numberSystemBase = numberSystemBase;
+        blockSize = (int)Math.ceil(bitLengthN / Math.log(numberSystemBase) / Math.log(2));
+        System.out.println("blockSize: " + blockSize);
+        blockSizePlusOne = blockSize + 1;
     }
     public static void setBlockSize(int blockSize){
         RSA.blockSize = blockSize;
@@ -356,9 +362,14 @@ public class RSA {
     public static String encrypt(String message, BigInteger e, BigInteger n) {
         System.out.println("n: " + n);
         System.out.println("Input message: " + message);
-
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUnicode(message);
+        //Unicode values should not be equal or larger than numberSystemBase
+        for(int i = 0; i < unicodeMessage.size(); i++){
+            if(unicodeMessage.get(i) >= numberSystemBase){
+                throw new IllegalArgumentException("Unicode value is equal or larger than numberSystemBase");
+            }
+        }
         System.out.println("Unicode message: " + unicodeMessage);
         // Step 2: Prepare message for encryption (Block cipher)
         List<BigInteger> numericMessage = prepareMessageForEncryption(unicodeMessage);
@@ -496,5 +507,58 @@ public class RSA {
     private static String removePadding(String decryptedMessageStr) {
         int paddingIndex = decryptedMessageStr.indexOf(0);
         return paddingIndex >= 0 ? decryptedMessageStr.substring(0, paddingIndex) : decryptedMessageStr;
+    }
+     private static String bytesToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder(2 * hash.length);
+        for (int i = 0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if(hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+    public static String sign(String message) throws NoSuchAlgorithmException {
+        //check if N is larger than 256 bit
+        if(n.bitLength() < 256){
+            throw new IllegalArgumentException("N is smaller than 256 bit");
+        }
+        // Hash the message using SHA3-256
+        final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+        final byte[] hashbytes = digest.digest(
+                message.getBytes(StandardCharsets.UTF_8));
+
+        // Convert the hashed bytes to a BigInteger
+        BigInteger hashInteger = new BigInteger(1, hashbytes);
+
+        // Encrypt the hash directly using RSA private key
+        BigInteger encryptedHash = MathMethods.alternativeQuickExponentiation(hashInteger, d, n);
+
+        // Convert the encrypted hash to a hex string (or you can use another format as needed)
+        return encryptedHash.toString(16); // Using base 16 for hex representation
+    }
+    public static boolean verifySignature(String message, String signature) throws NoSuchAlgorithmException {
+        //If signature is not in hex format, throw exception
+        if(!signature.matches("-?[0-9a-fA-F]+")){
+            throw new IllegalArgumentException("Signature is not in hex format");
+        }
+
+        // Hash the message using SHA3-256
+        final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+        final byte[] hashbytes = digest.digest(
+                message.getBytes(StandardCharsets.UTF_8));
+
+        // Convert the hashed bytes to a BigInteger
+        BigInteger hashInteger = new BigInteger(1, hashbytes);
+
+        // Convert the signature to a BigInteger
+        BigInteger signatureInteger = new BigInteger(signature, 16);
+
+        // Decrypt the signature using the public key
+        BigInteger decryptedSignature = MathMethods.alternativeQuickExponentiation(signatureInteger, e, n);
+
+        // Compare the decrypted signature with the hash of the message
+        return decryptedSignature.equals(hashInteger);
     }
 }

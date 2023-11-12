@@ -191,7 +191,7 @@ public class MathMethods {
 
 
     };
-
+    static BigInteger TWO = BigInteger.valueOf(2);
     /**
      * Performs modular exponentiation using the "square-and-multiply" algorithm.
      * @param base the base number
@@ -261,6 +261,7 @@ public class MathMethods {
      */
     public static BigInteger randomElsner(BigInteger m, BigInteger n, BigInteger a, BigInteger b){
         BigDecimal decimalM = new BigDecimal(m);
+
         BigDecimal decimalN = new BigDecimal(n);
         BigDecimal decimalA = new BigDecimal(a);
         BigDecimal decimalB = new BigDecimal(b);
@@ -269,7 +270,13 @@ public class MathMethods {
         BigDecimal mathContextRange = range.add(decimalN);
         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
         MathContext context = new MathContext(decadicLogarithm);
-        BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context).divideAndRemainder(decimalOne, context)[1]);
+        //Does not throw error, instead increases the number by one
+        if(decimalM.sqrt(context).remainder(BigDecimal.ONE).equals(BigDecimal.ZERO)){
+            decimalM = decimalM.add(BigDecimal.ONE);
+        }
+        BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context));
+//        System.out.println("m: " + decimalM);
+        randomSeededNumber = randomSeededNumber.remainder(decimalOne);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         return a.add(randomSeedNumberOffset.toBigInteger());
     }
@@ -285,13 +292,12 @@ public class MathMethods {
         BigInteger primeCandidate;
         BigInteger copyOfCountOfN = RSA.getCountOfN();
         while (true) {
-            System.out.println("b: " + b);
-            System.out.println("a: " + a);
-            System.out.println("m: " + m);
-            System.out.println("countOfN: " + copyOfCountOfN);
+//            System.out.println("b: " + b);
+//            System.out.println("a: " + a);
+//            System.out.println("countOfN: " + copyOfCountOfN);
             // Generate a random odd BigInteger within the range
             primeCandidate = randomElsner(m, copyOfCountOfN, a, b).setBit(0); // Ensure it's odd
-            System.out.println("TEST: " + primeCandidate);
+//            System.out.println("TEST: " + primeCandidate);
             // Fast check against small primes
             boolean isComposite = false;
             for (BigInteger smallPrime : SMALL_PRIMES) {
