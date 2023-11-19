@@ -5,6 +5,7 @@ import rsa.RSA;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -237,7 +238,75 @@ public class MathMethods {
             return new BigInteger[] {gcd, x, y};
         }
     }
+/**
+ * Die Berechnung der Darstellung von p kongruent zu 1 mod 4 als Summe von zwei Quadraten
+ *  Algorithmus 3.1 (Euklidischer Algorithmus in ZZ[i])
+ *  Eingabe: a,b Z[i]
+ *  Ausgabe: d = ggT(a,b)
+ *  begin (assumption b.abs() > a.abs())
+ *  g0 := b, g1 := a, k := 1
+ *  while gk != 0 do
+ *  berechne ck := gk-1 / gk
+ *  berechne gk+1 := gk-1 - gk * f(ck)
+ *  k := k + 1
+ *  end
+ *  d := gk-1
+    */
+public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b) {
+    BigInteger[] g0 = b;
+    BigInteger[] g1 = a;
+    BigInteger[] ck, gk_plus1;
 
+    while (!(g1[0].equals(BigInteger.ZERO) && g1[1].equals(BigInteger.ZERO))) {
+        ck = divideGaussianIntegers(g0, g1);
+        gk_plus1 = subtractGaussianIntegers(g0, multiplyGaussianIntegers(g1, f(ck)));
+        g0 = g1;
+        g1 = gk_plus1;
+    }
+
+    // Normalize the GCD to the smallest non-zero Gaussian integer
+    return normalizeGCD(g0);
+}
+    private static BigInteger[] normalizeGCD(BigInteger[] gcd) {
+        // Normalize the GCD to the smallest non-zero Gaussian integer
+        if (gcd[0].equals(BigInteger.ZERO) && gcd[1].equals(BigInteger.ZERO)) {
+            return new BigInteger[]{ZERO, ZERO};
+        } else if (gcd[0].equals(BigInteger.ZERO)) {
+            return new BigInteger[]{gcd[1], ZERO};
+        } else if (gcd[1].equals(BigInteger.ZERO)) {
+            return new BigInteger[]{gcd[0], ZERO};
+        }
+        return gcd;
+    }
+    // Function f for the extended Euclidean algorithm in Z[i]
+    private static BigInteger[] f(BigInteger[] z) {
+        BigInteger realPart = roundHalfUp(z[0]);
+        BigInteger imaginaryPart = roundHalfUp(z[1]);
+        return new BigInteger[]{realPart, imaginaryPart};
+    }
+    // Rounds a BigInteger to the nearest integer
+    private static BigInteger roundHalfUp(BigInteger number) {
+        BigInteger half = BigInteger.ONE.shiftLeft(number.bitLength() - 1); // 2^(n-1), wobei n die Bitlänge ist
+        return number.add(half).shiftRight(1); // (number + half) / 2
+    }
+    private static BigInteger[] divideGaussianIntegers(BigInteger[] a, BigInteger[] b) {
+        BigInteger aSquaredPlusBSquared = b[0].pow(2).add(b[1].pow(2));
+        BigInteger realPart = a[0].multiply(b[0]).add(a[1].multiply(b[1])).divide(aSquaredPlusBSquared);
+        BigInteger imaginaryPart = a[1].multiply(b[0]).subtract(a[0].multiply(b[1])).divide(aSquaredPlusBSquared);
+        return new BigInteger[]{realPart, imaginaryPart};
+    }
+
+    private static BigInteger[] multiplyGaussianIntegers(BigInteger[] a, BigInteger[] b) {
+        BigInteger realPart = a[0].multiply(b[0]).subtract(a[1].multiply(b[1]));
+        BigInteger imaginaryPart = a[0].multiply(b[1]).add(a[1].multiply(b[0]));
+        return new BigInteger[]{realPart, imaginaryPart};
+    }
+
+    private static BigInteger[] subtractGaussianIntegers(BigInteger[] a, BigInteger[] b) {
+        BigInteger realPart = a[0].subtract(b[0]);
+        BigInteger imaginaryPart = a[1].subtract(b[1]);
+        return new BigInteger[]{realPart, imaginaryPart};
+    }
     /**
      * Generates a random BigInteger less than a given upper limit.
      * @param upperLimit the upper limit for the random number
@@ -261,7 +330,6 @@ public class MathMethods {
      */
     public static BigInteger randomElsner(BigInteger m, BigInteger n, BigInteger a, BigInteger b){
         BigDecimal decimalM = new BigDecimal(m);
-
         BigDecimal decimalN = new BigDecimal(n);
         BigDecimal decimalA = new BigDecimal(a);
         BigDecimal decimalB = new BigDecimal(b);
@@ -275,7 +343,7 @@ public class MathMethods {
             decimalM = decimalM.add(BigDecimal.ONE);
         }
         BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context));
-//        System.out.println("m: " + decimalM);
+        // System.out.println("m: " + decimalM);
         randomSeededNumber = randomSeededNumber.remainder(decimalOne);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         return a.add(randomSeedNumberOffset.toBigInteger());

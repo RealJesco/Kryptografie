@@ -9,7 +9,7 @@ public class RSATest {
 
     @Test
     public void encryptionAndDecryptionShouldReturnOriginalMessage() {
-        RSA rsa = new RSA(40, 1024, 55926, BigInteger.valueOf(844));
+        RSA rsa = new RSA(1000, 4096, 55926, BigInteger.valueOf(844));
         RSA.generatePrimeNumbers();
         String originalMessage = "Mathematik ist spannend";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());

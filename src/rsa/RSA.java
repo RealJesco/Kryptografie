@@ -435,6 +435,7 @@ public class RSA {
         return numberList;
     }
     public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
+        System.out.println("encryptedNumericMessageStr: " + encryptedNumericMessageStr);
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUnicode(encryptedNumericMessageStr);
         System.out.println("Decrypting Unicode to encrypted blocks: " + unicodeMessage);
