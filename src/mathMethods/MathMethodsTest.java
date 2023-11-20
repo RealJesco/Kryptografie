@@ -389,6 +389,16 @@ class MathMethodsTest {
         assertEquals("Test", result, "The convertUniCodeToText method should correctly convert the Unicode to text.");
     }
 
+
+    @Test
+    void roundHalfUpTest() {
+        BigInteger number = new BigInteger("3");
+
+        BigInteger expected = new BigInteger("3");
+
+        assertEquals(expected, MathMethods.roundHalfUp(number));
+    }
+
     @Test
     void testGaussianExtendedEuclideanInZi() {
         BigInteger[] a = {new BigInteger("5"), new BigInteger("4")}; // 5 + 4i
@@ -470,6 +480,7 @@ class MathMethodsTest {
         BigInteger[] b = {BigInteger.ZERO, new BigInteger("5")};
 
         BigInteger[] gcd = extendedEuclideanInZi(a, b);
+        System.out.println("Wrong GCD: " + gcd[0] + " + " + gcd[1] + "i");
 
         assertEquals(BigInteger.ONE, gcd[0]);
         assertEquals(BigInteger.ZERO, gcd[1]);

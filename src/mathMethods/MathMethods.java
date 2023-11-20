@@ -252,21 +252,21 @@ public class MathMethods {
  *  d := gk-1
     */
 public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b) {
-    BigInteger[] g0 = b;
-    BigInteger[] g1 = a;
+    BigInteger[] gk_minus1 = b;
+    BigInteger[] gk = a;
     BigInteger[] ck, gk_plus1;
 
-    while (!(g1[0].equals(BigInteger.ZERO) && g1[1].equals(BigInteger.ZERO))) {
-        ck = divideGaussianIntegers(g0, g1);
-        gk_plus1 = subtractGaussianIntegers(g0, multiplyGaussianIntegers(g1, f(ck)));
-        g0 = g1;
-        g1 = gk_plus1;
+    while (!(gk[0].equals(BigInteger.ZERO) && gk[1].equals(BigInteger.ZERO))) {
+        ck = divideGaussianIntegers(gk_minus1, gk);
+        gk_plus1 = subtractGaussianIntegers(gk_minus1, multiplyGaussianIntegers(gk, f(ck)));
+        gk_minus1 = gk;
+        gk = gk_plus1;
     }
 
     // Normalize the GCD to the smallest non-zero Gaussian integer
-    return normalizeGCD(g0);
+    return normalizeGCD(gk_minus1);
 }
-    private static BigInteger[] normalizeGCD(BigInteger[] gcd) {
+    public static BigInteger[] normalizeGCD(BigInteger[] gcd) {
         // Normalize the GCD to the smallest non-zero Gaussian integer
         if (gcd[0].equals(BigInteger.ZERO) && gcd[1].equals(BigInteger.ZERO)) {
             return new BigInteger[]{ZERO, ZERO};
@@ -278,30 +278,30 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         return gcd;
     }
     // Function f for the extended Euclidean algorithm in Z[i]
-    private static BigInteger[] f(BigInteger[] z) {
+    public static BigInteger[] f(BigInteger[] z) {
         BigInteger realPart = roundHalfUp(z[0]);
         BigInteger imaginaryPart = roundHalfUp(z[1]);
         return new BigInteger[]{realPart, imaginaryPart};
     }
     // Rounds a BigInteger to the nearest integer
-    private static BigInteger roundHalfUp(BigInteger number) {
+    public static BigInteger roundHalfUp(BigInteger number) {
         BigInteger half = BigInteger.ONE.shiftLeft(number.bitLength() - 1); // 2^(n-1), wobei n die Bitlänge ist
         return number.add(half).shiftRight(1); // (number + half) / 2
     }
-    private static BigInteger[] divideGaussianIntegers(BigInteger[] a, BigInteger[] b) {
+    public static BigInteger[] divideGaussianIntegers(BigInteger[] a, BigInteger[] b) {
         BigInteger aSquaredPlusBSquared = b[0].pow(2).add(b[1].pow(2));
         BigInteger realPart = a[0].multiply(b[0]).add(a[1].multiply(b[1])).divide(aSquaredPlusBSquared);
         BigInteger imaginaryPart = a[1].multiply(b[0]).subtract(a[0].multiply(b[1])).divide(aSquaredPlusBSquared);
         return new BigInteger[]{realPart, imaginaryPart};
     }
 
-    private static BigInteger[] multiplyGaussianIntegers(BigInteger[] a, BigInteger[] b) {
+    public static BigInteger[] multiplyGaussianIntegers(BigInteger[] a, BigInteger[] b) {
         BigInteger realPart = a[0].multiply(b[0]).subtract(a[1].multiply(b[1]));
         BigInteger imaginaryPart = a[0].multiply(b[1]).add(a[1].multiply(b[0]));
         return new BigInteger[]{realPart, imaginaryPart};
     }
 
-    private static BigInteger[] subtractGaussianIntegers(BigInteger[] a, BigInteger[] b) {
+    public static BigInteger[] subtractGaussianIntegers(BigInteger[] a, BigInteger[] b) {
         BigInteger realPart = a[0].subtract(b[0]);
         BigInteger imaginaryPart = a[1].subtract(b[1]);
         return new BigInteger[]{realPart, imaginaryPart};
