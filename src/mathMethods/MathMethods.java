@@ -285,9 +285,13 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
     }
     // Rounds a BigInteger to the nearest integer
     public static BigInteger roundHalfUp(BigInteger number) {
-        BigInteger half = BigInteger.ONE.shiftLeft(number.bitLength() - 1); // 2^(n-1), wobei n die Bitlänge ist
-        return number.add(half).shiftRight(1); // (number + half) / 2
+        // Addiere 0.5 zur Zahl und runde dann ab
+        BigInteger half = BigInteger.ONE.divide(BigInteger.valueOf(2)); // 0.5 als BigInteger
+        return number.add(half).divide(BigInteger.ONE); // (number + 0.5) abgerundet
     }
+
+
+
     public static BigInteger[] divideGaussianIntegers(BigInteger[] a, BigInteger[] b) {
         BigInteger aSquaredPlusBSquared = b[0].pow(2).add(b[1].pow(2));
         BigInteger realPart = a[0].multiply(b[0]).add(a[1].multiply(b[1])).divide(aSquaredPlusBSquared);
