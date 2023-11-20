@@ -200,8 +200,6 @@ public class RSA {
             BigInteger.valueOf(983),
             BigInteger.valueOf(991),
             BigInteger.valueOf(997)
-
-
     };
 
     //    Constructor

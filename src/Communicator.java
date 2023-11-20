@@ -1,14 +1,19 @@
 import mathMethods.MathMethods;
+import rsa.MethodenFromRSA;
+import rsa.RSA;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Communicator extends JFrame {
+    public String name;
     public BigInteger n;
     public BigInteger e;
     private BigInteger d;
@@ -17,27 +22,26 @@ public class Communicator extends JFrame {
     private JTextArea secretField;
     private JTextArea inputAndOutput;
     private JButton startEncode;
+    private JButton startDecode;
     private JButton signMessage;
     private JButton sendMessage;
     private JTextField signings;
     private JTextField signingValid;
     private JButton clearEverything;
     private static GridBagConstraints c;
-    private SecureRandom random;
+    private Communicator thisInstance;
+    private ArrayList<Message> messageList = new ArrayList<>();
+    private int currentMessageIndex = 0;
 
-    public Communicator(String name, BigInteger p1, BigInteger p2, SecureRandom random, Point point){
+    public Communicator(String name, BigInteger n, BigInteger phiN, BigInteger m, Point point){
         super(name);
-        this.random = random;
-        this.n = p1.multiply(p2);
+        this.name = name;
+        this.n = n;
         //berechne inverse zu d -> e
-        BigInteger p0p1 = p1.subtract(BigInteger.ONE).multiply(p2.subtract(BigInteger.ONE));
-        do{
-            this.e = MathMethods.getRandomBigIntegerUpperLimit(p0p1);
-        } while(MathMethods.extendedEuclidean(e,p0p1)[0].compareTo(BigInteger.ONE)==0);
-        this.d=e;
+        this.e = MethodenFromRSA.calculateE(phiN, CommunicationPanel.getInstance().getM(), CommunicationPanel.getInstance().getMillerRabinSteps());
+        this.d = MethodenFromRSA.calculateD(e, phiN);
 
-
-
+        thisInstance = this;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(1000,400));
@@ -58,15 +62,41 @@ public class Communicator extends JFrame {
         startEncode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //mathMethods.MathMethods.blockCipherEncrypt(inputAndOutput.getText(), CommunicationPanel.getInstance().getBlockLength());
+                Communicator receiver = getReceiver();
+                inputAndOutput.setText(MethodenFromRSA.encrypt(inputAndOutput.getText(),receiver.e, receiver.n, CommunicationPanel.getInstance().getNumberSystemBase(), CommunicationPanel.getInstance().getBlockSize()));
             }
         });
         startEncode.setPreferredSize(new Dimension(250,25));
+        startDecode = new JButton("Entschlüsseln");
+        startDecode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(messageList.size() > currentMessageIndex){
+                    Message message = messageList.get(currentMessageIndex++);
+                    inputAndOutput.setText(MethodenFromRSA.decrypt(message.text, d, n, CommunicationPanel.getInstance().getBlockSize(), CommunicationPanel.getInstance().getNumberSystemBase()));
+                    if(message.signature != null){
+                        try {
+                            signingValid.setText("" + MethodenFromRSA.verifySignature(inputAndOutput.getText(), message.signature, message.e, message.n));
+                        } catch (NoSuchAlgorithmException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        signingValid.setText("");
+                    }
+                }
+            }
+        });
+        startDecode.setPreferredSize(new Dimension(250,25));
         signMessage = new JButton("Signieren der Nachricht");
         signMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                try {
+                    signatur = MethodenFromRSA.sign(inputAndOutput.getText(), d, n);
+                    signings.setText(signatur);
+                } catch (NoSuchAlgorithmException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         signMessage.setPreferredSize(new Dimension(250,25));
@@ -74,6 +104,11 @@ public class Communicator extends JFrame {
         sendMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(signatur != null) {
+                    getReceiver().sendAMessage(new Message(inputAndOutput.getText(), signatur, thisInstance.e, thisInstance.n));
+                } else {
+                    getReceiver().sendAMessage(new Message(inputAndOutput.getText(), thisInstance.e, thisInstance.n));
+                }
             }
         });
         sendMessage.setPreferredSize(new Dimension(250,25));
@@ -84,27 +119,33 @@ public class Communicator extends JFrame {
                 inputAndOutput.setText("");
                 signings.setText("");
                 signingValid.setText("");
+                signatur = null;
             }
         });
         clearEverything.setPreferredSize(new Dimension(250,25));
 
         JPanel buttons = new JPanel();
         GridBagConstraints c1 = new GridBagConstraints();
+        int i = 0;
         c1.fill = GridBagConstraints.HORIZONTAL;
         c1.gridx = 0;
-        c1.gridy = 0;
+        c1.gridy = i++;
         buttons.add(startEncode,c1);
         c1.fill = GridBagConstraints.HORIZONTAL;
         c1.gridx = 0;
-        c1.gridy = 1;
+        c1.gridy = i++;
+        buttons.add(startDecode,c1);
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
         buttons.add(signMessage,c1);
         c1.fill = GridBagConstraints.HORIZONTAL;
         c1.gridx = 0;
-        c1.gridy = 2;
+        c1.gridy = i++;
         buttons.add(sendMessage,c1);
         c1.fill = GridBagConstraints.HORIZONTAL;
         c1.gridx = 0;
-        c1.gridy = 3;
+        c1.gridy = i++;
         buttons.add(clearEverything,c1);
 
 
@@ -142,6 +183,19 @@ public class Communicator extends JFrame {
 
         add(panel);
         panel.updateUI();
+    }
+
+    public void sendAMessage(Message m) {
+        messageList.add(m);
+        inputAndOutput.setText(m.text);
+    }
+
+    private Communicator getReceiver() {
+        if(name.equals("Bob")){
+            return CommunicationPanel.getInstance().getAlice();
+        } else {
+            return CommunicationPanel.getInstance().getBob();
+        }
     }
 
     private static JTextField getNewTextfield(int row, String headline, boolean editable) {

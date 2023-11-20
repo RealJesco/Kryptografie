@@ -1,4 +1,6 @@
 import mathMethods.MathMethods;
+import rsa.MethodenFromRSA;
+import rsa.RSA;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,23 +11,28 @@ import java.util.Random;
 
 public class CommunicationPanel extends JFrame {
     private static final CommunicationPanel singleton = new CommunicationPanel();
+    private int millerRabinSteps = 100;
+    private int numberSystemBase = 55926;
+    private BigInteger m = BigInteger.valueOf(844);
+    private BigInteger primeBitLength = BigInteger.valueOf(1024);
     private static JPanel panel;
     private static JButton generateCommunicators;
-    private static JTextField randomNumberM;
+    private static JTextField nonCubicNumberMField;
+    private static JTextField numberSystemBaseField;
     private static JTextField millerRabinStepsField;
-    private static JTextField lengthOfP;
+    private static JTextField primeBitLengthField;
     private static JTextArea alicePublicKeyField;
     private static JTextArea bobPublicKeyField;
     private static JTextArea alicePublicNField;
     private static JTextArea bobPublicNField;
-    private static Communicator Alice = null;
-    private static Communicator Bob = null;
+    private Communicator Alice = null;
+    private Communicator Bob = null;
     private static GridBagConstraints c = null;
-    private static SecureRandom random;
+    private static RSA rsa;
+    private int blockSize;
 
     private CommunicationPanel() {
         super("CommunicationPanel");
-        random = new SecureRandom();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(650, 500));
         setSize(new Dimension(650, 500));
@@ -36,18 +43,25 @@ public class CommunicationPanel extends JFrame {
 
         generateCommunicators = new JButton("Generiere Alice und Bob");
         int i = 0;
-        randomNumberM = getNewTextfield(i++, "Nicht-Quadratzahl m");
+        nonCubicNumberMField = getNewTextfield(i++, "Nicht-Quadratzahl m");
         millerRabinStepsField = getNewTextfield(i++, "Miller-Rabin Schritte");
-        lengthOfP = getNewTextfield(i++, "Länge von Primzahlen");
+        numberSystemBaseField = getNewTextfield(i++, "Adisches System: Das g");
+        primeBitLengthField = getNewTextfield(i++, "Bit-Länge von n");
         alicePublicKeyField = getNewTextArea(i++, "Öffentlicher Schlüssel e von Alice");
         alicePublicNField = getNewTextArea(i++, "Öffentlicher Schlüssel n von Alice");
         bobPublicKeyField = getNewTextArea(i++, "Öffentlicher Schlüssel e von Bob");
         bobPublicNField = getNewTextArea(i++, "Öffentlicher Schlüssel n von Bob");
 
-        millerRabinStepsField.setText("10");
+        nonCubicNumberMField.setText(String.valueOf(m));
+        onlyAllowNumbers(nonCubicNumberMField);
+        numberSystemBaseField.setText(String.valueOf(numberSystemBase));
+        onlyAllowNumbers(numberSystemBaseField);
+        millerRabinStepsField.setText(String.valueOf(millerRabinSteps));
         onlyAllowNumbers(millerRabinStepsField);
-        lengthOfP.setText("10");
-        onlyAllowNumbers(lengthOfP);
+        primeBitLengthField.setText(String.valueOf(primeBitLength));
+        onlyAllowNumbers(primeBitLengthField);
+
+        calculateBlockSize(primeBitLength.intValue(), numberSystemBase);
 
         generateCommunicators.addActionListener(new ActionListener() {
             @Override
@@ -60,16 +74,14 @@ public class CommunicationPanel extends JFrame {
                     Alice.dispose();
                 } catch (Exception f) {
                 }
-                //Übergang für random Prime
-                BigInteger TempP1 = MathMethods.getRandomPrimeBigInteger(Integer.parseInt(lengthOfP.getText()),Integer.parseInt(randomNumberM.getText()),Integer.parseInt(millerRabinStepsField.getText()),random);
-                BigInteger TempP2;
-                do {
-                    TempP2 = MathMethods.getRandomPrimeBigInteger(Integer.parseInt(lengthOfP.getText()),Integer.parseInt(randomNumberM.getText()),Integer.parseInt(millerRabinStepsField.getText()),random);
-                }while (TempP1.equals(TempP2));
+                BigInteger TempP = MethodenFromRSA.calculatePrimeByBitLength(primeBitLength.divide(BigInteger.TWO), m, millerRabinSteps);
+                BigInteger TempQ = MethodenFromRSA.calculatePrimeByBitLength(primeBitLength.divide(BigInteger.TWO), m,millerRabinSteps, TempP);
 
-                BigInteger n = TempP1.multiply(TempP2);
-                Alice = new Communicator("Alice", TempP1, TempP2, random, new Point(900, 0));
-                Bob = new Communicator("Bob", TempP1, TempP2, random, new Point(900, 400));
+                BigInteger n = TempP.multiply(TempQ);
+                BigInteger phiN = (TempP.subtract(BigInteger.ONE)).multiply(TempQ.subtract(BigInteger.ONE));
+
+                Alice = new Communicator("Alice", n, phiN, m, new Point(900, 0));
+                Bob = new Communicator("Bob", n, phiN, m, new Point(900, 400));
                 alicePublicKeyField.setText(Alice.e.toString());
                 alicePublicNField.setText(Alice.n.toString());
                 bobPublicKeyField.setText(Bob.e.toString());
@@ -77,12 +89,75 @@ public class CommunicationPanel extends JFrame {
             }
         });
 
+        nonCubicNumberMField.addInputMethodListener(new InputMethodListener() {
+            @Override
+            public void inputMethodTextChanged(InputMethodEvent event) {
+                int value = getIntegerOfField(nonCubicNumberMField);
+                if(value!=1) {
+                    m = BigInteger.valueOf(value);
+                }
+            }
+
+            @Override
+            public void caretPositionChanged(InputMethodEvent event) {
+
+            }
+        });
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = i++;
         panel.add(generateCommunicators, c);
         add(panel);
         panel.updateUI();
+    }
+
+    private int getIntegerOfField(JTextField field) {
+        try{
+            return Integer.parseInt(field.getText());
+        } catch (Exception e) {
+            JFrame frame = new JFrame();
+            frame.setSize(new Dimension(200, 100));
+            JPanel p = new JPanel();
+            p.add(new JLabel("Fehler beim Auslesen eines Feldes -> Parsen ins Integer fehlgeschlagen: " + e.getStackTrace()));
+            frame.add(p);
+            frame.setVisible(true);
+        }
+        return 1;
+    }
+
+
+    public Communicator getAlice() {
+        return this.Alice;
+    }
+
+    public Communicator getBob() {
+        return this.Bob;
+    }
+    public static CommunicationPanel getInstance() {
+        return singleton;
+    }
+
+    public int getMillerRabinSteps() {
+        return millerRabinSteps;
+    }
+
+    public BigInteger getM() {
+        return m;
+    }
+
+    public BigInteger getPrimeBitLength() {
+        return primeBitLength;
+    }
+
+    public int getNumberSystemBase() {
+        return numberSystemBase;
+    }
+    public void calculateBlockSize(int bitLengthN, int numberSystemBase){
+        this.blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase)));
+    }
+
+    public static RSA getRsa() {
+        return rsa;
     }
 
     private void onlyAllowNumbers(JTextField field) {
@@ -92,10 +167,6 @@ public class CommunicationPanel extends JFrame {
                 jTextFieldKeyTyped(e);
             }
         });
-    }
-
-    public static CommunicationPanel getInstance() {
-        return singleton;
     }
 
     private void jTextFieldKeyTyped(java.awt.event.KeyEvent evt) {
@@ -139,5 +210,9 @@ public class CommunicationPanel extends JFrame {
         j.add(scrollPane);
         panel.add(j, c);
         return field;
+    }
+
+    public int getBlockSize() {
+        return this.blockSize;
     }
 }
