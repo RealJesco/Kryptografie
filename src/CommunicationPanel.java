@@ -89,18 +89,20 @@ public class CommunicationPanel extends JFrame {
             }
         });
 
-        nonCubicNumberMField.addInputMethodListener(new InputMethodListener() {
+        nonCubicNumberMField.addFocusListener(new FocusAdapter() {
             @Override
-            public void inputMethodTextChanged(InputMethodEvent event) {
+            public void focusLost(FocusEvent e) {
                 int value = getIntegerOfField(nonCubicNumberMField);
-                if(value!=1) {
+                System.out.println(value);
+                double sqrt = Math.sqrt(value);
+                if(sqrt != Math.floor(sqrt) && value > 2) {
                     m = BigInteger.valueOf(value);
+                } else {
+                    // Handle the case where the input is a perfect square
+                    // For example, you could reset the field and show an error message
+                    nonCubicNumberMField.setText("");
+                    JOptionPane.showMessageDialog(null, "Input must be a non-square number");
                 }
-            }
-
-            @Override
-            public void caretPositionChanged(InputMethodEvent event) {
-
             }
         });
         c.fill = GridBagConstraints.HORIZONTAL;

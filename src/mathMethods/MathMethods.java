@@ -218,7 +218,6 @@ public class MathMethods {
         return result; // Return the accumulated result
     }
 
-//    TODO: @Adham: Habe ich das so richtig kommentert (und verstanden)?
     /**
      * Performs the Extended Euclidean Algorithm to find the greatest common divisor of two numbers.
      * @param a the first number
@@ -267,7 +266,6 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
     return normalizeGCD(gk_minus1);
 }
     public static BigInteger[] normalizeGCD(BigInteger[] gcd) {
-        // Normalize the GCD to the smallest non-zero Gaussian integer
         if (gcd[0].equals(BigInteger.ZERO) && gcd[1].equals(BigInteger.ZERO)) {
             return new BigInteger[]{ZERO, ZERO};
         } else if (gcd[0].equals(BigInteger.ZERO)) {
@@ -568,7 +566,6 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         return decryptedMessage;
     }
 
-    //TODO: Test diese kleinen Methoden
     public static List<Integer> convertTextToUniCode(String text){
         List<Integer> unicode = new ArrayList<>();
         for(int i = 0; i < text.length(); i++){

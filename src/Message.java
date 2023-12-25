@@ -1,18 +1,20 @@
 import java.math.BigInteger;
 
 public class Message {
+    public String originalText;
+    public String encryptedText;
     String signature = null;
     BigInteger e;
     BigInteger n;
-    String text;
-    public Message(String t, String s, BigInteger E, BigInteger N) {
-        this.signature = s;
-        this.text = t;
-        this.n = N;
-        this.e = E;
+    public Message(String originalText, String encryptedText, String signature, BigInteger e, BigInteger n) {
+        this.originalText = originalText;
+        this.encryptedText = encryptedText;
+        this.signature = signature;
+        this.e = e;
+        this.n = n;
     }
     public Message(String t, BigInteger E, BigInteger N) {
-        this.text = t;
+        this.originalText = t;
         this.n = N;
         this.e = E;
     }

@@ -68,48 +68,48 @@ public class Communicator extends JFrame {
         });
         startEncode.setPreferredSize(new Dimension(250,25));
         startDecode = new JButton("Entschlüsseln");
-        startDecode.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(messageList.size() > currentMessageIndex){
-                    Message message = messageList.get(currentMessageIndex++);
-                    inputAndOutput.setText(MethodenFromRSA.decrypt(message.text, d, n, CommunicationPanel.getInstance().getBlockSize(), CommunicationPanel.getInstance().getNumberSystemBase()));
-                    if(message.signature != null){
-                        try {
-                            signingValid.setText("" + MethodenFromRSA.verifySignature(inputAndOutput.getText(), message.signature, message.e, message.n));
-                        } catch (NoSuchAlgorithmException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    } else {
-                        signingValid.setText("");
+        startDecode.addActionListener(e -> {
+            if(messageList.size() > currentMessageIndex){
+                Message message = messageList.get(currentMessageIndex++);
+                System.out.println("Original Message: " + message.originalText);
+                System.out.println("Encrypted Message: " + message.encryptedText);
+                System.out.println("Signature: " + message.signature);
+                String decryptedMessage = MethodenFromRSA.decrypt(message.encryptedText, d, n, CommunicationPanel.getInstance().getBlockSize(), CommunicationPanel.getInstance().getNumberSystemBase());
+                inputAndOutput.setText(decryptedMessage);
+                if(message.signature != null){
+                    try {
+                        System.out.println(message.signature);
+                        System.out.println(message.originalText);
+
+                        signingValid.setText("" + MethodenFromRSA.verifySignature(message.originalText, message.signature, message.e, message.n));
+                    } catch (NoSuchAlgorithmException ex) {
+                        throw new RuntimeException(ex);
                     }
+                } else {
+                    signingValid.setText("");
                 }
             }
         });
         startDecode.setPreferredSize(new Dimension(250,25));
         signMessage = new JButton("Signieren der Nachricht");
-        signMessage.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    signatur = MethodenFromRSA.sign(inputAndOutput.getText(), d, n);
-                    signings.setText(signatur);
-                } catch (NoSuchAlgorithmException ex) {
-                    throw new RuntimeException(ex);
-                }
+        signMessage.addActionListener(e -> {
+            try {
+                System.out.println("Nachricht: " + inputAndOutput.getText());
+                System.out.println("Signatur: " + MethodenFromRSA.sign(inputAndOutput.getText(), d, n));
+                signatur = MethodenFromRSA.sign(inputAndOutput.getText(), d, n);
+                signings.setText(signatur);
+            } catch (NoSuchAlgorithmException ex) {
+                throw new RuntimeException(ex);
             }
         });
         signMessage.setPreferredSize(new Dimension(250,25));
         sendMessage = new JButton("Nachricht versenden");
-        sendMessage.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(signatur != null) {
-                    getReceiver().sendAMessage(new Message(inputAndOutput.getText(), signatur, thisInstance.e, thisInstance.n));
-                } else {
-                    getReceiver().sendAMessage(new Message(inputAndOutput.getText(), thisInstance.e, thisInstance.n));
-                }
-            }
+        sendMessage.addActionListener(e -> {
+            String originalMessage = inputAndOutput.getText();
+            String encryptedMessage = MethodenFromRSA.encrypt(originalMessage, getReceiver().e, getReceiver().n, CommunicationPanel.getInstance().getNumberSystemBase(), CommunicationPanel.getInstance().getBlockSize());
+            Message me = new Message(originalMessage, encryptedMessage, signings.getText(), thisInstance.e, thisInstance.n);
+            System.out.println("Sent message: " + me.originalText);
+            getReceiver().sendAMessage(new Message(originalMessage, encryptedMessage, signings.getText(), thisInstance.e, thisInstance.n));
         });
         sendMessage.setPreferredSize(new Dimension(250,25));
         clearEverything = new JButton("Alle Eingaben und Nachrichten löschen");
@@ -187,15 +187,21 @@ public class Communicator extends JFrame {
 
     public void sendAMessage(Message m) {
         messageList.add(m);
-        inputAndOutput.setText(m.text);
+        inputAndOutput.setText(m.originalText);
+        System.out.println("Original Message: " + m.originalText);
+        System.out.println("Encrypted Message: " + m.encryptedText);
+        System.out.println("Sent message: " + m.originalText); // Print the message that is being sent
     }
 
     private Communicator getReceiver() {
+        Communicator receiver;
         if(name.equals("Bob")){
-            return CommunicationPanel.getInstance().getAlice();
+            receiver = CommunicationPanel.getInstance().getAlice();
         } else {
-            return CommunicationPanel.getInstance().getBob();
+            receiver = CommunicationPanel.getInstance().getBob();
         }
+        System.out.println("Receiver: " + receiver.name); // Print the name of the receiver
+        return receiver;
     }
 
     private static JTextField getNewTextfield(int row, String headline, boolean editable) {
