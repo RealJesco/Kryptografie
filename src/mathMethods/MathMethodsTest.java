@@ -482,7 +482,7 @@ class MathMethodsTest {
         BigInteger[] gcd = extendedEuclideanInZi(a, b);
         System.out.println("Wrong GCD: " + gcd[0] + " + " + gcd[1] + "i");
 
-        assertEquals(BigInteger.ONE, gcd[0]);
+        assertEquals(BigInteger.valueOf(5), gcd[0]);
         assertEquals(BigInteger.ZERO, gcd[1]);
     }
 
@@ -506,6 +506,15 @@ class MathMethodsTest {
 
         assertEquals(BigInteger.ONE, gcd[0]);
         assertEquals(BigInteger.ZERO, gcd[1]);
+    }
+    @Test
+    void representPrimeAsSumOfTwoSquaresOne() {
+        BigInteger prime = new BigInteger("13");
+
+        BigInteger[] result = MathMethods.representPrimeAsSumOfSquares(prime);
+        System.out.println("p = " + result[0] + " + " + result[1] + "i");
+        assertEquals(BigInteger.valueOf(3), result[0]);
+        assertEquals(BigInteger.valueOf(2), result[1]);
     }
 
 }

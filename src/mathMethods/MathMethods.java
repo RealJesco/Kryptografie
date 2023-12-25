@@ -6,15 +6,14 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.math.BigInteger.*;
+
 /**
  * This class contains various mathematical methods used in the RSA encryption process.
  */
@@ -192,15 +191,17 @@ public class MathMethods {
 
     };
     static BigInteger TWO = BigInteger.valueOf(2);
+
     /**
      * Performs modular exponentiation using the "square-and-multiply" algorithm.
+     *
      * @param base the base number
-     * @param exp the exponent
-     * @param mod the modulus
+     * @param exp  the exponent
+     * @param mod  the modulus
      * @return the result of raising the base to the exponent power, modulo the modulus
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
-        if(exp.compareTo(ZERO) < 0) throw new IllegalArgumentException("Exponent must be positive");
+        if (exp.compareTo(ZERO) < 0) throw new IllegalArgumentException("Exponent must be positive");
         BigInteger result = BigInteger.ONE;
         base = base.mod(mod); // Modulo operation, to ensure the base is within mod range
 
@@ -220,51 +221,121 @@ public class MathMethods {
 
     /**
      * Performs the Extended Euclidean Algorithm to find the greatest common divisor of two numbers.
+     *
      * @param a the first number
      * @param b the second number
      * @return an array of BigIntegers where the first element is the greatest common divisor of a and b,
-     *         the second element is the coefficient of a, and the third element is the coefficient of b
+     * the second element is the coefficient of a, and the third element is the coefficient of b
      */
     public static BigInteger[] extendedEuclidean(BigInteger a, BigInteger b) {
         if (b.equals(ZERO)) {
-            return new BigInteger[] {a, BigInteger.ONE, ZERO};
+            return new BigInteger[]{a, BigInteger.ONE, ZERO};
         } else {
             BigInteger[] ee = extendedEuclidean(b, a.mod(b)); // b ist der Teiler (im Skript der erste Faktor); a.mod(b) ist der Rest
             BigInteger gcd = ee[0]; // im Skript der erste Faktor
             BigInteger x = ee[2]; // Rest
             BigInteger y = ee[1].subtract(a.divide(b).multiply(ee[2])); // im Skript der zweite Faktor
-            return new BigInteger[] {gcd, x, y};
+            return new BigInteger[]{gcd, x, y};
         }
     }
-/**
- * Die Berechnung der Darstellung von p kongruent zu 1 mod 4 als Summe von zwei Quadraten
- *  Algorithmus 3.1 (Euklidischer Algorithmus in ZZ[i])
- *  Eingabe: a,b Z[i]
- *  Ausgabe: d = ggT(a,b)
- *  begin (assumption b.abs() > a.abs())
- *  g0 := b, g1 := a, k := 1
- *  while gk != 0 do
- *  berechne ck := gk-1 / gk
- *  berechne gk+1 := gk-1 - gk * f(ck)
- *  k := k + 1
- *  end
- *  d := gk-1
-    */
-public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b) {
-    BigInteger[] gk_minus1 = b;
-    BigInteger[] gk = a;
-    BigInteger[] ck, gk_plus1;
 
-    while (!(gk[0].equals(BigInteger.ZERO) && gk[1].equals(BigInteger.ZERO))) {
-        ck = divideGaussianIntegers(gk_minus1, gk);
-        gk_plus1 = subtractGaussianIntegers(gk_minus1, multiplyGaussianIntegers(gk, f(ck)));
-        gk_minus1 = gk;
-        gk = gk_plus1;
+
+
+
+    public static BigInteger[] representPrimeAsSumOfSquares(BigInteger p) {
+        // Check if p is of the form 4n + 1
+        if (!p.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
+            System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
+            return null;
+        }
+        //Use the extended Euclidean algorithm in Z[i] to find a Gaussian integer x such that x^2 = -1 mod p
+        BigInteger[] x = extendedEuclideanInZi(new BigInteger[]{ZERO, ONE}, new BigInteger[]{p, ZERO});
+        System.out.println("x: " + Arrays.toString(x));
+        // Check if x is a multiple of p
+        if (isMultiple(x, new BigInteger[]{p, ZERO})) {
+            System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
+            return null;
+        }
+        // Use the extended Euclidean algorithm in Z[i] to find a Gaussian integer y such that y^2 = -1 mod p
+        BigInteger[] y = extendedEuclideanInZi(new BigInteger[]{ZERO, ONE}, x);
+        System.out.println("y: " + Arrays.toString(y));
+        // Check if y is a multiple of p
+        if (isMultiple(y, new BigInteger[]{p, ZERO})) {
+            System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
+            return null;
+        }
+        // Compute the inverse of y in Z[i]
+        BigInteger[] yInverse = extendedEuclideanInZi(y, new BigInteger[]{p, ZERO});
+        System.out.println("yInverse: " + Arrays.toString(yInverse));
+        // Compute the square root of x^2 + y^2 in Z[i]
+        BigInteger[] squareRoot = extendedEuclideanInZi(x, y);
+        System.out.println("squareRoot: " + Arrays.toString(squareRoot));
+        // Compute the inverse of squareRoot in Z[i]
+        BigInteger[] squareRootInverse = extendedEuclideanInZi(squareRoot, new BigInteger[]{p, ZERO});
+        System.out.println("squareRootInverse: " + Arrays.toString(squareRootInverse));
+        // Compute the square root of -1 in Z[i]
+        BigInteger[] squareRootOfMinusOne = extendedEuclideanInZi(new BigInteger[]{ZERO, ONE}, new BigInteger[]{p, ZERO});
+        System.out.println("squareRootOfMinusOne: " + Arrays.toString(squareRootOfMinusOne));
+        return new BigInteger[]{squareRoot[0], squareRoot[1]};
     }
 
-    // Normalize the GCD to the smallest non-zero Gaussian integer
-    return normalizeGCD(gk_minus1);
-}
+
+
+    /**
+     * Die Berechnung der Darstellung von p kongruent zu 1 mod 4 als Summe von zwei Quadraten
+     * Algorithmus 3.1 (Euklidischer Algorithmus in ZZ[i])
+     * Eingabe: a,b Z[i]
+     * Ausgabe: d = ggT(a,b)
+     * begin (assumption b.abs() > a.abs())
+     * g0 := b, g1 := a, k := 1
+     * while gk != 0 do
+     * berechne ck := gk-1 / gk
+     * berechne gk+1 := gk-1 - gk * f(ck)
+     * k := k + 1
+     * end
+     * d := gk-1
+     */
+    public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b) {
+        BigInteger[] gk_minus1 = b;
+        BigInteger[] gk = a;
+        BigInteger[] ck, gk_plus1;
+
+        while (!(gk[0].equals(BigInteger.ZERO) && gk[1].equals(BigInteger.ZERO))) {
+            System.out.println(gk[0] + " " + gk[1]);
+            ck = divideGaussianIntegers(gk_minus1, gk);
+            ck = f(ck);
+            gk_plus1 = subtractGaussianIntegers(gk_minus1, multiplyGaussianIntegers(gk, ck));
+            System.out.println("quotient: " + Arrays.toString(ck));
+            System.out.println("gk_minus1: " + Arrays.toString(gk_minus1) + ", gk: " + Arrays.toString(gk));
+            System.out.println("gk_plus1: " + Arrays.toString(gk_plus1));
+
+            if (Arrays.equals(gk_plus1, gk)) {
+                System.out.println("Infinite loop detected.");
+                break;
+            }
+            gk_minus1 = gk;
+            gk = gk_plus1;
+        }
+        System.out.println("gcd: " + Arrays.toString(gk_minus1));
+        System.out.println("normalized gcd: " + Arrays.toString(normalizeGCD(gk_minus1)));
+        return normalizeGCD(gk_minus1);
+    }
+
+
+    public static boolean isMultiple(BigInteger[] a, BigInteger[] b) {
+        // Avoid division by zero
+        if (b[0].equals(BigInteger.ZERO) && b[1].equals(BigInteger.ZERO)) {
+            return false;
+        }
+
+        BigInteger[] quotient = divideGaussianIntegers(a, b);
+        BigInteger[] product = multiplyGaussianIntegers(quotient, b);
+
+        // Check if multiplying the quotient by b results in a, without rounding
+        return a[0].equals(product[0]) && a[1].equals(product[1]);
+    }
+
+
     public static BigInteger[] normalizeGCD(BigInteger[] gcd) {
         if (gcd[0].equals(BigInteger.ZERO) && gcd[1].equals(BigInteger.ZERO)) {
             return new BigInteger[]{ZERO, ZERO};
@@ -275,27 +346,53 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         }
         return gcd;
     }
+
     // Function f for the extended Euclidean algorithm in Z[i]
     public static BigInteger[] f(BigInteger[] z) {
+        System.out.println("z: " + Arrays.toString(z)); // Print the value of z
+
         BigInteger realPart = roundHalfUp(z[0]);
+        System.out.println("realPart: " + realPart);
         BigInteger imaginaryPart = roundHalfUp(z[1]);
-        return new BigInteger[]{realPart, imaginaryPart};
-    }
-    // Rounds a BigInteger to the nearest integer
-    public static BigInteger roundHalfUp(BigInteger number) {
-        // Addiere 0.5 zur Zahl und runde dann ab
-        BigInteger half = BigInteger.ONE.divide(BigInteger.valueOf(2)); // 0.5 als BigInteger
-        return number.add(half).divide(BigInteger.ONE); // (number + 0.5) abgerundet
+        System.out.println("imaginaryPart: " + imaginaryPart);
+        BigInteger[] result = new BigInteger[]{realPart, imaginaryPart};
+
+        System.out.println("result: " + Arrays.toString(result)); // Print the result
+        return result;
     }
 
+    // Rounds a BigInteger to the nearest integer
+    public static BigInteger roundHalfUp(BigInteger number) {
+        // The rounding logic needs to handle negative numbers differently than positive numbers
+        BigInteger halfDivisor = new BigInteger("5");
+        BigInteger scaledNumber = number.multiply(BigInteger.TEN);
+
+        if (number.compareTo(BigInteger.ZERO) < 0) {
+            // For negative numbers, subtract 5 before dividing by 10
+            return scaledNumber.subtract(halfDivisor).divide(BigInteger.TEN);
+        } else {
+            // For positive numbers, add 5 before dividing by 10
+            return scaledNumber.add(halfDivisor).divide(BigInteger.TEN);
+        }
+    }
 
 
     public static BigInteger[] divideGaussianIntegers(BigInteger[] a, BigInteger[] b) {
-        BigInteger aSquaredPlusBSquared = b[0].pow(2).add(b[1].pow(2));
-        BigInteger realPart = a[0].multiply(b[0]).add(a[1].multiply(b[1])).divide(aSquaredPlusBSquared);
-        BigInteger imaginaryPart = a[1].multiply(b[0]).subtract(a[0].multiply(b[1])).divide(aSquaredPlusBSquared);
-        return new BigInteger[]{realPart, imaginaryPart};
+        BigInteger normB = b[0].pow(2).add(b[1].pow(2));
+
+        // Compute the real part of the quotient
+        BigInteger realNumerator = a[0].multiply(b[0]).add(a[1].multiply(b[1]));
+        BigInteger realPart = roundHalfUp(realNumerator.divide(normB));
+
+        // Compute the imaginary part of the quotient
+        BigInteger imagNumerator = a[1].multiply(b[0]).subtract(a[0].multiply(b[1])); // Use subtraction here
+        BigInteger imagPart = roundHalfUp(imagNumerator.divide(normB));
+
+        BigInteger[] quotient = new BigInteger[]{realPart, imagPart};
+
+        return quotient;
     }
+
 
     public static BigInteger[] multiplyGaussianIntegers(BigInteger[] a, BigInteger[] b) {
         BigInteger realPart = a[0].multiply(b[0]).subtract(a[1].multiply(b[1]));
@@ -308,12 +405,19 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         BigInteger imaginaryPart = a[1].subtract(b[1]);
         return new BigInteger[]{realPart, imaginaryPart};
     }
+    public static BigInteger[] addGaussianIntegers(BigInteger[] a, BigInteger[] b) {
+        BigInteger realPart = a[0].add(b[0]);
+        BigInteger imaginaryPart = a[1].add(b[1]);
+        return new BigInteger[]{realPart, imaginaryPart};
+    }
+
     /**
      * Generates a random BigInteger less than a given upper limit.
+     *
      * @param upperLimit the upper limit for the random number
      * @return a random BigInteger less than the upper limit
      */
-    public static BigInteger getRandomBigIntegerUpperLimit(BigInteger upperLimit){
+    public static BigInteger getRandomBigIntegerUpperLimit(BigInteger upperLimit) {
         SecureRandom random = new SecureRandom();
         BigInteger randomNumber;
         do {
@@ -321,15 +425,17 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         } while (randomNumber.compareTo(upperLimit) >= 0);
         return randomNumber;
     }
+
     /**
      * Generates a random BigInteger within a specified range using the Elsner method.
+     *
      * @param m the random seed
      * @param n the incremental seed shift
      * @param a the lower bound
      * @param b the upper bound
      * @return a random BigInteger within the range [a, b]
      */
-    public static BigInteger randomElsner(BigInteger m, BigInteger n, BigInteger a, BigInteger b){
+    public static BigInteger randomElsner(BigInteger m, BigInteger n, BigInteger a, BigInteger b) {
         BigDecimal decimalM = new BigDecimal(m);
         BigDecimal decimalN = new BigDecimal(n);
         BigDecimal decimalA = new BigDecimal(a);
@@ -340,7 +446,7 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
         MathContext context = new MathContext(decadicLogarithm);
         //Does not throw error, instead increases the number by one
-        if(decimalM.sqrt(context).remainder(BigDecimal.ONE).equals(BigDecimal.ZERO)){
+        if (decimalM.sqrt(context).remainder(BigDecimal.ONE).equals(BigDecimal.ZERO)) {
             decimalM = decimalM.add(BigDecimal.ONE);
         }
         BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context));
@@ -349,11 +455,13 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         return a.add(randomSeedNumberOffset.toBigInteger());
     }
+
     /**
      * Generates a random prime number within a specified range.
-     * @param m the random seed
-     * @param a the lower bound
-     * @param b the upper bound
+     *
+     * @param m                the random seed
+     * @param a                the lower bound
+     * @param b                the upper bound
      * @param millerRabinSteps the number of iterations for the Miller-Rabin primality test
      * @return a probable prime number within the range [a, b]
      */
@@ -371,7 +479,7 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
             boolean isComposite = false;
             for (BigInteger smallPrime : SMALL_PRIMES) {
                 if (primeCandidate.equals(smallPrime)) {
-                    return  primeCandidate; // Prime is found
+                    return primeCandidate; // Prime is found
                 } else if (primeCandidate.mod(smallPrime).equals(BigInteger.ZERO)) {
                     isComposite = true;
                     break;
@@ -392,29 +500,31 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         System.out.println("Prime candidate: " + primeCandidate);
         return primeCandidate;
     }
-    public static BigInteger getRandomPrimeBigInteger(int length, int m, int millerRabinSteps, SecureRandom random){
-        if(length==0)return ZERO;
-        int maxShift = length*100;
-        MathContext context = new MathContext(maxShift+3*length);
+
+    public static BigInteger getRandomPrimeBigInteger(int length, int m, int millerRabinSteps, SecureRandom random) {
+        if (length == 0) return ZERO;
+        int maxShift = length * 100;
+        MathContext context = new MathContext(maxShift + 3 * length);
         BigDecimal lengthDecimal = BigDecimal.TEN.pow(length);
         BigDecimal mRoot = BigDecimal.valueOf(m).sqrt(context).multiply(lengthDecimal);
         BigInteger prime;
         boolean isNoMultipleOfSmallPrime;
-        do{
+        do {
             isNoMultipleOfSmallPrime = true;
             prime = mRoot.multiply(BigDecimal.TEN.pow(Math.abs(random.nextInt(maxShift))), context).divideAndRemainder(lengthDecimal, context)[1].toBigInteger();
-            for(BigInteger small : SMALL_PRIMES){
-                if(prime.mod(small).equals(ZERO)){
-                    if(prime.equals(small)){
+            for (BigInteger small : SMALL_PRIMES) {
+                if (prime.mod(small).equals(ZERO)) {
+                    if (prime.equals(small)) {
                         return prime;
                     }
                     isNoMultipleOfSmallPrime = false;
                     break;
                 }
             }
-        } while(!isNoMultipleOfSmallPrime || !parallelMillerRabinTest(prime,millerRabinSteps, BigInteger.valueOf(m), BigInteger.valueOf(random.nextInt(m))));
+        } while (!isNoMultipleOfSmallPrime || !parallelMillerRabinTest(prime, millerRabinSteps, BigInteger.valueOf(m), BigInteger.valueOf(random.nextInt(m))));
         return prime;
     }
+
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
 //        System.out.println("Testing number: " + possiblePrime.toString());
@@ -469,6 +579,7 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
 
         return true;
     }
+
     // Parallel Miller-Rabin Test
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
         if (possiblePrime.equals(TWO)) return true;
@@ -509,7 +620,8 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
             forkJoinPool.shutdown();
         }
     }
-    public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem){
+
+    public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem) {
         // Divide message into blocks of size blockSize
         List<List<Integer>> blocks = new ArrayList<>();
 
@@ -539,7 +651,7 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         return encryptedBlocks;
     }
 
-    public static List<Integer> prepareMessageForDecryption(BigInteger message, int blockSize, int numberSystem){
+    public static List<Integer> prepareMessageForDecryption(BigInteger message, int blockSize, int numberSystem) {
         List<Integer> decryptedMessage = new ArrayList<>();
 
         // Divide message into blocks of size blockSize
@@ -552,7 +664,7 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
             message = message.divide(numberSystemToThePowerOfBlockSize);
         }
 
-        for(BigInteger block : blocks) {
+        for (BigInteger block : blocks) {
             // For each block go through every character and convert it to a number
             // in the number system with respect to its index
             for (int i = blockSize - 1; i >= 0; i--) {
@@ -566,15 +678,15 @@ public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b)
         return decryptedMessage;
     }
 
-    public static List<Integer> convertTextToUniCode(String text){
+    public static List<Integer> convertTextToUniCode(String text) {
         List<Integer> unicode = new ArrayList<>();
-        for(int i = 0; i < text.length(); i++){
-            unicode.add((int)text.charAt(i));
+        for (int i = 0; i < text.length(); i++) {
+            unicode.add((int) text.charAt(i));
         }
         return unicode;
     }
 
-    public static String convertUniCodeToText(List<Integer> unicode){
+    public static String convertUniCodeToText(List<Integer> unicode) {
         StringBuilder text = new StringBuilder();
         for (Integer integer : unicode) {
             text.append((char) integer.intValue());
