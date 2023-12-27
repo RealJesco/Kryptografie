@@ -253,11 +253,17 @@ public class MathMethods {
 
 
     public static GaussianInteger representPrimeAsSumOfSquares(BigInteger p) throws IllegalArgumentException {
+        //Check if p is a prime number
+        if (p.isProbablePrime(100)) {
+            System.out.println("The prime number " + p + " is a prime number.");
+        } else {
+            System.out.println("The prime number " + p + " is not a prime number.");
+            throw new IllegalArgumentException("The number " + p + " is not a prime number.");
+        }
         // Check if p is of the form 4n + 1
         if (!p.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
             System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
-            //TODO throw exception instead of returning null
-            throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
+            throw new IllegalArgumentException("The number " + p + " cannot be represented as a sum of two squares.");
         }
 
         //Use the extended Euclidean algorithm in Z[i] to find a Gaussian integer x such that x^2 = -1 mod p

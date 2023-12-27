@@ -11,6 +11,7 @@ public class Main {
 
     public static void main(String[] args) throws NoSuchAlgorithmException {
         CommunicationPanel.getInstance();
+        Zusatzaufgabe.getInstance();
         // Calculate block size as the floor of the logarithm base 55296 of 2^bitLengthN using change of base formula
         // Clock time
         long start = System.nanoTime();
