@@ -531,5 +531,15 @@ class MathMethodsTest {
         assertEquals(BigInteger.valueOf(1), result.imaginary);
     }
 
+    @Test
+    void representPrimeAsSumOfTwoSquaresThree() {
+        BigInteger prime = new BigInteger("29");
+
+        GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
+        System.out.println("p = " + prime + " -> " + result);
+        assertEquals(BigInteger.valueOf(5), result.real);
+        assertEquals(BigInteger.valueOf(2), result.imaginary);
+    }
+
 }
 

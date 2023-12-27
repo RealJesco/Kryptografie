@@ -246,12 +246,13 @@ public class MathMethods {
         BigInteger z;
         do {
             z = new BigInteger(p.bitLength(), rand).mod(p);
-        } while (z.modPow(p.subtract(BigInteger.ONE).divide(TWO), p).equals(BigInteger.ONE));
+        } while (alternativeQuickExponentiation(z, p.subtract(BigInteger.ONE).divide(TWO), p).equals(BigInteger.ONE));
+
         return z;
     }
 
 
-    public static GaussianInteger representPrimeAsSumOfSquares(BigInteger p) {
+    public static GaussianInteger representPrimeAsSumOfSquares(BigInteger p) throws IllegalArgumentException {
         // Check if p is of the form 4n + 1
         if (!p.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
             System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
@@ -265,22 +266,19 @@ public class MathMethods {
         // Check if x is a multiple of p
         if (x.isMultiple(new GaussianInteger(p, ZERO))) {
             System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
-            //TODO throw exception instead of returning null
             throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 
         BigInteger randomZ = eulerCriterion(p);
         //Check if randomZ is a squared non-residue mod p
-        while (randomZ.modPow(p.subtract(BigInteger.ONE).divide(TWO), p).equals(BigInteger.ONE) || randomZ.compareTo(BigInteger.ONE) <= 0) {
+        while (alternativeQuickExponentiation(randomZ, p.subtract(BigInteger.ONE).divide(TWO), p).equals(BigInteger.ONE) || randomZ.compareTo(BigInteger.ONE) <= 0) {
             //If equal to or smaller than 1, it is not a squared non-residue mod p
-
             randomZ = eulerCriterion(p);
         }
 
         System.out.println("randomZ: " + randomZ);
         BigInteger four = BigInteger.valueOf(4);
-        //TODO Replace modPow with alternativeQuickExponentiation and rand with randomElsner
-        BigInteger randomW = randomZ.modPow(p.subtract(ONE).divide(four), p);
+        BigInteger randomW = alternativeQuickExponentiation(randomZ, p.subtract(ONE).divide(four), p);
         System.out.println("randomW: " + randomW);
         GaussianInteger w_i = new GaussianInteger(randomW, ONE);
         System.out.println("w_i: " + w_i);
@@ -555,8 +553,6 @@ public class MathMethods {
 
             int r;
             for (r = 1; r < s; r++) {
-//                x = x.modPow(BigInteger.TWO, possiblePrime);
-                // Do it with alternativeQuickExponentiation
                 x = alternativeQuickExponentiation(x, TWO, possiblePrime);
                 if (x.equals(BigInteger.ONE)) {
                     return false;
