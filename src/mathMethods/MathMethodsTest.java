@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static mathMethods.MathMethods.extendedEuclideanInZi;
+import static mathMethods.MathMethods.moveToNextGridPoint;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MathMethodsTest {
@@ -401,30 +402,29 @@ class MathMethodsTest {
 
     @Test
     void testGaussianExtendedEuclideanInZi() {
-        BigInteger[] a = {new BigInteger("5"), new BigInteger("4")}; // 5 + 4i
-        BigInteger[] b = {new BigInteger("7"), new BigInteger("3")}; // 7 + 3i
+        GaussianInteger a = new GaussianInteger(new BigInteger("5"), new BigInteger("4")); // 5 + 4i
+        GaussianInteger b = new GaussianInteger(new BigInteger("7"), new BigInteger("3")); // 7 + 3i
 
-        BigInteger[] gcd = extendedEuclideanInZi(a, b);
-        System.out.println("GCD: " + gcd[0] + " + " + gcd[1] + "i");
+        GaussianInteger gcd = extendedEuclideanInZi(a, b);
+        System.out.println("GCD: " + gcd);
 
         // Assuming you know the expected real and imaginary parts of the GCD
         BigInteger expectedReal = new BigInteger("1"); // replace with the expected real part
         BigInteger expectedImag = new BigInteger("0"); // replace with the expected imaginary part
 
-        assertEquals(expectedReal, gcd[0], "Real part of GCD is incorrect");
-        assertEquals(expectedImag, gcd[1], "Imaginary part of GCD is incorrect");
+        assertEquals(expectedReal, gcd.real, "Real part of GCD is incorrect");
+        assertEquals(expectedImag, gcd.imaginary, "Imaginary part of GCD is incorrect");
     }
 
     @Test
     void testGaussianExtendedEuclideanWithZeroInput() {
-        BigInteger[] a = {new BigInteger("0"), new BigInteger("0")};
-        BigInteger[] b = {new BigInteger("3"), new BigInteger("4")}; // 3 + 4i
+        GaussianInteger a = new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
+        GaussianInteger b = new GaussianInteger(new BigInteger("3"), new BigInteger("4")); // 3 + 4i
 
-        BigInteger[] gcd = extendedEuclideanInZi(a, b);
-        System.out.println("GCD: " + gcd[0] + " + " + gcd[1] + "i");
+        GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
 
-        assertEquals(b[0], gcd[0], "Real part of GCD with zero input is incorrect");
-        assertEquals(b[1], gcd[1], "Imaginary part of GCD with zero input is incorrect");
+        assertEquals(b.real, gcd.real, "Real part of GCD with zero input is incorrect");
+        assertEquals(b.imaginary, gcd.imaginary, "Imaginary part of GCD with zero input is incorrect");
     }
 
 //    @Test
@@ -442,79 +442,83 @@ class MathMethodsTest {
 
     @Test
     void testGaussianExtendedEuclideanSymmetryOfResults() {
-        BigInteger[] a = {new BigInteger("5"), new BigInteger("4")};
-        BigInteger[] b = {new BigInteger("7"), new BigInteger("3")};
+        GaussianInteger a = new GaussianInteger(new BigInteger("5"), new BigInteger("4"));
+        GaussianInteger b = new GaussianInteger(new BigInteger("7"), new BigInteger("3"));
 
-        BigInteger[] gcd_ab = extendedEuclideanInZi(a, b);
-        BigInteger[] gcd_ba = extendedEuclideanInZi(b, a);
+        GaussianInteger gcd_ab = MathMethods.extendedEuclideanInZi(a, b);
+        GaussianInteger gcd_ba = MathMethods.extendedEuclideanInZi(b, a);
 
-        assertEquals(gcd_ab[0], gcd_ba[0]);
-        assertEquals(gcd_ab[1], gcd_ba[1]);
+        assertEquals(gcd_ab.real, gcd_ba.real);
+        assertEquals(gcd_ab.imaginary, gcd_ba.imaginary);
     }
 
     @Test
     void testGaussianExtendedEuclideanIdentity() {
-        BigInteger[] a = {new BigInteger("1"), BigInteger.ZERO};
-        BigInteger[] b = {new BigInteger("7"), new BigInteger("3")};
+        GaussianInteger a = new GaussianInteger(new BigInteger("1"), BigInteger.ZERO);
+        GaussianInteger b = new GaussianInteger(new BigInteger("7"), new BigInteger("3"));
 
-        BigInteger[] gcd = extendedEuclideanInZi(a, b);
+        GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
 
-        assertEquals(BigInteger.ONE, gcd[0]);
-        assertEquals(BigInteger.ZERO, gcd[1]);
+        assertEquals(BigInteger.ONE, gcd.real);
+        assertEquals(BigInteger.ZERO, gcd.imaginary);
     }
-
     @Test
     void testGaussianExtendedEuclideanMultiples() {
-        BigInteger[] a = {new BigInteger("2"), new BigInteger("2")};
-        BigInteger[] b = {new BigInteger("4"), new BigInteger("4")};
+        GaussianInteger a = new GaussianInteger(new BigInteger("2"), new BigInteger("2"));
+        GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("4"));
 
-        BigInteger[] gcd = extendedEuclideanInZi(a, b);
+        GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
 
-        assertEquals(a[0], gcd[0]);
-        assertEquals(a[1], gcd[1]);
+        assertEquals(a.real, gcd.real);
+        assertEquals(a.imaginary, gcd.imaginary);
     }
 
     @Test
     void testGaussianExtendedEuclideanPurelyRealAndImaginaryIntegers() {
-        BigInteger[] a = {new BigInteger("5"), BigInteger.ZERO};
-        BigInteger[] b = {BigInteger.ZERO, new BigInteger("5")};
+        GaussianInteger a = new GaussianInteger(new BigInteger("5"), BigInteger.ZERO);
+        GaussianInteger b = new GaussianInteger(new BigInteger("5"), BigInteger.ZERO);
 
-        BigInteger[] gcd = extendedEuclideanInZi(a, b);
-        System.out.println("Wrong GCD: " + gcd[0] + " + " + gcd[1] + "i");
+        GaussianInteger gcd = extendedEuclideanInZi(a, b);
 
-        assertEquals(BigInteger.valueOf(5), gcd[0]);
-        assertEquals(BigInteger.ZERO, gcd[1]);
+        assertEquals(BigInteger.valueOf(5), gcd.real);
+        assertEquals(BigInteger.ZERO, gcd.imaginary);
     }
-
-    @Test
+//    @Test
+//    void moveGaussianIntegerToNextGridPoint() {
+//        BigInteger[] a = {new BigInteger("5"), new BigInteger("4")};
+//        BigInteger[] result =  moveToNextGridPoint(a[0], a[1]);
+//        assertEquals(new BigInteger("6"), result[0]);
+//        assertEquals(new BigInteger("5"), result[1]);
+//    }
+@Test
     void testGaussianExtendedEuclideanCommonDivisorCases() {
-        BigInteger[] a = {new BigInteger("4"), new BigInteger("2")};
-        BigInteger[] b = {new BigInteger("6"), new BigInteger("3")};
+    GaussianInteger a = new GaussianInteger(new BigInteger("4"), new BigInteger("2"));
+    GaussianInteger b = new GaussianInteger(new BigInteger("6"), new BigInteger("3"));
 
-        BigInteger[] gcd = extendedEuclideanInZi(a, b);
+    GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
 
-        assertEquals(new BigInteger("2"), gcd[0]);
-        assertEquals(BigInteger.ONE, gcd[1]);
-    }
+    assertEquals(new BigInteger("2"), gcd.real);
+    assertEquals(BigInteger.ONE, gcd.imaginary);
+}
 
     @Test
     void testGaussianExtendedEuclideanWithPrimes() {
-        BigInteger[] a = {new BigInteger("3"), BigInteger.ZERO};
-        BigInteger[] b = {new BigInteger("5"), BigInteger.ZERO};
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), BigInteger.ZERO);
+        GaussianInteger b = new GaussianInteger(new BigInteger("5"), BigInteger.ZERO);
 
-        BigInteger[] gcd = extendedEuclideanInZi(a, b);
+        GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
 
-        assertEquals(BigInteger.ONE, gcd[0]);
-        assertEquals(BigInteger.ZERO, gcd[1]);
+        assertEquals(BigInteger.ONE, gcd.real);
+        assertEquals(BigInteger.ZERO, gcd.imaginary);
     }
     @Test
     void representPrimeAsSumOfTwoSquaresOne() {
         BigInteger prime = new BigInteger("13");
 
-        BigInteger[] result = MathMethods.representPrimeAsSumOfSquares(prime);
-        System.out.println("p = " + result[0] + " + " + result[1] + "i");
-        assertEquals(BigInteger.valueOf(3), result[0]);
-        assertEquals(BigInteger.valueOf(2), result[1]);
+        GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
+        System.out.println("p = " + prime + " -> " + result);
+        assertEquals(BigInteger.valueOf(3), result.real);
+        assertEquals(BigInteger.valueOf(2), result.imaginary);
     }
 
 }

@@ -5,14 +5,15 @@ import rsa.RSA;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import static java.math.BigInteger.*;
+
 
 /**
  * This class contains various mathematical methods used in the RSA encryption process.
@@ -242,41 +243,27 @@ public class MathMethods {
 
 
 
-    public static BigInteger[] representPrimeAsSumOfSquares(BigInteger p) {
+    public static GaussianInteger representPrimeAsSumOfSquares(BigInteger p) {
         // Check if p is of the form 4n + 1
         if (!p.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
             System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
+            //TODO throw exception instead of returning null
             return null;
         }
+
         //Use the extended Euclidean algorithm in Z[i] to find a Gaussian integer x such that x^2 = -1 mod p
-        BigInteger[] x = extendedEuclideanInZi(new BigInteger[]{ZERO, ONE}, new BigInteger[]{p, ZERO});
-        System.out.println("x: " + Arrays.toString(x));
+        GaussianInteger x = extendedEuclideanInZi(new GaussianInteger(ZERO, ONE), new GaussianInteger(p, ZERO));
+        System.out.println("x: " + x);
         // Check if x is a multiple of p
-        if (isMultiple(x, new BigInteger[]{p, ZERO})) {
+        if (x.isMultiple(new GaussianInteger(p, ZERO))) {
             System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
+            //TODO throw exception instead of returning null
             return null;
         }
-        // Use the extended Euclidean algorithm in Z[i] to find a Gaussian integer y such that y^2 = -1 mod p
-        BigInteger[] y = extendedEuclideanInZi(new BigInteger[]{ZERO, ONE}, x);
-        System.out.println("y: " + Arrays.toString(y));
-        // Check if y is a multiple of p
-        if (isMultiple(y, new BigInteger[]{p, ZERO})) {
-            System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
-            return null;
-        }
-        // Compute the inverse of y in Z[i]
-        BigInteger[] yInverse = extendedEuclideanInZi(y, new BigInteger[]{p, ZERO});
-        System.out.println("yInverse: " + Arrays.toString(yInverse));
-        // Compute the square root of x^2 + y^2 in Z[i]
-        BigInteger[] squareRoot = extendedEuclideanInZi(x, y);
-        System.out.println("squareRoot: " + Arrays.toString(squareRoot));
-        // Compute the inverse of squareRoot in Z[i]
-        BigInteger[] squareRootInverse = extendedEuclideanInZi(squareRoot, new BigInteger[]{p, ZERO});
-        System.out.println("squareRootInverse: " + Arrays.toString(squareRootInverse));
-        // Compute the square root of -1 in Z[i]
-        BigInteger[] squareRootOfMinusOne = extendedEuclideanInZi(new BigInteger[]{ZERO, ONE}, new BigInteger[]{p, ZERO});
-        System.out.println("squareRootOfMinusOne: " + Arrays.toString(squareRootOfMinusOne));
-        return new BigInteger[]{squareRoot[0], squareRoot[1]};
+
+        //13 = 13 + 0i
+        //13 = 2^2 + 3^2
+        return x;
     }
 
 
@@ -295,57 +282,56 @@ public class MathMethods {
      * end
      * d := gk-1
      */
-    public static BigInteger[] extendedEuclideanInZi(BigInteger[] a, BigInteger[] b) {
-        BigInteger[] gk_minus1 = b;
-        BigInteger[] gk = a;
-        BigInteger[] ck, gk_plus1;
 
-        while (!(gk[0].equals(BigInteger.ZERO) && gk[1].equals(BigInteger.ZERO))) {
-            System.out.println(gk[0] + " " + gk[1]);
-            ck = divideGaussianIntegers(gk_minus1, gk);
-            ck = f(ck);
-            gk_plus1 = subtractGaussianIntegers(gk_minus1, multiplyGaussianIntegers(gk, ck));
-            System.out.println("quotient: " + Arrays.toString(ck));
-            System.out.println("gk_minus1: " + Arrays.toString(gk_minus1) + ", gk: " + Arrays.toString(gk));
-            System.out.println("gk_plus1: " + Arrays.toString(gk_plus1));
+    public static BigInteger[] moveToNextGridPoint(BigInteger a, BigInteger b){
+        BigDecimal aDecimal = new BigDecimal(a);
+        BigDecimal bDecimal = new BigDecimal(b);
+        BigDecimal half = new BigDecimal("0.5");
 
-            if (Arrays.equals(gk_plus1, gk)) {
+        //Subtract 1/2 from a and b and round to the nearest BigInteger
+        BigDecimal c = aDecimal.subtract(half);
+        System.out.println("c: " + c);
+        BigDecimal ceilingNumberOfC = c.setScale(0, RoundingMode.CEILING);
+        System.out.println("c: " + ceilingNumberOfC);
+        BigDecimal d = bDecimal.subtract(half);
+        BigDecimal ceilingNumberOfD = d.setScale(0, RoundingMode.CEILING);
+        System.out.println("d: " + ceilingNumberOfD);
+        //Round to the next BigInteger
+        BigInteger[] result = new BigInteger[]{ceilingNumberOfC.toBigInteger(), ceilingNumberOfD.toBigInteger()};
+        System.out.println("result: " + Arrays.toString(result));
+        return result;
+    }
+
+    public static GaussianInteger extendedEuclideanInZi(GaussianInteger a, GaussianInteger b) {
+        GaussianInteger gk_minus1 = b;
+        GaussianInteger gk = a;
+        GaussianInteger ck, gk_plus1;
+
+        while (!gk.isZero()) {
+            System.out.println(gk.real + " " + gk.imaginary);
+            ck = gk_minus1.divide(gk);
+            gk_plus1 = gk_minus1.subtractGaussianInteger(gk.multiply(ck));
+            System.out.println("quotient: " + ck);
+            System.out.println("gk_minus1: " + gk_minus1 + ", gk: " + gk);
+            System.out.println("gk_plus1: " + gk_plus1);
+
+            if (gk.equals(gk_plus1)) {
                 System.out.println("Infinite loop detected.");
                 break;
             }
             gk_minus1 = gk;
             gk = gk_plus1;
         }
-        System.out.println("gcd: " + Arrays.toString(gk_minus1));
-        System.out.println("normalized gcd: " + Arrays.toString(normalizeGCD(gk_minus1)));
-        return normalizeGCD(gk_minus1);
+        System.out.println("gcd: " + gk_minus1);
+        System.out.println("normalized gcd: " + gk_minus1.normalizeGCD());
+        return gk_minus1.normalizeGCD();
     }
 
 
-    public static boolean isMultiple(BigInteger[] a, BigInteger[] b) {
-        // Avoid division by zero
-        if (b[0].equals(BigInteger.ZERO) && b[1].equals(BigInteger.ZERO)) {
-            return false;
-        }
-
-        BigInteger[] quotient = divideGaussianIntegers(a, b);
-        BigInteger[] product = multiplyGaussianIntegers(quotient, b);
-
-        // Check if multiplying the quotient by b results in a, without rounding
-        return a[0].equals(product[0]) && a[1].equals(product[1]);
-    }
 
 
-    public static BigInteger[] normalizeGCD(BigInteger[] gcd) {
-        if (gcd[0].equals(BigInteger.ZERO) && gcd[1].equals(BigInteger.ZERO)) {
-            return new BigInteger[]{ZERO, ZERO};
-        } else if (gcd[0].equals(BigInteger.ZERO)) {
-            return new BigInteger[]{gcd[1], ZERO};
-        } else if (gcd[1].equals(BigInteger.ZERO)) {
-            return new BigInteger[]{gcd[0], ZERO};
-        }
-        return gcd;
-    }
+
+
 
     // Function f for the extended Euclidean algorithm in Z[i]
     public static BigInteger[] f(BigInteger[] z) {
@@ -377,39 +363,7 @@ public class MathMethods {
     }
 
 
-    public static BigInteger[] divideGaussianIntegers(BigInteger[] a, BigInteger[] b) {
-        BigInteger normB = b[0].pow(2).add(b[1].pow(2));
 
-        // Compute the real part of the quotient
-        BigInteger realNumerator = a[0].multiply(b[0]).add(a[1].multiply(b[1]));
-        BigInteger realPart = roundHalfUp(realNumerator.divide(normB));
-
-        // Compute the imaginary part of the quotient
-        BigInteger imagNumerator = a[1].multiply(b[0]).subtract(a[0].multiply(b[1])); // Use subtraction here
-        BigInteger imagPart = roundHalfUp(imagNumerator.divide(normB));
-
-        BigInteger[] quotient = new BigInteger[]{realPart, imagPart};
-
-        return quotient;
-    }
-
-
-    public static BigInteger[] multiplyGaussianIntegers(BigInteger[] a, BigInteger[] b) {
-        BigInteger realPart = a[0].multiply(b[0]).subtract(a[1].multiply(b[1]));
-        BigInteger imaginaryPart = a[0].multiply(b[1]).add(a[1].multiply(b[0]));
-        return new BigInteger[]{realPart, imaginaryPart};
-    }
-
-    public static BigInteger[] subtractGaussianIntegers(BigInteger[] a, BigInteger[] b) {
-        BigInteger realPart = a[0].subtract(b[0]);
-        BigInteger imaginaryPart = a[1].subtract(b[1]);
-        return new BigInteger[]{realPart, imaginaryPart};
-    }
-    public static BigInteger[] addGaussianIntegers(BigInteger[] a, BigInteger[] b) {
-        BigInteger realPart = a[0].add(b[0]);
-        BigInteger imaginaryPart = a[1].add(b[1]);
-        return new BigInteger[]{realPart, imaginaryPart};
-    }
 
     /**
      * Generates a random BigInteger less than a given upper limit.
