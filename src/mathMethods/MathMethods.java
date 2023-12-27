@@ -241,6 +241,14 @@ public class MathMethods {
     }
 
 
+    public static BigInteger eulerCriterion(BigInteger p) {
+        SecureRandom rand = new SecureRandom();
+        BigInteger z;
+        do {
+            z = new BigInteger(p.bitLength(), rand).mod(p);
+        } while (z.modPow(p.subtract(BigInteger.ONE).divide(TWO), p).equals(BigInteger.ONE));
+        return z;
+    }
 
 
     public static GaussianInteger representPrimeAsSumOfSquares(BigInteger p) {
@@ -248,7 +256,7 @@ public class MathMethods {
         if (!p.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
             System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
             //TODO throw exception instead of returning null
-            return null;
+            throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 
         //Use the extended Euclidean algorithm in Z[i] to find a Gaussian integer x such that x^2 = -1 mod p
@@ -258,12 +266,44 @@ public class MathMethods {
         if (x.isMultiple(new GaussianInteger(p, ZERO))) {
             System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
             //TODO throw exception instead of returning null
-            return null;
+            throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 
-        //13 = 13 + 0i
-        //13 = 2^2 + 3^2
-        return x;
+        BigInteger randomZ = eulerCriterion(p);
+        //Check if randomZ is a squared non-residue mod p
+        while (randomZ.modPow(p.subtract(BigInteger.ONE).divide(TWO), p).equals(BigInteger.ONE) || randomZ.compareTo(BigInteger.ONE) <= 0) {
+            //If equal to or smaller than 1, it is not a squared non-residue mod p
+
+            randomZ = eulerCriterion(p);
+        }
+
+        System.out.println("randomZ: " + randomZ);
+        BigInteger four = BigInteger.valueOf(4);
+        //TODO Replace modPow with alternativeQuickExponentiation and rand with randomElsner
+        BigInteger randomW = randomZ.modPow(p.subtract(ONE).divide(four), p);
+        System.out.println("randomW: " + randomW);
+        GaussianInteger w_i = new GaussianInteger(randomW, ONE);
+        System.out.println("w_i: " + w_i);
+        GaussianInteger p_0 = new GaussianInteger(p, ZERO);
+        System.out.println("p_0: " + p_0);
+
+        GaussianInteger result = extendedEuclideanInZi(w_i, p_0);
+        //Make sure that results are positive by multiplying with -1 if necessary
+        if (result.real.compareTo(ZERO) < 0) {
+            result.real = result.real.multiply(BigInteger.valueOf(-1));
+        }
+        if (result.imaginary.compareTo(ZERO) < 0) {
+            result.imaginary = result.imaginary.multiply(BigInteger.valueOf(-1));
+        }
+        System.out.println("result: " + result);
+        // Überprüfen Sie, ob gcd tatsächlich der ggT ist und p = gcd.real^2 + gcd.imag^2
+        BigInteger c = result.real;
+        BigInteger d = result.imaginary;
+        if (p.equals(c.multiply(c).add(d.multiply(d)))) {
+            return new GaussianInteger(c, d);
+        } else {
+            throw new IllegalStateException("Etwas ist schief gelaufen bei der Berechnung des ggT.");
+        }
     }
 
 
