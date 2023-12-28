@@ -71,20 +71,29 @@ public class CommunicationPanel extends JFrame {
                     Alice.dispose();
                 } catch (Exception f) {
                 }
-                BigInteger TempP = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps());
-                BigInteger TempQ = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps(), TempP);
 
-                BigInteger n = TempP.multiply(TempQ);
-                BigInteger phiN = (TempP.subtract(BigInteger.ONE)).multiply(TempQ.subtract(BigInteger.ONE));
+                // Generate unique prime numbers and keys for Alice
+                BigInteger AliceTempP = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps());
+                BigInteger AliceTempQ = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps(), AliceTempP);
+                BigInteger AliceN = AliceTempP.multiply(AliceTempQ);
+                BigInteger AlicePhiN = (AliceTempP.subtract(BigInteger.ONE)).multiply(AliceTempQ.subtract(BigInteger.ONE));
+                Alice = new Communicator("Alice", AliceN, AlicePhiN, new Point(900, 0));
 
-                Alice = new Communicator("Alice", n, phiN, new Point(900, 0));
-                Bob = new Communicator("Bob", n, phiN, new Point(900, 400));
+                // Generate unique prime numbers and keys for Bob
+                BigInteger BobTempP = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps());
+                BigInteger BobTempQ = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps(), BobTempP);
+                BigInteger BobN = BobTempP.multiply(BobTempQ);
+                BigInteger BobPhiN = (BobTempP.subtract(BigInteger.ONE)).multiply(BobTempQ.subtract(BigInteger.ONE));
+                Bob = new Communicator("Bob", BobN, BobPhiN, new Point(900, 400));
+
+                // Update fields with public keys
                 alicePublicKeyField.setText(Alice.e.toString());
                 alicePublicNField.setText(Alice.n.toString());
                 bobPublicKeyField.setText(Bob.e.toString());
                 bobPublicNField.setText(Bob.n.toString());
             }
         });
+
         nonCubicNumberMField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
