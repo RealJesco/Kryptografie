@@ -22,41 +22,41 @@ public class Zusatzaufgabe extends JFrame {
         super("Zusatzaufgabe");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Percentage of the screen
-        double widthPercentage = 0.5;
-        double heightPercentage = 0.5;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int width = (int) (screenSize.width * widthPercentage);
-        int height = (int) (screenSize.height * heightPercentage);
-        setPreferredSize(new Dimension(width, height));
-        setSize(new Dimension(width, height));
+        setPreferredSize(new Dimension(1000, 350));
+        setSize(new Dimension(1000, 350));
         setVisible(true);
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         c = new GridBagConstraints();
 
         calculateDivisorsOfPrimeNumber = new JButton("Berechne die Primzahl als Summe zweier Quadrate");
-        calculateDivisorsOfPrimeNumber.setFont(new Font("Arial", Font.PLAIN, 40));
+        calculateDivisorsOfPrimeNumber.setPreferredSize(new Dimension(690,100));
+        calculateDivisorsOfPrimeNumber.setFont(new Font("Arial", Font.PLAIN, 25));
         int i = 0;
         primeNumberField = new JTextField();
-        //Percentage of the width
-        primeNumberField.setPreferredSize(new Dimension(width / 2, height / 10));
+        primeNumberField.setPreferredSize(new Dimension(680,100));
+        primeNumberField.setFont(new Font("Arial", Font.PLAIN, 30));
+        divisorsOfPrimeNumberField = new JTextArea();
+        divisorsOfPrimeNumberField.setLineWrap(true);
+        divisorsOfPrimeNumberField.setFont(new Font("Arial", Font.PLAIN, 30));
+        divisorsOfPrimeNumberField.setPreferredSize(new Dimension(680, 100));
         //Placeholder text
-        primeNumberField.setText("Primzahl");
-        primeNumberField.setFont(new Font("Arial", Font.PLAIN, 40));
         c.gridx = 0;
+        c.gridy = i;
+        panel.add(new JLabel("Primzahl"), c);
+        c.gridx = 1;
         c.gridy = i++;
         panel.add(primeNumberField, c);
-        divisorsOfPrimeNumberField = new JTextArea();
-        //Calculate width percentage
-        divisorsOfPrimeNumberField.setPreferredSize(new Dimension(width / 2, height / 10));
-        divisorsOfPrimeNumberField.setText("Summe zweier Quadrate");
-        divisorsOfPrimeNumberField.setFont(new Font("Arial", Font.PLAIN, 40));
         c.gridx = 0;
+        c.gridy = i;
+        panel.add(new JLabel("Summe zweier Quadrate"), c);
+        c.gridx = 1;
         c.gridy = i++;
         panel.add(divisorsOfPrimeNumberField, c);
-        c.gridx = 0;
+        c.gridx = 1;
         c.gridy = i++;
-        panel.add(calculateDivisorsOfPrimeNumber, c);
+        panel.add(calculateDivisorsOfPrimeNumber,c);
         calculateDivisorsOfPrimeNumber.addActionListener(e -> {
             try {
                 //Check if input is a number only
@@ -65,7 +65,7 @@ public class Zusatzaufgabe extends JFrame {
                 }
                 BigInteger primeNumber = new BigInteger(primeNumberField.getText());
                 GaussianInteger divisors = MathMethods.representPrimeAsSumOfSquares(primeNumber);
-                divisorsOfPrimeNumberField.setText(divisors.real + "^2 + " + divisors.imaginary + "^2");
+                divisorsOfPrimeNumberField.setText(divisors.real + "² + " + divisors.imaginary + "²");
             } catch (Exception ex) {
                 divisorsOfPrimeNumberField.setText(ex.getMessage());
             }
