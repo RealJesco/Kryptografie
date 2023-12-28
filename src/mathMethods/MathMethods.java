@@ -254,24 +254,18 @@ public class MathMethods {
 
     public static GaussianInteger representPrimeAsSumOfSquares(BigInteger p) throws IllegalArgumentException {
         //Check if p is a prime number
-        if (p.isProbablePrime(100)) {
-            System.out.println("The prime number " + p + " is a prime number.");
-        } else {
-            System.out.println("The prime number " + p + " is not a prime number.");
+        if (!p.isProbablePrime(100)) {
             throw new IllegalArgumentException("The number " + p + " is not a prime number.");
         }
         // Check if p is of the form 4n + 1
         if (!p.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
-            System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
             throw new IllegalArgumentException("The number " + p + " cannot be represented as a sum of two squares.");
         }
 
         //Use the extended Euclidean algorithm in Z[i] to find a Gaussian integer x such that x^2 = -1 mod p
         GaussianInteger x = extendedEuclideanInZi(new GaussianInteger(ZERO, ONE), new GaussianInteger(p, ZERO));
-        System.out.println("x: " + x);
         // Check if x is a multiple of p
         if (x.isMultiple(new GaussianInteger(p, ZERO))) {
-            System.out.println("The prime number " + p + " cannot be represented as a sum of two squares.");
             throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 
@@ -282,14 +276,10 @@ public class MathMethods {
             randomZ = eulerCriterion(p);
         }
 
-        System.out.println("randomZ: " + randomZ);
         BigInteger four = BigInteger.valueOf(4);
         BigInteger randomW = alternativeQuickExponentiation(randomZ, p.subtract(ONE).divide(four), p);
-        System.out.println("randomW: " + randomW);
         GaussianInteger w_i = new GaussianInteger(randomW, ONE);
-        System.out.println("w_i: " + w_i);
         GaussianInteger p_0 = new GaussianInteger(p, ZERO);
-        System.out.println("p_0: " + p_0);
 
         GaussianInteger result = extendedEuclideanInZi(w_i, p_0);
         //Make sure that results are positive by multiplying with -1 if necessary
@@ -299,7 +289,6 @@ public class MathMethods {
         if (result.imaginary.compareTo(ZERO) < 0) {
             result.imaginary = result.imaginary.multiply(BigInteger.valueOf(-1));
         }
-        System.out.println("result: " + result);
         // Überprüfen Sie, ob gcd tatsächlich der ggT ist und p = gcd.real^2 + gcd.imag^2
         BigInteger c = result.real;
         BigInteger d = result.imaginary;
@@ -334,15 +323,11 @@ public class MathMethods {
 
         //Subtract 1/2 from a and b and round to the nearest BigInteger
         BigDecimal c = aDecimal.subtract(half);
-        System.out.println("c: " + c);
         BigDecimal ceilingNumberOfC = c.setScale(0, RoundingMode.CEILING);
-        System.out.println("c: " + ceilingNumberOfC);
         BigDecimal d = bDecimal.subtract(half);
         BigDecimal ceilingNumberOfD = d.setScale(0, RoundingMode.CEILING);
-        System.out.println("d: " + ceilingNumberOfD);
         //Round to the next BigInteger
         BigInteger[] result = new BigInteger[]{ceilingNumberOfC.toBigInteger(), ceilingNumberOfD.toBigInteger()};
-        System.out.println("result: " + Arrays.toString(result));
         return result;
     }
 
@@ -352,22 +337,15 @@ public class MathMethods {
         GaussianInteger ck, gk_plus1;
 
         while (!gk.isZero()) {
-            System.out.println(gk.real + " " + gk.imaginary);
             ck = gk_minus1.divide(gk);
             gk_plus1 = gk_minus1.subtractGaussianInteger(gk.multiply(ck));
-            System.out.println("quotient: " + ck);
-            System.out.println("gk_minus1: " + gk_minus1 + ", gk: " + gk);
-            System.out.println("gk_plus1: " + gk_plus1);
 
             if (gk.equals(gk_plus1)) {
-                System.out.println("Infinite loop detected.");
                 break;
             }
             gk_minus1 = gk;
             gk = gk_plus1;
         }
-        System.out.println("gcd: " + gk_minus1);
-        System.out.println("normalized gcd: " + gk_minus1.normalizeGCD());
         return gk_minus1.normalizeGCD();
     }
 
@@ -379,15 +357,10 @@ public class MathMethods {
 
     // Function f for the extended Euclidean algorithm in Z[i]
     public static BigInteger[] f(BigInteger[] z) {
-        System.out.println("z: " + Arrays.toString(z)); // Print the value of z
 
         BigInteger realPart = roundHalfUp(z[0]);
-        System.out.println("realPart: " + realPart);
         BigInteger imaginaryPart = roundHalfUp(z[1]);
-        System.out.println("imaginaryPart: " + imaginaryPart);
         BigInteger[] result = new BigInteger[]{realPart, imaginaryPart};
-
-        System.out.println("result: " + Arrays.toString(result)); // Print the result
         return result;
     }
 
@@ -448,7 +421,6 @@ public class MathMethods {
             decimalM = decimalM.add(BigDecimal.ONE);
         }
         BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context));
-        // System.out.println("m: " + decimalM);
         randomSeededNumber = randomSeededNumber.remainder(decimalOne);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         return a.add(randomSeedNumberOffset.toBigInteger());
@@ -467,12 +439,8 @@ public class MathMethods {
         BigInteger primeCandidate;
         BigInteger copyOfCountOfN = RSA.getCountOfN();
         while (true) {
-//            System.out.println("b: " + b);
-//            System.out.println("a: " + a);
-//            System.out.println("countOfN: " + copyOfCountOfN);
             // Generate a random odd BigInteger within the range
             primeCandidate = randomElsner(m, copyOfCountOfN, a, b).setBit(0); // Ensure it's odd
-//            System.out.println("TEST: " + primeCandidate);
             // Fast check against small primes
             boolean isComposite = false;
             for (BigInteger smallPrime : SMALL_PRIMES) {
@@ -495,7 +463,6 @@ public class MathMethods {
             // Otherwise, loop again and generate a new primeCandidate
         }
         RSA.setCountOfN(copyOfCountOfN.add(ONE));
-        System.out.println("Prime candidate: " + primeCandidate);
         return primeCandidate;
     }
 
@@ -525,17 +492,14 @@ public class MathMethods {
 
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
-//        System.out.println("Testing number: " + possiblePrime.toString());
 
         if (possiblePrime.equals(BigInteger.ONE)) {
-//            System.out.println("Number is 1");
             return false;
         }
         if (possiblePrime.equals(TWO)) {
             return true;
         }
         if (!possiblePrime.testBit(0)) {
-//            System.out.println("Number is even");
             return false;
         }
 

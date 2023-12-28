@@ -53,6 +53,7 @@ public class MethodenFromRSA {
     }
     public static String encrypt(String message, BigInteger e, BigInteger n, int numberSystemBase, int blockSize) {
         // Step 1: Convert text to Unicode
+        if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         List<Integer> unicodeMessage = convertTextToUnicode(message);
         //Unicode values should not be equal or larger than numberSystemBase
         for(int i = 0; i < unicodeMessage.size(); i++){
@@ -70,8 +71,8 @@ public class MethodenFromRSA {
     }
 
     private static List<BigInteger> prepareMessageForEncryption(List<Integer> unicodeMessage, int numberSystemBase, int blockSize) {
+        if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         // Implementation of preparing message for encryption
-        System.out.println(blockSize + " " + numberSystemBase);
         return MathMethods.prepareMessageForEncryption(unicodeMessage, blockSize, numberSystemBase);
     }
 
@@ -85,7 +86,6 @@ public class MethodenFromRSA {
     }
 
     public static boolean verifySignature(String message, String signature, BigInteger e, BigInteger n) throws NoSuchAlgorithmException {
-        System.out.println(signature);
         //If signature is not in hex format, throw exception
         if(!signature.matches("-?[0-9a-fA-F]+")){
             throw new IllegalArgumentException("Signature is not in hex format");
@@ -104,15 +104,13 @@ public class MethodenFromRSA {
 
         // Decrypt the signature using the public key
         BigInteger decryptedSignature = MathMethods.alternativeQuickExponentiation(signatureInteger, e, n);
-        System.out.println(e);
-        System.out.println(n);
-        System.out.println(decryptedSignature);
 
         // Compare the decrypted signature with the hash of the message
         return decryptedSignature.equals(hashInteger);
     }
 
     private static String processEncryptedBlocksToString(List<BigInteger> encryptedBlocks, int numberSystemBase, int blockSize) {
+        if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         // Implementation of processing encrypted blocks into string
         StringBuilder encryptedNumericMessageStr = new StringBuilder();
         for (BigInteger block : encryptedBlocks) {
@@ -121,6 +119,7 @@ public class MethodenFromRSA {
         return encryptedNumericMessageStr.toString();
     }
     private static List<Integer> convertBlockToNumberList(BigInteger block, int numberSystemBase, int blockSize) {
+        if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         // Convert a single encrypted block into a list of numbers
         List<Integer> numberList = new ArrayList<>();
         int count = 0;
@@ -137,6 +136,7 @@ public class MethodenFromRSA {
         return numberList;
     }
     private static String convertBlockToString(BigInteger block, int numberSystemBase, int blockSize) {
+        if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         // Convert a single encrypted block into a string representation
         List<Integer> tempList = convertBlockToNumberList(block, numberSystemBase, blockSize);
         return MathMethods.convertUniCodeToText(tempList);
@@ -160,12 +160,7 @@ public class MethodenFromRSA {
     }
 
     public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n, int blockSize, int numberSystemBase) {
-        System.out.println(encryptedNumericMessageStr);
-        System.out.println(d);
-        System.out.println(n);
-        System.out.println(blockSize);
-        System.out.println(numberSystemBase);
-
+        if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUnicode(encryptedNumericMessageStr);
         // Step 2: Create encrypted blocks from Unicode
@@ -183,6 +178,7 @@ public class MethodenFromRSA {
     }
 
     private static List<Integer> convertNumericMessageToIntegers(List<BigInteger> numericMessage, int blockSize, int numberSystemBase) {
+        if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         List<Integer> decryptedMessage = new ArrayList<>();
         for (BigInteger block : numericMessage) {
             decryptedMessage.addAll(MathMethods.prepareMessageForDecryption(block, blockSize, numberSystemBase));
@@ -221,6 +217,7 @@ public class MethodenFromRSA {
     }
 
     private static List<List<BigInteger>> createEncryptedBlocksFromUnicode(List<Integer> unicodeMessage, int blockSize) {
+        if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         List<List<BigInteger>> encryptedBlocks = new ArrayList<>();
         int blockSizePlusOne = blockSize + 1;
         for (int i = 0; i < unicodeMessage.size(); i += blockSizePlusOne) {

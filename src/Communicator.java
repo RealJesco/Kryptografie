@@ -32,7 +32,7 @@ public class Communicator extends JFrame {
     private ArrayList<Message> messageList = new ArrayList<>();
     private int currentMessageIndex = 0;
 
-    public Communicator(String name, BigInteger n, BigInteger phiN, BigInteger m, Point point){
+    public Communicator(String name, BigInteger n, BigInteger phiN, Point point){
         super(name);
         this.name = name;
         this.n = n;

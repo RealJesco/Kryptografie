@@ -294,10 +294,7 @@ public class RSA {
     }
 
     public static void calculateN(BigInteger p, BigInteger q){
-        System.out.println("pppp: " + p);
-        System.out.println("qqqq: " + q);
         n = p.multiply(q);
-        System.out.println("nnn: " + n);
     }
     public static void calculatePhiN(BigInteger p, BigInteger q){
         phiN = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
@@ -324,7 +321,6 @@ public class RSA {
         BigInteger possibleP;
         a = TWO.pow(bitLengthP.intValue() - 1);
         b = TWO.pow(bitLengthP.intValue());
-        System.out.println("a: " + a);
         do {
             possibleP = generateRandomPrime(m,a, b, millerRabinSteps);
         } while (possibleP.equals(q));
@@ -348,12 +344,10 @@ public class RSA {
     public static void generatePrimeNumbers() {
         // Calculate bit length of p and q
         int bitLengthPQ = bitLengthN / 2;
-        System.out.println("bitLengthPQ: " + bitLengthPQ);
         long startTime = System.nanoTime();
         calculateP(BigInteger.valueOf(bitLengthPQ));
         calculateQ(BigInteger.valueOf(bitLengthPQ));
         long endTime = System.nanoTime();
-        System.out.println("Time for prime generation: " + (endTime - startTime) / 1000000 + " ms");
         calculateN(p, q);
         calculatePhiN(p, q);
         calculateE(phiN);
@@ -361,8 +355,6 @@ public class RSA {
     }
 
     public static String encrypt(String message, BigInteger e, BigInteger n) {
-        System.out.println("n: " + n);
-        System.out.println("Input message: " + message);
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUnicode(message);
         //Unicode values should not be equal or larger than numberSystemBase
@@ -371,13 +363,10 @@ public class RSA {
                 throw new IllegalArgumentException("Unicode value is equal or larger than numberSystemBase");
             }
         }
-        System.out.println("Unicode message: " + unicodeMessage);
         // Step 2: Prepare message for encryption (Block cipher)
         List<BigInteger> numericMessage = prepareMessageForEncryption(unicodeMessage);
-        System.out.println("Numeric message: " + numericMessage);
         // Step 3: Encrypt the numeric representation
         List<BigInteger> encryptedBlocks = encryptNumericBlocks(numericMessage, e, n);
-        System.out.println("Encrypted blocks: " + encryptedBlocks);
         // Step 4: Process the encrypted blocks into a string representation
 
         return processEncryptedBlocksToString(encryptedBlocks);
@@ -433,25 +422,18 @@ public class RSA {
         return numberList;
     }
     public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
-        System.out.println("encryptedNumericMessageStr: " + encryptedNumericMessageStr);
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUnicode(encryptedNumericMessageStr);
-        System.out.println("Decrypting Unicode to encrypted blocks: " + unicodeMessage);
         // Step 2: Create encrypted blocks from Unicode
         List<List<BigInteger>> encryptedBlocks = createEncryptedBlocksFromUnicode(unicodeMessage);
-        System.out.println("Encrypted blocks: " + encryptedBlocks);
         // Step 3: Convert the encrypted blocks to BigInteger format
         List<BigInteger> encryptedNumericMessages = convertBlocksToBigIntegers(encryptedBlocks);
-        System.out.println("Encrypted numeric messages: " + encryptedNumericMessages);
         // Step 4: Decrypt the numeric representation
         List<BigInteger> numericMessage = decryptNumericMessages(encryptedNumericMessages, d, n);
-        System.out.println("Numeric message: " + numericMessage);
         // Step 5: Convert the numeric message to a list of integers
         List<Integer> decryptedMessage = convertNumericMessageToIntegers(numericMessage);
-        System.out.println("Decrypted message in Unicode integer values: " + decryptedMessage);
         // Step 6: Convert the list of integers to a string
         String decryptedMessageStr = convertIntegersToText(decryptedMessage);
-        System.out.println("Decrypted message string with padding: " + decryptedMessageStr);
         // Step 7: Remove padding from the decrypted string
         return removePadding(decryptedMessageStr);
     }
