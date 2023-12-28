@@ -58,7 +58,7 @@ public class CommunicationPanel extends JFrame {
         primeBitLengthField.setText("1024");
         onlyAllowNumbers(primeBitLengthField);
 
-        calculateBlockSize(getPrimeBitLength(), getNumberSystemBase());
+        calculateBlockSize();
 
         generateCommunicators.addActionListener(new ActionListener() {
             @Override
@@ -97,6 +97,18 @@ public class CommunicationPanel extends JFrame {
                     nonCubicNumberMField.setText("");
                     JOptionPane.showMessageDialog(null, "Input must be a non-square number");
                 }
+            }
+        });
+        numberSystemBaseField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                calculateBlockSize();
+            }
+        });
+        primeBitLengthField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                calculateBlockSize();
             }
         });
 
@@ -192,8 +204,13 @@ public class CommunicationPanel extends JFrame {
     public BigInteger getPrimeBitLength() throws NumberFormatException {
         return getBigIntegerOfField(primeBitLengthField);
     }
-    public void calculateBlockSize(BigInteger bitLengthN, int numberSystemBase){
-        this.blockSize = (int)(bitLengthN.doubleValue() * (Math.log(2) / Math.log(numberSystemBase)));
+    public void calculateBlockSize(){
+        try{
+            this.blockSize = (int)(Integer.parseInt(primeBitLengthField.getText()) * (Math.log(2) / Math.log(Integer.parseInt(numberSystemBaseField.getText()))));
+        } catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Error in calculation of blockSize");
+            this.blockSize = 0;
+        }
     }
     public int getBlockSize() {
         return blockSize;
