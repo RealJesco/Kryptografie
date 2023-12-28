@@ -1,26 +1,25 @@
-import mathMethods.MathMethods;
+
 import rsa.MethodenFromRSA;
-import rsa.RSA;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Random;
+import java.math.MathContext;
 
 public class CommunicationPanel extends JFrame {
     private static final CommunicationPanel singleton = new CommunicationPanel();
-    private int millerRabinSteps = 100;
-    private int numberSystemBase = 55926;
-    private BigInteger m = BigInteger.valueOf(844);
-    private BigInteger primeBitLength = BigInteger.valueOf(1024);
+
+    private int blockSize;
+
     private static JPanel panel;
     private static JButton generateCommunicators;
     private static JTextField nonCubicNumberMField;
     private static JTextField numberSystemBaseField;
     private static JTextField millerRabinStepsField;
     private static JTextField primeBitLengthField;
+
     private static JTextArea alicePublicKeyField;
     private static JTextArea bobPublicKeyField;
     private static JTextArea alicePublicNField;
@@ -28,8 +27,6 @@ public class CommunicationPanel extends JFrame {
     private Communicator Alice = null;
     private Communicator Bob = null;
     private static GridBagConstraints c = null;
-    private static RSA rsa;
-    private int blockSize;
 
     private CommunicationPanel() {
         super("CommunicationPanel");
@@ -52,16 +49,16 @@ public class CommunicationPanel extends JFrame {
         bobPublicKeyField = getNewTextArea(i++, "Öffentlicher Schlüssel e von Bob");
         bobPublicNField = getNewTextArea(i++, "Öffentlicher Schlüssel n von Bob");
 
-        nonCubicNumberMField.setText(String.valueOf(m));
+        nonCubicNumberMField.setText("844");
         onlyAllowNumbers(nonCubicNumberMField);
-        numberSystemBaseField.setText(String.valueOf(numberSystemBase));
+        numberSystemBaseField.setText("55926");
         onlyAllowNumbers(numberSystemBaseField);
-        millerRabinStepsField.setText(String.valueOf(millerRabinSteps));
+        millerRabinStepsField.setText("100");
         onlyAllowNumbers(millerRabinStepsField);
-        primeBitLengthField.setText(String.valueOf(primeBitLength));
+        primeBitLengthField.setText("1024");
         onlyAllowNumbers(primeBitLengthField);
 
-        calculateBlockSize(primeBitLength.intValue(), numberSystemBase);
+        calculateBlockSize(getPrimeBitLength(), getNumberSystemBase());
 
         generateCommunicators.addActionListener(new ActionListener() {
             @Override
@@ -74,14 +71,14 @@ public class CommunicationPanel extends JFrame {
                     Alice.dispose();
                 } catch (Exception f) {
                 }
-                BigInteger TempP = MethodenFromRSA.calculatePrimeByBitLength(primeBitLength.divide(BigInteger.TWO), m, millerRabinSteps);
-                BigInteger TempQ = MethodenFromRSA.calculatePrimeByBitLength(primeBitLength.divide(BigInteger.TWO), m,millerRabinSteps, TempP);
+                BigInteger TempP = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps());
+                BigInteger TempQ = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps(), TempP);
 
                 BigInteger n = TempP.multiply(TempQ);
                 BigInteger phiN = (TempP.subtract(BigInteger.ONE)).multiply(TempQ.subtract(BigInteger.ONE));
 
-                Alice = new Communicator("Alice", n, phiN, m, new Point(900, 0));
-                Bob = new Communicator("Bob", n, phiN, m, new Point(900, 400));
+                Alice = new Communicator("Alice", n, phiN, new Point(900, 0));
+                Bob = new Communicator("Bob", n, phiN, new Point(900, 400));
                 alicePublicKeyField.setText(Alice.e.toString());
                 alicePublicNField.setText(Alice.n.toString());
                 bobPublicKeyField.setText(Bob.e.toString());
@@ -89,77 +86,12 @@ public class CommunicationPanel extends JFrame {
             }
         });
 
-        nonCubicNumberMField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                int value = getIntegerOfField(nonCubicNumberMField);
-                System.out.println(value);
-                double sqrt = Math.sqrt(value);
-                if(sqrt != Math.floor(sqrt) && value > 2) {
-                    m = BigInteger.valueOf(value);
-                } else {
-                    // Handle the case where the input is a perfect square
-                    // For example, you could reset the field and show an error message
-                    nonCubicNumberMField.setText("");
-                    JOptionPane.showMessageDialog(null, "Input must be a non-square number");
-                }
-            }
-        });
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = i++;
         panel.add(generateCommunicators, c);
         add(panel);
         panel.updateUI();
-    }
-
-    private int getIntegerOfField(JTextField field) {
-        try{
-            return Integer.parseInt(field.getText());
-        } catch (Exception e) {
-            JFrame frame = new JFrame();
-            frame.setSize(new Dimension(200, 100));
-            JPanel p = new JPanel();
-            p.add(new JLabel("Fehler beim Auslesen eines Feldes -> Parsen ins Integer fehlgeschlagen: " + e.getStackTrace()));
-            frame.add(p);
-            frame.setVisible(true);
-        }
-        return 1;
-    }
-
-
-    public Communicator getAlice() {
-        return this.Alice;
-    }
-
-    public Communicator getBob() {
-        return this.Bob;
-    }
-    public static CommunicationPanel getInstance() {
-        return singleton;
-    }
-
-    public int getMillerRabinSteps() {
-        return millerRabinSteps;
-    }
-
-    public BigInteger getM() {
-        return m;
-    }
-
-    public BigInteger getPrimeBitLength() {
-        return primeBitLength;
-    }
-
-    public int getNumberSystemBase() {
-        return numberSystemBase;
-    }
-    public void calculateBlockSize(int bitLengthN, int numberSystemBase){
-        this.blockSize = (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase)));
-    }
-
-    public static RSA getRsa() {
-        return rsa;
     }
 
     private void onlyAllowNumbers(JTextField field) {
@@ -213,8 +145,43 @@ public class CommunicationPanel extends JFrame {
         panel.add(j, c);
         return field;
     }
+    public static CommunicationPanel getInstance() {
+        return singleton;
+    }
 
+    public Communicator getAlice() {
+        return this.Alice;
+    }
+
+    public Communicator getBob() {
+        return this.Bob;
+    }
+
+    private BigInteger getBigIntegerOfField(JTextField field) throws NumberFormatException{
+        return BigInteger.valueOf(Long.parseLong(field.getText()));
+    }
+
+    public int getMillerRabinSteps() throws NumberFormatException {return getBigIntegerOfField(millerRabinStepsField).intValue();
+    }
+    public BigInteger getM() throws NumberFormatException {
+        BigInteger m = getBigIntegerOfField(nonCubicNumberMField);
+        BigDecimal mSqrt = new BigDecimal(m).sqrt(new MathContext(100));
+        if(m != BigInteger.TWO && mSqrt.divide(BigDecimal.ONE) != BigDecimal.ZERO) {
+            return getBigIntegerOfField(nonCubicNumberMField);
+        } else {
+            throw new NumberFormatException("M ist eine Quadratzahl");
+        }
+    }
+    public int getNumberSystemBase() throws NumberFormatException {
+        return Integer.parseInt(numberSystemBaseField.getText());
+    }
+    public BigInteger getPrimeBitLength() throws NumberFormatException {
+        return getBigIntegerOfField(primeBitLengthField);
+    }
+    public void calculateBlockSize(BigInteger bitLengthN, int numberSystemBase){
+        this.blockSize = (int)(bitLengthN.doubleValue() * (Math.log(2) / Math.log(numberSystemBase)));
+    }
     public int getBlockSize() {
-        return this.blockSize;
+        return blockSize;
     }
 }
