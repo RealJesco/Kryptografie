@@ -73,7 +73,6 @@ public class MethodenFromRSA {
     private static List<BigInteger> prepareMessageForEncryption(List<Integer> unicodeMessage, int numberSystemBase, int blockSize) {
         if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
         // Implementation of preparing message for encryption
-        System.out.println(blockSize + " " + numberSystemBase);
         return MathMethods.prepareMessageForEncryption(unicodeMessage, blockSize, numberSystemBase);
     }
 
@@ -87,7 +86,6 @@ public class MethodenFromRSA {
     }
 
     public static boolean verifySignature(String message, String signature, BigInteger e, BigInteger n) throws NoSuchAlgorithmException {
-        System.out.println(signature);
         //If signature is not in hex format, throw exception
         if(!signature.matches("-?[0-9a-fA-F]+")){
             throw new IllegalArgumentException("Signature is not in hex format");
@@ -106,9 +104,6 @@ public class MethodenFromRSA {
 
         // Decrypt the signature using the public key
         BigInteger decryptedSignature = MathMethods.alternativeQuickExponentiation(signatureInteger, e, n);
-        System.out.println(e);
-        System.out.println(n);
-        System.out.println(decryptedSignature);
 
         // Compare the decrypted signature with the hash of the message
         return decryptedSignature.equals(hashInteger);
@@ -166,12 +161,6 @@ public class MethodenFromRSA {
 
     public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n, int blockSize, int numberSystemBase) {
         if(blockSize<=0) throw new IllegalArgumentException("Blocksize can't be lower than 1");
-        System.out.println(encryptedNumericMessageStr);
-        System.out.println(d);
-        System.out.println(n);
-        System.out.println(blockSize);
-        System.out.println(numberSystemBase);
-
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUnicode(encryptedNumericMessageStr);
         // Step 2: Create encrypted blocks from Unicode
