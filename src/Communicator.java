@@ -1,16 +1,15 @@
-import mathMethods.MathMethods;
 import rsa.MethodenFromRSA;
-import rsa.RSA;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Communicator extends JFrame {
     public String name;
@@ -52,18 +51,45 @@ public class Communicator extends JFrame {
         panel.setLayout(new GridBagLayout());
         c = new GridBagConstraints();
 
-
+        AtomicBoolean currentMessageIsEncrypted = new AtomicBoolean(false);
+        AtomicBoolean currentMessageIsSigned = new AtomicBoolean(false);
         inputAndOutput = new JTextArea();
         inputAndOutput.setLineWrap(true);
         JScrollPane scrollPane = new JScrollPane(inputAndOutput);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setPreferredSize(new Dimension(450, 60));
         startEncode = new JButton("Verschlüsseln");
-        startEncode.addActionListener(new ActionListener() {
+        startEncode.addActionListener(e -> {
+            Communicator receiver = getReceiver();
+            inputAndOutput.setText(MethodenFromRSA.encrypt(inputAndOutput.getText(),receiver.e, receiver.n, CommunicationPanel.getInstance().getNumberSystemBase(), CommunicationPanel.getInstance().getBlockSize()));
+            currentMessageIsEncrypted.set(true);
+        });
+        inputAndOutput.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                Communicator receiver = getReceiver();
-                inputAndOutput.setText(MethodenFromRSA.encrypt(inputAndOutput.getText(),receiver.e, receiver.n, CommunicationPanel.getInstance().getNumberSystemBase(), CommunicationPanel.getInstance().getBlockSize()));
+            public void insertUpdate(DocumentEvent e) {
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                //Remove the signature if the message is changed
+                signatur = null;
+                signings.setText("");
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                //Remove the signature if the message is changed
+                signatur = null;
+                signings.setText("");
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                //Remove the signature if the message is changed
+                signatur = null;
+                signings.setText("");
             }
         });
         startEncode.setPreferredSize(new Dimension(250,25));
@@ -71,17 +97,26 @@ public class Communicator extends JFrame {
         startDecode.addActionListener(e -> {
             if(messageList.size() > currentMessageIndex){
                 Message message = messageList.get(currentMessageIndex++);
-                System.out.println("Original Message: " + message.originalText);
-                System.out.println("Encrypted Message: " + message.encryptedText);
+                String messageToUse;
+                if(message.isEncrypted()){
+                    messageToUse = MethodenFromRSA.decrypt(message.message, d, n, CommunicationPanel.getInstance().getBlockSize(), CommunicationPanel.getInstance().getNumberSystemBase());
+                    System.out.println("Decrypted Message: " + messageToUse);
+                } else {
+                    messageToUse = message.message;
+                    System.out.println("Message not encrypted: " + messageToUse);
+                }
+                System.out.println("Received Message: " + message);
                 System.out.println("Signature: " + message.signature);
-                String decryptedMessage = MethodenFromRSA.decrypt(message.encryptedText, d, n, CommunicationPanel.getInstance().getBlockSize(), CommunicationPanel.getInstance().getNumberSystemBase());
-                inputAndOutput.setText(decryptedMessage);
-                if(message.signature != null){
+                inputAndOutput.setText(messageToUse);
+                System.out.println(message.isSigned());
+                if(message.isSigned()){
                     try {
                         System.out.println(message.signature);
-                        System.out.println(message.originalText);
-
-                        signingValid.setText("" + MethodenFromRSA.verifySignature(message.originalText, message.signature, message.e, message.n));
+                        if(message.isEncrypted){
+                            signingValid.setText("" + MethodenFromRSA.verifySignature(message.message, message.signature, message.e, message.n));
+                        } else {
+                            signingValid.setText("" + MethodenFromRSA.verifySignature(messageToUse, message.signature, message.e, message.n));
+                        }
                     } catch (NoSuchAlgorithmException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -98,6 +133,7 @@ public class Communicator extends JFrame {
                 System.out.println("Signatur: " + MethodenFromRSA.sign(inputAndOutput.getText(), d, n));
                 signatur = MethodenFromRSA.sign(inputAndOutput.getText(), d, n);
                 signings.setText(signatur);
+                currentMessageIsSigned.set(true);
             } catch (NoSuchAlgorithmException ex) {
                 throw new RuntimeException(ex);
             }
@@ -105,11 +141,9 @@ public class Communicator extends JFrame {
         signMessage.setPreferredSize(new Dimension(250,25));
         sendMessage = new JButton("Nachricht versenden");
         sendMessage.addActionListener(e -> {
-            String originalMessage = inputAndOutput.getText();
-            String encryptedMessage = MethodenFromRSA.encrypt(originalMessage, getReceiver().e, getReceiver().n, CommunicationPanel.getInstance().getNumberSystemBase(), CommunicationPanel.getInstance().getBlockSize());
-            Message me = new Message(originalMessage, encryptedMessage, signings.getText(), thisInstance.e, thisInstance.n);
-            System.out.println("Sent message: " + me.originalText);
-            getReceiver().sendAMessage(new Message(originalMessage, encryptedMessage, signings.getText(), thisInstance.e, thisInstance.n));
+            String message = inputAndOutput.getText();
+
+            getReceiver().sendAMessage(new Message(message, signings.getText(), thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get()));
         });
         sendMessage.setPreferredSize(new Dimension(250,25));
         clearEverything = new JButton("Alle Eingaben und Nachrichten löschen");
@@ -187,10 +221,9 @@ public class Communicator extends JFrame {
 
     public void sendAMessage(Message m) {
         messageList.add(m);
-        inputAndOutput.setText(m.originalText);
-        System.out.println("Original Message: " + m.originalText);
-        System.out.println("Encrypted Message: " + m.encryptedText);
-        System.out.println("Sent message: " + m.originalText); // Print the message that is being sent
+        inputAndOutput.setText(m.message);
+        signingValid.setText("");
+        System.out.println("Received Message: " + m.message);
     }
 
     private Communicator getReceiver() {
