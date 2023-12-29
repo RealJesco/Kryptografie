@@ -188,10 +188,8 @@ public class MathMethods {
             BigInteger.valueOf(983),
             BigInteger.valueOf(991),
             BigInteger.valueOf(997)
-
-
     };
-    static BigInteger TWO = BigInteger.valueOf(2);
+    private static final BigInteger MINUSONE = BigInteger.valueOf(-1);
 
     /**
      * Performs modular exponentiation using the "square-and-multiply" algorithm.
@@ -203,7 +201,7 @@ public class MathMethods {
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
         if (exp.compareTo(ZERO) < 0) throw new IllegalArgumentException("Exponent must be positive");
-        BigInteger result = BigInteger.ONE;
+        BigInteger result = ONE;
         base = base.mod(mod); // Modulo operation, to ensure the base is within mod range
 
         if(exp.equals(ZERO) && base.equals(ZERO) && mod.equals(ONE)) {
@@ -211,7 +209,7 @@ public class MathMethods {
         }
         while (!exp.equals(ZERO)) {
             // If the exponent is odd, multiply the result by base
-            if (exp.and(BigInteger.ONE).equals(BigInteger.ONE)) {
+            if (exp.and(ONE).equals(ONE)) {
                 result = (result.multiply(base)).mod(mod);
             }
 
@@ -219,6 +217,7 @@ public class MathMethods {
             base = (base.multiply(base)).mod(mod);
             exp = exp.shiftRight(1);
         }
+
         return result; // Return the accumulated result
     }
 
@@ -232,7 +231,7 @@ public class MathMethods {
      */
     public static BigInteger[] extendedEuclidean(BigInteger a, BigInteger b) {
         if (b.equals(ZERO)) {
-            return new BigInteger[]{a, BigInteger.ONE, ZERO};
+            return new BigInteger[]{a, ONE, ZERO};
         } else {
             BigInteger[] ee = extendedEuclidean(b, a.mod(b)); // b ist der Teiler (im Skript der erste Faktor); a.mod(b) ist der Rest
             BigInteger gcd = ee[0]; // im Skript der erste Faktor
@@ -248,7 +247,7 @@ public class MathMethods {
         BigInteger z;
         do {
             z = new BigInteger(p.bitLength(), rand).mod(p);
-        } while (alternativeQuickExponentiation(z, p.subtract(BigInteger.ONE).divide(TWO), p).equals(BigInteger.ONE));
+        } while (alternativeQuickExponentiation(z, p.subtract(ONE).divide(TWO), p).equals(ONE));
 
         return z;
     }
@@ -260,7 +259,7 @@ public class MathMethods {
             throw new IllegalArgumentException("The number " + p + " is not a prime number.");
         }
         // Check if p is of the form 4n + 1
-        if (!p.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
+        if (!p.mod(BigInteger.valueOf(4)).equals(ONE)) {
             throw new IllegalArgumentException("The number " + p + " cannot be represented as a sum of two squares.");
         }
 
@@ -273,7 +272,7 @@ public class MathMethods {
 
         BigInteger randomZ = eulerCriterion(p);
         //Check if randomZ is a squared non-residue mod p
-        while (alternativeQuickExponentiation(randomZ, p.subtract(BigInteger.ONE).divide(TWO), p).equals(BigInteger.ONE) || randomZ.compareTo(BigInteger.ONE) <= 0) {
+        while (alternativeQuickExponentiation(randomZ, p.subtract(ONE).divide(TWO), p).equals(ONE) || randomZ.compareTo(ONE) <= 0) {
             //If equal to or smaller than 1, it is not a squared non-residue mod p
             randomZ = eulerCriterion(p);
         }
@@ -286,10 +285,10 @@ public class MathMethods {
         GaussianInteger result = extendedEuclideanInZi(w_i, p_0);
         //Make sure that results are positive by multiplying with -1 if necessary
         if (result.real.compareTo(ZERO) < 0) {
-            result.real = result.real.multiply(BigInteger.valueOf(-1));
+            result.real = result.real.multiply(MINUSONE);
         }
         if (result.imaginary.compareTo(ZERO) < 0) {
-            result.imaginary = result.imaginary.multiply(BigInteger.valueOf(-1));
+            result.imaginary = result.imaginary.multiply(MINUSONE);
         }
         //Check if the found values are correct
         BigInteger c = result.real;
@@ -348,14 +347,14 @@ public class MathMethods {
     public static BigInteger roundHalfUp(BigInteger number) {
         // The rounding logic needs to handle negative numbers differently than positive numbers
         BigInteger halfDivisor = new BigInteger("5");
-        BigInteger scaledNumber = number.multiply(BigInteger.TEN);
+        BigInteger scaledNumber = number.multiply(TEN);
 
-        if (number.compareTo(BigInteger.ZERO) < 0) {
+        if (number.compareTo(ZERO) < 0) {
             // For negative numbers, subtract 5 before dividing by 10
-            return scaledNumber.subtract(halfDivisor).divide(BigInteger.TEN);
+            return scaledNumber.subtract(halfDivisor).divide(TEN);
         } else {
             // For positive numbers, add 5 before dividing by 10
-            return scaledNumber.add(halfDivisor).divide(BigInteger.TEN);
+            return scaledNumber.add(halfDivisor).divide(TEN);
         }
     }
 
@@ -410,7 +409,7 @@ public class MathMethods {
             for (BigInteger smallPrime : SMALL_PRIMES) {
                 if (primeCandidate.equals(smallPrime)) {
                     return primeCandidate; // Prime is found
-                } else if (primeCandidate.mod(smallPrime).equals(BigInteger.ZERO)) {
+                } else if (primeCandidate.mod(smallPrime).equals(ZERO)) {
                     isComposite = true;
                     break;
                 }
@@ -434,7 +433,7 @@ public class MathMethods {
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
 
-        if (possiblePrime.equals(BigInteger.ONE)) {
+        if (possiblePrime.equals(ONE)) {
             return false;
         }
         if (possiblePrime.equals(TWO)) {
@@ -444,7 +443,7 @@ public class MathMethods {
             return false;
         }
 
-        BigInteger d = possiblePrime.subtract(BigInteger.ONE);
+        BigInteger d = possiblePrime.subtract(ONE);
         BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
 
         int s = 0;
@@ -458,17 +457,17 @@ public class MathMethods {
 
             BigInteger x = alternativeQuickExponentiation(a, d, possiblePrime);
 
-            if (x.equals(BigInteger.ONE) || x.equals(possiblePrime.subtract(BigInteger.ONE))) {
+            if (x.equals(ONE) || x.equals(possiblePrime.subtract(ONE))) {
                 continue;
             }
 
             int r;
             for (r = 1; r < s; r++) {
                 x = alternativeQuickExponentiation(x, TWO, possiblePrime);
-                if (x.equals(BigInteger.ONE)) {
+                if (x.equals(ONE)) {
                     return false;
                 }
-                if (x.equals(possiblePrime.subtract(BigInteger.ONE))) {
+                if (x.equals(possiblePrime.subtract(ONE))) {
                     break;
                 }
             }
@@ -485,14 +484,14 @@ public class MathMethods {
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
         if (possiblePrime.equals(TWO)) return true;
         if (!possiblePrime.testBit(0)) return false;
-        if (possiblePrime.equals(BigInteger.ONE)) return false;
+        if (possiblePrime.equals(ONE)) return false;
 
-        int s = possiblePrime.subtract(BigInteger.ONE).getLowestSetBit();
-        BigInteger finalD = possiblePrime.subtract(BigInteger.ONE).shiftRight(s);
+        int s = possiblePrime.subtract(ONE).getLowestSetBit();
+        BigInteger finalD = possiblePrime.subtract(ONE).shiftRight(s);
         // ForkJoinPool can potentially be more efficient for certain tasks
         ForkJoinPool forkJoinPool = new ForkJoinPool();
         int finalS = s;
-        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(BigInteger.ONE);
+        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(ONE);
         BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
         List<Callable<Boolean>> tasks = IntStream.range(0, numberOfTests)
                 .mapToObj(i -> (Callable<Boolean>) () -> {

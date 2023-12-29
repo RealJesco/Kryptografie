@@ -14,6 +14,9 @@ import static mathMethods.MathMethods.generateRandomPrime;
 
 public class RSA {
 
+    private static final BigInteger ONE = BigInteger.ONE;
+    private static final BigInteger TWO = BigInteger.TWO;
+    private static final BigInteger ZERO = BigInteger.ZERO;
     private static int millerRabinSteps = 0;
     private static int blockSize = 0;
     private static int blockSizePlusOne = 0;
@@ -29,8 +32,6 @@ public class RSA {
     private static BigInteger b;
     private static BigInteger countOfN = BigInteger.valueOf(1);
     private static int bitLengthN = 128;
-    private static final SecureRandom random = new SecureRandom();
-    private static final BigInteger TWO = BigInteger.valueOf(2);
     private static final BigInteger[] SMALL_PRIMES = {
             BigInteger.valueOf(2),
             BigInteger.valueOf(3),
@@ -297,19 +298,19 @@ public class RSA {
         n = p.multiply(q);
     }
     public static void calculatePhiN(BigInteger p, BigInteger q){
-        phiN = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
+        phiN = (p.subtract(ONE)).multiply(q.subtract(ONE));
     }
     // Initially try to use 65537 as the public exponent e
     public static void calculateE(BigInteger phiN){
         e = BigInteger.valueOf(65537);
-        if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(BigInteger.ONE)) {
+        if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(ONE)) {
             e = BigInteger.valueOf(3);
-            if (!e.gcd(phiN).equals(BigInteger.ONE)) {
-                BigInteger lowerBoundForE = BigInteger.TWO; // e must be greater than 1
-                BigInteger upperBoundForE = phiN.subtract(BigInteger.ONE); // e must be less than phiN
+            if (!e.gcd(phiN).equals(ONE)) {
+                BigInteger lowerBoundForE = TWO; // e must be greater than 1
+                BigInteger upperBoundForE = phiN.subtract(ONE); // e must be less than phiN
                 do {
                     e = generateRandomPrime(m, lowerBoundForE, upperBoundForE, millerRabinSteps);
-                } while (!e.gcd(phiN).equals(BigInteger.ONE));
+                } while (!e.gcd(phiN).equals(ONE));
             }
         }
     }
@@ -410,7 +411,7 @@ public class RSA {
         // Convert a single encrypted block into a list of numbers
         List<Integer> numberList = new ArrayList<>();
         int count = 0;
-        while (!block.equals(BigInteger.ZERO)) {
+        while (!block.equals(ZERO)) {
             numberList.add(0, block.mod(BigInteger.valueOf(numberSystemBase)).intValue());
             block = block.divide(BigInteger.valueOf(numberSystemBase));
             count++;
@@ -447,7 +448,7 @@ public class RSA {
                 if (i + j < unicodeMessage.size()) {
                     block.add(BigInteger.valueOf(unicodeMessage.get(i + j)));
                 } else {
-                    block.add(BigInteger.ZERO);
+                    block.add(ZERO);
                 }
             }
             encryptedBlocks.add(block);
@@ -458,7 +459,7 @@ public class RSA {
     private static List<BigInteger> convertBlocksToBigIntegers(List<List<BigInteger>> encryptedBlocks) {
         List<BigInteger> encryptedNumericMessages = new ArrayList<>();
         for (List<BigInteger> encryptedBlock : encryptedBlocks) {
-            BigInteger sum = BigInteger.ZERO;
+            BigInteger sum = ZERO;
             for (int j = 0; j < encryptedBlock.size(); j++) {
                 BigInteger temp = encryptedBlock.get(encryptedBlock.size() - j - 1).multiply(BigInteger.valueOf(numberSystemBase).pow(j));
                 sum = sum.add(temp);

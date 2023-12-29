@@ -13,17 +13,19 @@ import static java.math.BigInteger.TWO;
 import static mathMethods.MathMethods.generateRandomPrime;
 
 public class MethodenFromRSA {
+    private static final BigInteger ONE = BigInteger.ONE;
+    private static final BigInteger ZERO = BigInteger.ZERO;
     private static BigInteger a;
     private static BigInteger b;
     public static BigInteger calculateE(BigInteger phiN, BigInteger m, int millerRabinSteps){
         BigInteger e = BigInteger.valueOf(65537);
-        if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(BigInteger.ONE)) {
+        if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(ONE)) {
             e = BigInteger.valueOf(3);
-            if (!e.gcd(phiN).equals(BigInteger.ONE)) {
-                BigInteger upperBoundForE = phiN.subtract(BigInteger.ONE); // e must be less than phiN
+            if (!e.gcd(phiN).equals(ONE)) {
+                BigInteger upperBoundForE = phiN.subtract(ONE); // e must be less than phiN
                 do {
                     e = generateRandomPrime(m, TWO, upperBoundForE, millerRabinSteps);
-                } while (!e.gcd(phiN).equals(BigInteger.ONE));
+                } while (!e.gcd(phiN).equals(ONE));
             }
         }
         return e;
@@ -123,7 +125,7 @@ public class MethodenFromRSA {
         // Convert a single encrypted block into a list of numbers
         List<Integer> numberList = new ArrayList<>();
         int count = 0;
-        while (!block.equals(BigInteger.ZERO)) {
+        while (!block.equals(ZERO)) {
             numberList.add(0, block.mod(BigInteger.valueOf(numberSystemBase)).intValue());
             block = block.divide(BigInteger.valueOf(numberSystemBase));
             count++;
@@ -146,7 +148,7 @@ public class MethodenFromRSA {
     }
 
     public static BigInteger calculatePrimeByBitLength(BigInteger primeBitLength, BigInteger m, int millerRabinSteps){
-        return calculatePrimeByBitLength(primeBitLength, m, millerRabinSteps, BigInteger.ONE);
+        return calculatePrimeByBitLength(primeBitLength, m, millerRabinSteps, ONE);
     }
 
     public static BigInteger calculatePrimeByBitLength(BigInteger primeBitLength, BigInteger m, int millerRabinSteps, BigInteger shouldBeDifferentTo){
@@ -206,7 +208,7 @@ public class MethodenFromRSA {
     private static List<BigInteger> convertBlocksToBigIntegers(List<List<BigInteger>> encryptedBlocks, int numberSystemBase) {
         List<BigInteger> encryptedNumericMessages = new ArrayList<>();
         for (List<BigInteger> encryptedBlock : encryptedBlocks) {
-            BigInteger sum = BigInteger.ZERO;
+            BigInteger sum = ZERO;
             for (int j = 0; j < encryptedBlock.size(); j++) {
                 BigInteger temp = encryptedBlock.get(encryptedBlock.size() - j - 1).multiply(BigInteger.valueOf(numberSystemBase).pow(j));
                 sum = sum.add(temp);
@@ -226,7 +228,7 @@ public class MethodenFromRSA {
                 if (i + j < unicodeMessage.size()) {
                     block.add(BigInteger.valueOf(unicodeMessage.get(i + j)));
                 } else {
-                    block.add(BigInteger.ZERO);
+                    block.add(ZERO);
                 }
             }
             encryptedBlocks.add(block);
