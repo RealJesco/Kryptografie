@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.math.BigInteger.TWO;
 import static mathMethods.MathMethods.generateRandomPrime;
@@ -151,14 +152,24 @@ public class MethodenFromRSA {
         return calculatePrimeByBitLength(primeBitLength, m, millerRabinSteps, ONE);
     }
 
-    public static BigInteger calculatePrimeByBitLength(BigInteger primeBitLength, BigInteger m, int millerRabinSteps, BigInteger shouldBeDifferentTo){
-        BigInteger possiblePrime;
-        a = TWO.pow(primeBitLength.intValue() -1);
-        b = TWO.pow(primeBitLength.intValue());
-        do {
-            possiblePrime = generateRandomPrime(m,a, b, millerRabinSteps);
-        } while (possiblePrime.equals(shouldBeDifferentTo));
-        return possiblePrime;
+    public static BigInteger calculatePrimeByBitLength(BigInteger primeBitLength,BigInteger m,  int millerRabinSteps, BigInteger shouldBeDifferentTo) {
+        if (primeBitLength.bitLength() > 31) {
+            throw new IllegalArgumentException("Bit length is too large to handle");
+        }
+
+        // Convert BigInteger bit length to int, assuming it's within int range
+        int bitLength = primeBitLength.intValue();
+
+        BigInteger a = TWO.pow(bitLength - 1);
+        BigInteger b = TWO.pow(bitLength);
+
+        // Parallel prime generation
+        return IntStream.range(0, Runtime.getRuntime().availableProcessors())
+                .parallel()
+                .mapToObj(i -> generateRandomPrime(m, a, b, millerRabinSteps))
+                .filter(possiblePrime -> !possiblePrime.equals(shouldBeDifferentTo))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Prime not found"));
     }
 
     public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n, int blockSize, int numberSystemBase) {

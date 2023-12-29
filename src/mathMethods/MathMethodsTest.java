@@ -77,7 +77,7 @@ class MathMethodsTest {
         BigInteger base = new BigInteger("1");
         BigInteger exp = new BigInteger("0");
         BigInteger mod = new BigInteger("1");
-
+        System.out.println("base = " + base + " exp = " + exp + " mod = " + mod);
         BigInteger expectedResult = base.modPow(exp, mod); // Using Java's built-in modPow method as a reference
         BigInteger actualResult = MathMethods.alternativeQuickExponentiation(base, exp, mod);
 
@@ -206,28 +206,66 @@ class MathMethodsTest {
 
     @Test
     void testPerformanceOfParallelMillerRabinVsMillerRabin() {
+        BigInteger number = new BigInteger("343739715955308939545691391117987800132704566049496335135859248151793918149206619119756660724626712063086796201569784256452606629036433928130351694654329292086244629709724318410807122127054289983753814291813861654343316296116490321676945035304666147301022078109790068726697482080796040521994604710699");
+
+        int warmupCount = 5; // Warm-up iterations
+        int count = 50; // Number of test iterations
         long accumulatedMillerRabinTime = 0;
         long accumulatedParallelMillerRabinTime = 0;
-        for(int i = 0; i < 100; i++) {
-            BigInteger number = new BigInteger("685082020225370353384144714523");
+
+        // Warm-up phase
+        for (int i = 0; i < warmupCount; i++) {
+            MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3));
+        }
+
+        for(int i = 0; i < count; i++) {
             long start = System.nanoTime();
             MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3));
             long end = System.nanoTime();
             accumulatedMillerRabinTime += (end - start);
-            System.out.println("Time needed for Miller-Rabin: " + (end - start));
             start = System.nanoTime();
             MathMethods.parallelMillerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3));
             end = System.nanoTime();
             accumulatedParallelMillerRabinTime += (end - start);
-            System.out.println("Time needed for Parallel Miller-Rabin: " + (end - start));
         }
         //In ms
-        System.out.println("Average time needed for Miller-Rabin: " + (accumulatedMillerRabinTime / 1000000) + " ms");
-        System.out.println("Average time needed for Parallel Miller-Rabin: " + (accumulatedParallelMillerRabinTime / 1000000) + " ms");
+        System.out.println("Average time needed for Miller-Rabin: " + (accumulatedMillerRabinTime / count / 1000000) + " ms");
+        System.out.println("Average time needed for Parallel Miller-Rabin: " + (accumulatedParallelMillerRabinTime / count / 1000000) + " ms");
         assertTrue(accumulatedParallelMillerRabinTime < accumulatedMillerRabinTime);
     }
 
+@Test
+void testGeneratePrimeNumbersPerformance() {
+    int warmupCount = 5; // Warm-up iterations
+    int count = 50; // Number of test iterations
+    long accumulatedTime = 0;
 
+    // Warm-up phase
+    for (int i = 0; i < warmupCount; i++) {
+        MathMethods.generateRandomPrime(BigInteger.valueOf(95), BigInteger.valueOf(1), BigInteger.valueOf(100), 20);
+    }
+
+    for(int i = 0; i < count; i++) {
+        long start = System.nanoTime();
+        MathMethods.generateRandomPrime(BigInteger.valueOf(99), BigInteger.valueOf(1), BigInteger.valueOf(100), 20);
+        long end = System.nanoTime();
+        accumulatedTime += (end - start);
+    }
+    //In ms
+    System.out.println("Average time needed for generating prime numbers: " + (accumulatedTime / count / 1000 ) + " ms");
+}
+
+    @Test
+    void testGeneratePrimeNumbers() {
+        BigInteger m = new BigInteger("10");
+        BigInteger a = new BigInteger("1");
+        BigInteger b = new BigInteger("100");
+        int millerRabinSteps = 20;
+
+        BigInteger result = MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
+        System.out.println(result);
+        //test countOfN from 0 to 100 and check if true, if not true print countOfN
+}
     @Test
     void prepareForEncryptionOne() {
         List<Integer> codeMessage = new ArrayList<>();

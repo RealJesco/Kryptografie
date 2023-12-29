@@ -180,17 +180,7 @@ public class Communicator extends JFrame {
 
 
         startDecode.setPreferredSize(new Dimension(250,25));
-        JButton signMessage = new JButton("Signieren der Nachricht");
-        signMessage.addActionListener(e -> {
-            try {
-                signature = MethodenFromRSA.sign(inputAndOutput.getText(), d, n);
-                signings.setText(signature);
-                currentMessageIsSigned.set(true);
-            } catch (NoSuchAlgorithmException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        signMessage.setPreferredSize(new Dimension(250,25));
+
         JButton sendMessage = new JButton("Nachricht versenden");
         sendMessage.addActionListener(e -> {
             Message message = new Message(inputAndOutput.getText(), signature, thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get(), thisInstance, getReceiver(thisInstance), currentClearMessage.get());
@@ -224,7 +214,6 @@ public class Communicator extends JFrame {
         c1.fill = GridBagConstraints.HORIZONTAL;
         c1.gridx = 0;
         c1.gridy = i++;
-        buttons.add(signMessage,c1);
         c1.fill = GridBagConstraints.HORIZONTAL;
         c1.gridx = 0;
         c1.gridy = i++;
@@ -245,6 +234,21 @@ public class Communicator extends JFrame {
         buttons.setPreferredSize(new Dimension(300,200));
         panel.add(buttons,c);
         signings = getNewTextfield(1, "Eigene Signatur");
+
+        JButton signMessage = new JButton("Signieren der Nachricht");
+        signMessage.addActionListener(e -> {
+            try {
+                signature = MethodenFromRSA.sign(inputAndOutput.getText(), d, n);
+                signings.setText(signature);
+                currentMessageIsSigned.set(true);
+            } catch (NoSuchAlgorithmException ex) {
+                System.out.println("Error while Signing" + ex.toString());
+                throw new RuntimeException(ex);
+            }
+        });
+        signMessage.setPreferredSize(new Dimension(250,25));
+        buttons.add(signMessage,c1);
+
         signingValid = getNewTextfield(2, "Empfangene Signatur gültig");
         JTextArea secretField = new JTextArea();
         secretField.setLineWrap(true);

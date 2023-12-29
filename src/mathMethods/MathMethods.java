@@ -5,7 +5,6 @@ import rsa.RSA;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.*;
@@ -190,6 +189,8 @@ public class MathMethods {
             BigInteger.valueOf(997)
     };
     private static final BigInteger MINUSONE = BigInteger.valueOf(-1);
+    private static final BigDecimal DECIMAL_ONE = BigDecimal.ONE;
+    private static final BigDecimal DECIMAL_ZERO = BigDecimal.ZERO;
 
     /**
      * Performs modular exponentiation using the "square-and-multiply" algorithm.
@@ -200,26 +201,27 @@ public class MathMethods {
      * @return the result of raising the base to the exponent power, modulo the modulus
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
-        if (exp.compareTo(ZERO) < 0) throw new IllegalArgumentException("Exponent must be positive");
-        BigInteger result = ONE;
-        base = base.mod(mod); // Modulo operation, to ensure the base is within mod range
-
-        if(exp.equals(ZERO) && base.equals(ZERO) && mod.equals(ONE)) {
+        if (exp.signum() < 0) throw new IllegalArgumentException("Exponent must be positive");
+        if(exp.equals(ZERO) && mod.equals(ONE)) {
+            System.out.println("0^0 mod 1 is not defined.");
             return ZERO;
         }
-        while (!exp.equals(ZERO)) {
-            // If the exponent is odd, multiply the result by base
-            if (exp.and(ONE).equals(ONE)) {
-                result = (result.multiply(base)).mod(mod);
-            }
+        BigInteger result = BigInteger.ONE;
+        base = base.mod(mod);
 
-            // Square the base and halve the exponent for the next iteration
-            base = (base.multiply(base)).mod(mod);
-            exp = exp.shiftRight(1);
+        while (exp.signum() != 0) {
+            if (exp.testBit(0)) { // Check if exponent is odd
+                result = result.multiply(base).mod(mod);
+            }
+            exp = exp.shiftRight(1); // Halve the exponent
+            if (exp.signum() != 0) { // Only square base if more iterations are required
+                base = base.multiply(base).mod(mod);
+            }
         }
 
-        return result; // Return the accumulated result
+        return result;
     }
+
 
     /**
      * Performs the Extended Euclidean Algorithm to find the greatest common divisor of two numbers.
@@ -359,7 +361,7 @@ public class MathMethods {
     }
 
 
-
+    private static final MathContext context = new MathContext(10);
     /**
      * Generates a random BigInteger within a specified range using the Elsner method.
      *
@@ -374,20 +376,32 @@ public class MathMethods {
         BigDecimal decimalN = new BigDecimal(n);
         BigDecimal decimalA = new BigDecimal(a);
         BigDecimal decimalB = new BigDecimal(b);
-        BigDecimal decimalOne = new BigDecimal(ONE);
-        BigDecimal range = decimalB.subtract(decimalA).add(decimalOne);
-        BigDecimal mathContextRange = range.add(decimalN);
-        int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
-        MathContext context = new MathContext(decadicLogarithm);
-        //Does not throw error, instead increases the number by one
-        if (decimalM.sqrt(context).remainder(BigDecimal.ONE).equals(BigDecimal.ZERO)) {
-            decimalM = decimalM.add(BigDecimal.ONE);
-        }
-        BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context));
-        randomSeededNumber = randomSeededNumber.remainder(decimalOne);
+
+        BigDecimal range = decimalB.subtract(decimalA).add(DECIMAL_ONE);
+        //TODO Check if this is mathematically correct
+//        BigDecimal mathContextRange = range.add(decimalN);
+
+        // If the decimal precision does change much between calls, compute it here as previously
+        // int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
+        // MathContext context = new MathContext(decadicLogarithm);
+
+        // In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
+        // So this condition will never be true. We can comment/remove this condition
+        // if (decimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
+        //     decimalM = decimalM.add(DECIMAL_ONE);
+        // }
+
+        BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context)).remainder(DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         return a.add(randomSeedNumberOffset.toBigInteger());
     }
+
+    private static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
+        return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
+                primeCandidate.mod(smallPrime).equals(ZERO) || primeCandidate.equals(smallPrime)
+        );
+    }
+
 
     /**
      * Generates a random prime number within a specified range.
@@ -399,6 +413,31 @@ public class MathMethods {
      * @return a probable prime number within the range [a, b]
      */
     public static BigInteger generateRandomPrime(BigInteger m, BigInteger a, BigInteger b, int millerRabinSteps) {
+        //Check that input values are valid
+        if (a.compareTo(b) > 0) {
+            throw new IllegalArgumentException("The lower bound must be smaller than the upper bound");
+        }
+        if (a.compareTo(ZERO) < 0) {
+            throw new IllegalArgumentException("The lower bound must be greater than or equal to 0");
+        }
+        if (b.compareTo(ZERO) < 0) {
+            throw new IllegalArgumentException("The upper bound must be greater than or equal to 0");
+        }
+        if (m.compareTo(ZERO) < 0) {
+            throw new IllegalArgumentException("The random seed must be greater than or equal to 0");
+        }
+        if (m.compareTo(b.subtract(a)) > 0) {
+            System.out.println("m: " + m);
+            System.out.println("b: " + b);
+            System.out.println("a: " + a);
+            System.out.println("b - a: " + b.subtract(a));
+            throw new IllegalArgumentException("The random seed must be smaller than the range");
+        }
+        if (m.equals(ZERO)) {
+            throw new IllegalArgumentException("The random seed must be greater than 0");
+        }
+
+
         BigInteger primeCandidate;
         BigInteger copyOfCountOfN = RSA.getCountOfN();
         while (true) {
@@ -447,8 +486,8 @@ public class MathMethods {
         BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
 
         int s = 0;
-        while (d.mod(TWO).equals(ZERO)) {
-            d = d.shiftRight(1); // More efficient division by 2
+        while (!d.testBit(0)) {
+            d = d.shiftRight(1);
             s++;
         }
         for (int i = 0; i < numberOfTests; i++) {
@@ -490,7 +529,6 @@ public class MathMethods {
         BigInteger finalD = possiblePrime.subtract(ONE).shiftRight(s);
         // ForkJoinPool can potentially be more efficient for certain tasks
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        int finalS = s;
         BigInteger possiblePrimeMinusOne = possiblePrime.subtract(ONE);
         BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
         List<Callable<Boolean>> tasks = IntStream.range(0, numberOfTests)
@@ -503,7 +541,7 @@ public class MathMethods {
                         return true;
                     }
 
-                    for (int r = 0; r < finalS; r++) {
+                    for (int r = 0; r < s; r++) {
                         x = alternativeQuickExponentiation(x, TWO, possiblePrime);
                         if (x.equals(possiblePrimeMinusOne)) return true;
                     }
