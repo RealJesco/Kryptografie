@@ -206,6 +206,9 @@ public class MathMethods {
         BigInteger result = BigInteger.ONE;
         base = base.mod(mod); // Modulo operation, to ensure the base is within mod range
 
+        if(exp.equals(ZERO) && base.equals(ZERO) && mod.equals(ONE)) {
+            return ZERO;
+        }
         while (!exp.equals(ZERO)) {
             // If the exponent is odd, multiply the result by base
             if (exp.and(BigInteger.ONE).equals(BigInteger.ONE)) {
@@ -216,7 +219,6 @@ public class MathMethods {
             base = (base.multiply(base)).mod(mod);
             exp = exp.shiftRight(1);
         }
-
         return result; // Return the accumulated result
     }
 
@@ -289,7 +291,7 @@ public class MathMethods {
         if (result.imaginary.compareTo(ZERO) < 0) {
             result.imaginary = result.imaginary.multiply(BigInteger.valueOf(-1));
         }
-        // Überprüfen Sie, ob gcd tatsächlich der ggT ist und p = gcd.real^2 + gcd.imag^2
+        //Check if the found values are correct
         BigInteger c = result.real;
         BigInteger d = result.imaginary;
         if (p.equals(c.multiply(c).add(d.multiply(d)))) {
@@ -315,22 +317,6 @@ public class MathMethods {
      * end
      * d := gk-1
      */
-
-    public static BigInteger[] moveToNextGridPoint(BigInteger a, BigInteger b){
-        BigDecimal aDecimal = new BigDecimal(a);
-        BigDecimal bDecimal = new BigDecimal(b);
-        BigDecimal half = new BigDecimal("0.5");
-
-        //Subtract 1/2 from a and b and round to the nearest BigInteger
-        BigDecimal c = aDecimal.subtract(half);
-        BigDecimal ceilingNumberOfC = c.setScale(0, RoundingMode.CEILING);
-        BigDecimal d = bDecimal.subtract(half);
-        BigDecimal ceilingNumberOfD = d.setScale(0, RoundingMode.CEILING);
-        //Round to the next BigInteger
-        BigInteger[] result = new BigInteger[]{ceilingNumberOfC.toBigInteger(), ceilingNumberOfD.toBigInteger()};
-        return result;
-    }
-
     public static GaussianInteger extendedEuclideanInZi(GaussianInteger a, GaussianInteger b) {
         GaussianInteger gk_minus1 = b;
         GaussianInteger gk = a;
@@ -350,18 +336,12 @@ public class MathMethods {
     }
 
 
-
-
-
-
-
     // Function f for the extended Euclidean algorithm in Z[i]
     public static BigInteger[] f(BigInteger[] z) {
 
         BigInteger realPart = roundHalfUp(z[0]);
         BigInteger imaginaryPart = roundHalfUp(z[1]);
-        BigInteger[] result = new BigInteger[]{realPart, imaginaryPart};
-        return result;
+        return new BigInteger[]{realPart, imaginaryPart};
     }
 
     // Rounds a BigInteger to the nearest integer
@@ -380,22 +360,6 @@ public class MathMethods {
     }
 
 
-
-
-    /**
-     * Generates a random BigInteger less than a given upper limit.
-     *
-     * @param upperLimit the upper limit for the random number
-     * @return a random BigInteger less than the upper limit
-     */
-    public static BigInteger getRandomBigIntegerUpperLimit(BigInteger upperLimit) {
-        SecureRandom random = new SecureRandom();
-        BigInteger randomNumber;
-        do {
-            randomNumber = new BigInteger(upperLimit.bitLength(), random);
-        } while (randomNumber.compareTo(upperLimit) >= 0);
-        return randomNumber;
-    }
 
     /**
      * Generates a random BigInteger within a specified range using the Elsner method.
@@ -466,29 +430,6 @@ public class MathMethods {
         return primeCandidate;
     }
 
-    public static BigInteger getRandomPrimeBigInteger(int length, int m, int millerRabinSteps, SecureRandom random) {
-        if (length == 0) return ZERO;
-        int maxShift = length * 100;
-        MathContext context = new MathContext(maxShift + 3 * length);
-        BigDecimal lengthDecimal = BigDecimal.TEN.pow(length);
-        BigDecimal mRoot = BigDecimal.valueOf(m).sqrt(context).multiply(lengthDecimal);
-        BigInteger prime;
-        boolean isNoMultipleOfSmallPrime;
-        do {
-            isNoMultipleOfSmallPrime = true;
-            prime = mRoot.multiply(BigDecimal.TEN.pow(Math.abs(random.nextInt(maxShift))), context).divideAndRemainder(lengthDecimal, context)[1].toBigInteger();
-            for (BigInteger small : SMALL_PRIMES) {
-                if (prime.mod(small).equals(ZERO)) {
-                    if (prime.equals(small)) {
-                        return prime;
-                    }
-                    isNoMultipleOfSmallPrime = false;
-                    break;
-                }
-            }
-        } while (!isNoMultipleOfSmallPrime || !parallelMillerRabinTest(prime, millerRabinSteps, BigInteger.valueOf(m), BigInteger.valueOf(random.nextInt(m))));
-        return prime;
-    }
 
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
@@ -581,6 +522,16 @@ public class MathMethods {
         }
     }
 
+    /**
+     * This is the block cipher encryption method.
+     * It takes a message and encrypts it using the RSA algorithm.
+     * It has been renamed to encryptMessage to avoid confusion, since it is not strictly speaking a pure block cipher encryption method.
+     * It is used to encrypt the message before it is converted to a list of integers, which is then encrypted using the block cipher.
+     * @param message the message to be encrypted
+     * @param blockSize the block size to be used for the conversion
+     * @param numberSystem the number system to be used for the conversion
+     * @return encryptedBlocks
+     */
     public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem) {
         // Divide message into blocks of size blockSize
         List<List<Integer>> blocks = new ArrayList<>();
@@ -611,6 +562,15 @@ public class MathMethods {
         return encryptedBlocks;
     }
 
+    /**
+     * This is the block cipher decryption method.
+     * It also has been renamed to decryptMessage to avoid confusion, since it is not strictly speaking a pure block cipher decryption method.
+     * It is used to decrypt the message after it is converted to a list of integers, which is then decrypted using the block cipher.
+     * @param message
+     * @param blockSize
+     * @param numberSystem
+     * @return decryptedMessage
+     */
     public static List<Integer> prepareMessageForDecryption(BigInteger message, int blockSize, int numberSystem) {
         List<Integer> decryptedMessage = new ArrayList<>();
 
@@ -638,6 +598,11 @@ public class MathMethods {
         return decryptedMessage;
     }
 
+    /**
+     * This method converts a text message to a list of integers, which are Unicode values of the characters in the text.
+     * @param text
+     * @return
+     */
     public static List<Integer> convertTextToUniCode(String text) {
         List<Integer> unicode = new ArrayList<>();
         for (int i = 0; i < text.length(); i++) {
@@ -646,6 +611,11 @@ public class MathMethods {
         return unicode;
     }
 
+    /**
+     * This method converts a list of integers to a text message, which is a concatenation of the characters with the corresponding Unicode values.
+     * @param unicode
+     * @return
+     */
     public static String convertUniCodeToText(List<Integer> unicode) {
         StringBuilder text = new StringBuilder();
         for (Integer integer : unicode) {

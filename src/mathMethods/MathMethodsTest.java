@@ -8,12 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static mathMethods.MathMethods.extendedEuclideanInZi;
-import static mathMethods.MathMethods.moveToNextGridPoint;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MathMethodsTest {
 
-    //    TODO @Adham Die ersten beiden Fälle habe ich 1 zu 1 aus Main übernommen, brauchen wir die?
     @Test
     void alternativeQuickExponentiationFromMainOne() {
         BigInteger base = new BigInteger("5");
@@ -67,6 +65,18 @@ class MathMethodsTest {
         BigInteger base = new BigInteger("987654321098765445321098765432109876543");
         BigInteger exp = new BigInteger("987654321098765432109876543210468435124");
         BigInteger mod = new BigInteger("1928374651928374651928374651");
+
+        BigInteger expectedResult = base.modPow(exp, mod); // Using Java's built-in modPow method as a reference
+        BigInteger actualResult = MathMethods.alternativeQuickExponentiation(base, exp, mod);
+
+        assertEquals(expectedResult, actualResult, "The alternativeQuickExponentiation method returned an incorrect result.");
+    }
+
+    @Test
+    void alternativeQuickExponentiationZero(){
+        BigInteger base = new BigInteger("1");
+        BigInteger exp = new BigInteger("0");
+        BigInteger mod = new BigInteger("1");
 
         BigInteger expectedResult = base.modPow(exp, mod); // Using Java's built-in modPow method as a reference
         BigInteger actualResult = MathMethods.alternativeQuickExponentiation(base, exp, mod);
@@ -182,6 +192,41 @@ class MathMethodsTest {
         assertFalse(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
+    @Test
+    void parallelMillerRabinIsNotAPrime() {
+        BigInteger number = new BigInteger("12");
+        assertFalse(MathMethods.parallelMillerRabinTest(number, 100, BigInteger.valueOf(221), BigInteger.valueOf(3)));
+    }
+
+    @Test
+    void parallelMillerRabinIsAPrime() {
+        BigInteger number = new BigInteger("13");
+        assertTrue(MathMethods.parallelMillerRabinTest(number, 100, BigInteger.valueOf(844), BigInteger.valueOf(3)));
+    }
+
+    @Test
+    void testPerformanceOfParallelMillerRabinVsMillerRabin() {
+        long accumulatedMillerRabinTime = 0;
+        long accumulatedParallelMillerRabinTime = 0;
+        for(int i = 0; i < 100; i++) {
+            BigInteger number = new BigInteger("685082020225370353384144714523");
+            long start = System.nanoTime();
+            MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3));
+            long end = System.nanoTime();
+            accumulatedMillerRabinTime += (end - start);
+            System.out.println("Time needed for Miller-Rabin: " + (end - start));
+            start = System.nanoTime();
+            MathMethods.parallelMillerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3));
+            end = System.nanoTime();
+            accumulatedParallelMillerRabinTime += (end - start);
+            System.out.println("Time needed for Parallel Miller-Rabin: " + (end - start));
+        }
+        //In ms
+        System.out.println("Average time needed for Miller-Rabin: " + (accumulatedMillerRabinTime / 1000000) + " ms");
+        System.out.println("Average time needed for Parallel Miller-Rabin: " + (accumulatedParallelMillerRabinTime / 1000000) + " ms");
+        assertTrue(accumulatedParallelMillerRabinTime < accumulatedMillerRabinTime);
+    }
+
 
     @Test
     void prepareForEncryptionOne() {
@@ -238,10 +283,23 @@ class MathMethodsTest {
     }
 
     @Test
-    void encryptToDecryptAlternativeQuickExponentiation() {
+    void encryptToDecryptAlternativeQuickExponentiationOnlyWithNumbers() {
         BigInteger message = new BigInteger("12345"); // Example message
+        BigInteger e = new BigInteger("18217281770421758450086481999749147637"); // public exponent
+        BigInteger d = new BigInteger("69856630177376283805385594524728944213"); // private exponent
+        BigInteger n = new BigInteger("152421106944440766760720109679329339863"); // modulus
+
+        BigInteger encryptedMessage = MathMethods.alternativeQuickExponentiation(message, e, n);
+        BigInteger decryptedMessage = MathMethods.alternativeQuickExponentiation(encryptedMessage, d, n);
+
+        assertEquals(message, decryptedMessage, "The decrypted message should match the original message.");
     }
 
+    /**
+     * This test is for testing the whole encryption and decryption cycle.
+     * The finished encrypt and decrypt methods do handle all the logic themselves, including padding and unpadding.
+     * This test is for testing the methods that are used in the encrypt and decrypt methods.
+     */
     @Test
     void testMessagePreparationAndEncryptionDecryptionCycle() {
         // Assuming we have a small RSA key pair for testing (not secure for real use)

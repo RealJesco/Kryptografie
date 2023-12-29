@@ -37,12 +37,6 @@ public class Communicator extends JFrame {
     private ArrayList<Message> messageList = new ArrayList<>();
     private int currentMessageIndex = 0;
 
-    private void receiveMessages() {
-        messageListModel.clear(); // Clear existing messages
-        for (Message message : messageList) {
-            messageListModel.addElement(message); // Add messages to the list model
-        }
-    }
 
     public Communicator(String name, BigInteger n, BigInteger phiN, Point point){
         super(name);

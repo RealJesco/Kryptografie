@@ -1,9 +1,9 @@
 import java.math.BigInteger;
 
 public class Message {
-    private Communicator sender;
+    private final Communicator sender;
 
-    private Communicator receiver;
+    private final Communicator receiver;
     final public String message;
     private final String clearMessage;
     public boolean isEncrypted;
