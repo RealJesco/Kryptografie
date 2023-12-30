@@ -1,11 +1,7 @@
-import mathMethods.MathMethods;
 import rsa.RSA;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class Main {
 
@@ -16,7 +12,7 @@ public class Main {
         // Clock time
         long start = System.nanoTime();
         RSA rsa = new RSA(40, 1024, 55926, BigInteger.valueOf(844));
-        RSA.generatePrimeNumbers();
+        RSA.generateRSAKeys();
         System.out.println("Time needed only to generate primes: " + (System.nanoTime()-start));
         System.out.println("p: " + RSA.getP());
         System.out.println("q: " + RSA.getQ());

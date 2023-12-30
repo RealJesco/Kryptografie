@@ -1,4 +1,4 @@
-import rsa.MethodenFromRSA;
+import rsa.RSA;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -35,12 +35,8 @@ public class Communicator extends JFrame {
         this.name = name;
         this.n = n;
         //berechne inverse zu d -> e
-        try{
-            this.e = MethodenFromRSA.calculateE(phiN, CommunicationPanel.getInstance().getM(), CommunicationPanel.getInstance().getMillerRabinSteps());
-        } catch(Exception e){
-            throw new InvalidParameterException();
-        }
-        this.d = MethodenFromRSA.calculateD(e, phiN);
+        this.e = RSA.getE();
+        this.d = RSA.getD();
 
         thisInstance = this;
 
@@ -95,7 +91,7 @@ public class Communicator extends JFrame {
         startEncode.addActionListener(e -> {
             Communicator receiver = getReceiver(thisInstance);
             try{
-                String encryptedMessage = MethodenFromRSA.encrypt(inputAndOutput.getText(), receiver.e, receiver.n, CommunicationPanel.getInstance().getNumberSystemBase(), CommunicationPanel.getInstance().getBlockSize());
+                String encryptedMessage = RSA.encrypt(inputAndOutput.getText(), receiver.e, receiver.n);
                 currentClearMessage.set(inputAndOutput.getText());
                 inputAndOutput.setText(encryptedMessage);
                 currentMessageIsEncrypted.set(true);
@@ -148,7 +144,7 @@ public class Communicator extends JFrame {
                     //If the message belongs to me, use my private key
                     if(selectedMessage.getReceiver().equals(thisInstance)) {
                         try {
-                            messageToUse = MethodenFromRSA.decrypt(selectedMessage.message, d, n, CommunicationPanel.getInstance().getBlockSize(), CommunicationPanel.getInstance().getNumberSystemBase());
+                            messageToUse = RSA.decrypt(selectedMessage.message, d, n);
                         } catch (Exception f){
                             JOptionPane.showMessageDialog(null, "Error while Decryption" + f.toString());
                             return;
@@ -163,9 +159,9 @@ public class Communicator extends JFrame {
                 if(selectedMessage.isSigned()){
                     try {
                         if(selectedMessage.isEncrypted){
-                            signingValid.setText("" + MethodenFromRSA.verifySignature(selectedMessage.message, selectedMessage.signature, selectedMessage.e, selectedMessage.n));
+                            signingValid.setText("" + RSA.verifySignature(selectedMessage.message, selectedMessage.signature, selectedMessage.e, selectedMessage.n));
                         } else {
-                            signingValid.setText("" + MethodenFromRSA.verifySignature(messageToUse, selectedMessage.signature, selectedMessage.e, selectedMessage.n));
+                            signingValid.setText("" + RSA.verifySignature(messageToUse, selectedMessage.signature, selectedMessage.e, selectedMessage.n));
                         }
                     } catch (NoSuchAlgorithmException ex) {
                         throw new RuntimeException(ex);
@@ -238,7 +234,7 @@ public class Communicator extends JFrame {
         JButton signMessage = new JButton("Signieren der Nachricht");
         signMessage.addActionListener(e -> {
             try {
-                signature = MethodenFromRSA.sign(inputAndOutput.getText(), d, n);
+                signature = RSA.sign(inputAndOutput.getText(), d, n);
                 signings.setText(signature);
                 currentMessageIsSigned.set(true);
             } catch (NoSuchAlgorithmException ex) {

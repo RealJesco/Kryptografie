@@ -193,12 +193,13 @@ public class MathMethods {
     private static final BigDecimal DECIMAL_ZERO = BigDecimal.ZERO;
 
     /**
-     * Performs modular exponentiation using the "square-and-multiply" algorithm.
+     * Calculates the alternative quick exponentiation of a base raised to the power of an exponent modulo a given modulus.
      *
-     * @param base the base number
-     * @param exp  the exponent
-     * @param mod  the modulus
-     * @return the result of raising the base to the exponent power, modulo the modulus
+     * @param base the base value
+     * @param exp the exponent value
+     * @param mod the modulus value
+     * @return the result of the exponentiation
+     * @throws IllegalArgumentException if the exponent is negative or if 0^0 mod 1 is encountered
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
         if (exp.signum() < 0) throw new IllegalArgumentException("Exponent must be positive");
@@ -206,7 +207,7 @@ public class MathMethods {
             System.out.println("0^0 mod 1 is not defined.");
             return ZERO;
         }
-        BigInteger result = BigInteger.ONE;
+        BigInteger result = ONE;
         base = base.mod(mod);
 
         while (exp.signum() != 0) {
@@ -224,12 +225,11 @@ public class MathMethods {
 
 
     /**
-     * Performs the Extended Euclidean Algorithm to find the greatest common divisor of two numbers.
+     * Calculates the extended Euclidean algorithm for two BigIntegers.
      *
-     * @param a the first number
-     * @param b the second number
-     * @return an array of BigIntegers where the first element is the greatest common divisor of a and b,
-     * the second element is the coefficient of a, and the third element is the coefficient of b
+     * @param a the first BigInteger
+     * @param b the second BigInteger
+     * @return an array containing three BigIntegers: [gcd, x, y], where gcd is the greatest common divisor of a and b, and x and y are Bezout's coefficients
      */
     public static BigInteger[] extendedEuclidean(BigInteger a, BigInteger b) {
         if (b.equals(ZERO)) {
@@ -244,6 +244,12 @@ public class MathMethods {
     }
 
 
+    /**
+     * Generates a random BigInteger satisfying Euler's criterion for a given prime number.
+     *
+     * @param p the prime number
+     * @return a random BigInteger satisfying Euler's criterion
+     */
     public static BigInteger eulerCriterion(BigInteger p) {
         SecureRandom rand = new SecureRandom();
         BigInteger z;
@@ -255,6 +261,14 @@ public class MathMethods {
     }
 
 
+    /**
+     * Represents the given prime number as a sum of two squares.
+     *
+     * @param p the prime number to be represented
+     * @return a GaussianInteger representing the prime number as a sum of two squares
+     * @throws IllegalArgumentException if the given number is not a prime number or cannot be represented as a sum of two squares
+     * @throws IllegalStateException    if an error occurs during the calculation
+     */
     public static GaussianInteger representPrimeAsSumOfSquares(BigInteger p) throws IllegalArgumentException {
         //Check if p is a prime number
         if (!p.isProbablePrime(100)) {
@@ -305,18 +319,11 @@ public class MathMethods {
 
 
     /**
-     * Die Berechnung der Darstellung von p kongruent zu 1 mod 4 als Summe von zwei Quadraten
-     * Algorithmus 3.1 (Euklidischer Algorithmus in ZZ[i])
-     * Eingabe: a,b Z[i]
-     * Ausgabe: d = ggT(a,b)
-     * begin (assumption b.abs() > a.abs())
-     * g0 := b, g1 := a, k := 1
-     * while gk != 0 do
-     * berechne ck := gk-1 / gk
-     * berechne gk+1 := gk-1 - gk * f(ck)
-     * k := k + 1
-     * end
-     * d := gk-1
+     * Calculates the extended Euclidean algorithm in Z[i].
+     *
+     * @param a the first GaussianInteger
+     * @param b the second GaussianInteger
+     * @return the greatest common divisor of a and b in Z[i]
      */
     public static GaussianInteger extendedEuclideanInZi(GaussianInteger a, GaussianInteger b) {
         GaussianInteger gk_minus1 = b;
@@ -325,7 +332,7 @@ public class MathMethods {
 
         while (!gk.isZero()) {
             ck = gk_minus1.divide(gk);
-            gk_plus1 = gk_minus1.subtractGaussianInteger(gk.multiply(ck));
+            gk_plus1 = gk_minus1.subtract(gk.multiply(ck));
 
             if (gk.equals(gk_plus1)) {
                 break;
@@ -337,6 +344,12 @@ public class MathMethods {
     }
 
 
+    /**
+     * Returns the rounded value of the given array of BigIntegers.
+     *
+     * @param z an array of BigIntegers [realPart, imaginaryPart]
+     * @return an array of BigIntegers [roundedRealPart, roundedImaginaryPart]
+     */
     // Function f for the extended Euclidean algorithm in Z[i]
     public static BigInteger[] f(BigInteger[] z) {
 
@@ -345,6 +358,12 @@ public class MathMethods {
         return new BigInteger[]{realPart, imaginaryPart};
     }
 
+    /**
+     * Rounds a BigInteger to the nearest integer using the round half up method.
+     *
+     * @param number the BigInteger to be rounded
+     * @return the rounded BigInteger
+     */
     // Rounds a BigInteger to the nearest integer
     public static BigInteger roundHalfUp(BigInteger number) {
         // The rounding logic needs to handle negative numbers differently than positive numbers
@@ -363,12 +382,12 @@ public class MathMethods {
 
     private static final MathContext context = new MathContext(10);
     /**
-     * Generates a random BigInteger within a specified range using the Elsner method.
+     * Generates a random BigInteger within the range [a, b] using Elsner's algorithm.
      *
      * @param m the random seed
-     * @param n the incremental seed shift
-     * @param a the lower bound
-     * @param b the upper bound
+     * @param n the range of randomness
+     * @param a the lower bound inclusive
+     * @param b the upper bound inclusive
      * @return a random BigInteger within the range [a, b]
      */
     public static BigInteger randomElsner(BigInteger m, BigInteger n, BigInteger a, BigInteger b) {
@@ -404,13 +423,14 @@ public class MathMethods {
 
 
     /**
-     * Generates a random prime number within a specified range.
+     * Generates a random prime number within a specified range using the Elsner algorithm and the Miller-Rabin primality test.
      *
      * @param m                the random seed
-     * @param a                the lower bound
-     * @param b                the upper bound
-     * @param millerRabinSteps the number of iterations for the Miller-Rabin primality test
-     * @return a probable prime number within the range [a, b]
+     * @param a                the lower bound (inclusive)
+     * @param b                the upper bound (inclusive)
+     * @param millerRabinSteps the number of Miller-Rabin steps to perform for primality testing
+     * @return a random prime number within the range [a, b]
+     * @throws IllegalArgumentException if the input values are invalid
      */
     public static BigInteger generateRandomPrime(BigInteger m, BigInteger a, BigInteger b, int millerRabinSteps) {
         //Check that input values are valid
@@ -469,6 +489,15 @@ public class MathMethods {
     }
 
 
+    /**
+     * Checks if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
+     *
+     * @param possiblePrime  the number to be tested for primality
+     * @param numberOfTests  the number of Miller-Rabin tests to perform
+     * @param m              the random seed
+     * @param countOfN       a value to increase the randomness of the tests
+     * @return true if the number is probably prime, false otherwise
+     */
     //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
 
@@ -519,7 +548,16 @@ public class MathMethods {
         return true;
     }
 
-    // Parallel Miller-Rabin Test
+    /**
+     * Performs the Parallel Miller-Rabin Test to check if a number is probably prime.
+     *
+     * @param possiblePrime the number to be tested for primality
+     * @param numberOfTests the number of Miller-Rabin tests to perform
+     * @param m             the random seed
+     * @param countOfN      a value to increase the randomness of the tests
+     * @return true if the number is probably prime, false otherwise
+     *
+     */
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
         if (possiblePrime.equals(TWO)) return true;
         if (!possiblePrime.testBit(0)) return false;
@@ -570,12 +608,12 @@ public class MathMethods {
      * @return encryptedBlocks
      */
     public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem) {
-        // Divide message into blocks of size blockSize
+
         List<List<Integer>> blocks = new ArrayList<>();
 
         for (int i = 0; i < message.size(); i++) {
             if (i % blockSize == 0) {
-                blocks.add(new ArrayList<>()); // Initializing each block
+                blocks.add(new ArrayList<>());
             }
             blocks.get(i / blockSize).add(message.get(i));
         }
@@ -585,14 +623,13 @@ public class MathMethods {
         for (List<Integer> block : blocks) {
             BigInteger blockValue = ZERO;
 
-            // For each block go through every character and convert it to a number
-            // in the number system with respect to its index
-            int exponent = blockSize - 1; // Start with the highest exponent
+
+            int exponent = blockSize - 1;
             for (Integer integer : block) {
                 blockValue = blockValue.add(BigInteger.valueOf(integer).multiply(BigInteger.valueOf(numberSystem).pow(exponent)));
-                exponent--; // Decrease the exponent for the next iteration
+                exponent--;
             }
-            // Add the block value to the encryptedBlocks list
+
             encryptedBlocks.add(blockValue);
         }
 
@@ -603,15 +640,14 @@ public class MathMethods {
      * This is the block cipher decryption method.
      * It also has been renamed to decryptMessage to avoid confusion, since it is not strictly speaking a pure block cipher decryption method.
      * It is used to decrypt the message after it is converted to a list of integers, which is then decrypted using the block cipher.
-     * @param message
-     * @param blockSize
-     * @param numberSystem
+     * @param message the message to be decrypted
+     * @param blockSize the block size to be used for the conversion
+     * @param numberSystem the number system to be used for the conversion
      * @return decryptedMessage
      */
     public static List<Integer> prepareMessageForDecryption(BigInteger message, int blockSize, int numberSystem) {
         List<Integer> decryptedMessage = new ArrayList<>();
 
-        // Divide message into blocks of size blockSize
         List<BigInteger> blocks = new ArrayList<>();
 
         BigInteger numberSystemToThePowerOfBlockSize = BigInteger.valueOf(numberSystem).pow(blockSize);
@@ -622,8 +658,6 @@ public class MathMethods {
         }
 
         for (BigInteger block : blocks) {
-            // For each block go through every character and convert it to a number
-            // in the number system with respect to its index
             for (int i = blockSize - 1; i >= 0; i--) {
                 BigInteger numberSystemToThePowerOfI = BigInteger.valueOf(numberSystem).pow(i);
                 BigInteger blockValue = block.divide(numberSystemToThePowerOfI);
@@ -636,9 +670,10 @@ public class MathMethods {
     }
 
     /**
-     * This method converts a text message to a list of integers, which are Unicode values of the characters in the text.
-     * @param text
-     * @return
+     * Converts a given text into a list of unicode values.
+     *
+     * @param text the text to be converted
+     * @return a list of unicode values representing the characters in the text
      */
     public static List<Integer> convertTextToUniCode(String text) {
         List<Integer> unicode = new ArrayList<>();
@@ -649,9 +684,10 @@ public class MathMethods {
     }
 
     /**
-     * This method converts a list of integers to a text message, which is a concatenation of the characters with the corresponding Unicode values.
-     * @param unicode
-     * @return
+     * Converts a list of Unicode values representing characters into a corresponding text.
+     *
+     * @param unicode the list of Unicode values representing characters
+     * @return the text represented by the Unicode values
      */
     public static String convertUniCodeToText(List<Integer> unicode) {
         StringBuilder text = new StringBuilder();

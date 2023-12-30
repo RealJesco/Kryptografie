@@ -10,7 +10,7 @@ public class RSATest {
     @Test
     public void encryptionAndDecryptionShouldReturnOriginalMessage() {
         RSA rsa = new RSA(1000, 4096, 55926, BigInteger.valueOf(844));
-        RSA.generatePrimeNumbers();
+        RSA.generateRSAKeys();
         String originalMessage = "Mathematik ist spannend";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
         String decryptedMessage = RSA.decrypt(encryptedMessage, RSA.getD(), RSA.getN());
@@ -20,7 +20,7 @@ public class RSATest {
     @Test
     public void encryptionAndDecryptionShouldReturnOriginalMessageAgain() {
         RSA rsa = new RSA(40, 1024, 55926, BigInteger.valueOf(844));
-        RSA.generatePrimeNumbers();
+        RSA.generateRSAKeys();
         String originalMessage = "Hello, World!";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
         String decryptedMessage = RSA.decrypt(encryptedMessage, RSA.getD(), RSA.getN());
@@ -33,7 +33,7 @@ public class RSATest {
         RSA.setBitLengthN(256);
         RSA.setNumberSystemBase(55926);
         RSA.setM(BigInteger.valueOf(100));
-        RSA.generatePrimeNumbers();
+        RSA.generateRSAKeys();
         String originalMessage = "";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
         String decryptedMessage = RSA.decrypt(encryptedMessage, RSA.getD(), RSA.getN());
@@ -46,7 +46,7 @@ public class RSATest {
         RSA.setBitLengthN(256);
         RSA.setNumberSystemBase(55926);
         RSA.setM(BigInteger.valueOf(100));
-        RSA.generatePrimeNumbers();
+        RSA.generateRSAKeys();
         String message = "Hello, World!";
         String signature = RSA.sign(message);
         assertTrue(RSA.verifySignature(message, signature));
@@ -58,7 +58,7 @@ public class RSATest {
         RSA.setBitLengthN(256);
         RSA.setNumberSystemBase(55926);
         RSA.setM(BigInteger.valueOf(100));
-        RSA.generatePrimeNumbers();
+        RSA.generateRSAKeys();
         String message = "Hello, World!";
         String invalidSignature = "InvalidSignature";
         // Convert to hex presentation
@@ -72,7 +72,7 @@ public class RSATest {
         RSA.setBitLengthN(256);
         RSA.setNumberSystemBase(55926);
         RSA.setM(BigInteger.valueOf(100));
-        RSA.generatePrimeNumbers();
+        RSA.generateRSAKeys();
         String message = "Hello, World!";
         String invalidSignature = "InvalidSignature";
         assertThrows(IllegalArgumentException.class, () -> RSA.verifySignature(message, invalidSignature));
@@ -85,7 +85,7 @@ public class RSATest {
 //        RSA.setBitLengthN(1024);
 //        RSA.setNumberSystemBase(55926);
 //        RSA.setM(BigInteger.valueOf(844));
-        RSA.generatePrimeNumbers();
+        RSA.generateRSAKeys();
         System.out.println("p: " + RSA.getP());
         System.out.println("q: " + RSA.getQ());
         System.out.println("n2: " + RSA.getN());

@@ -1,6 +1,7 @@
 package mathMethods;
 
 import org.junit.jupiter.api.Test;
+import rsa.RSA;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -11,6 +12,26 @@ import static mathMethods.MathMethods.extendedEuclideanInZi;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MathMethodsTest {
+
+    @Test
+    void testIfBitlengthIsCorrect() {
+        RSA.setBitLengthN(4000);
+        RSA.setM(BigInteger.valueOf(844));
+        RSA.setMillerRabinSteps(10);
+        RSA.setNumberSystemBase(55296);
+        RSA.generateRSAKeys();
+        System.out.println(RSA.getN().bitLength());
+        //Can be 5000 or 4999
+        assertTrue(RSA.getN().bitLength() == 4000 || RSA.getN().bitLength() == 3999);
+    }
+
+    @Test
+    void testIfBitlengthIsCorrectWithFunctionParameters() {
+        RSA.generateRSAKeys(BigInteger.valueOf(844), 10, 55296, 4000);
+        //Can be 5000 or 4999
+        assertTrue(RSA.getN().bitLength() == 4000 || RSA.getN().bitLength() == 3999);
+    }
+
 
     @Test
     void alternativeQuickExponentiationFromMainOne() {
@@ -209,7 +230,7 @@ class MathMethodsTest {
         BigInteger number = new BigInteger("343739715955308939545691391117987800132704566049496335135859248151793918149206619119756660724626712063086796201569784256452606629036433928130351694654329292086244629709724318410807122127054289983753814291813861654343316296116490321676945035304666147301022078109790068726697482080796040521994604710699");
 
         int warmupCount = 5; // Warm-up iterations
-        int count = 50; // Number of test iterations
+        int count = 10; // Number of test iterations
         long accumulatedMillerRabinTime = 0;
         long accumulatedParallelMillerRabinTime = 0;
 

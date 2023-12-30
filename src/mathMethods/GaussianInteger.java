@@ -5,14 +5,12 @@ import java.math.BigInteger;
 import static java.math.BigInteger.ZERO;
 
 public class GaussianInteger {
-//    public final BigInteger[] gaussianInteger;
     public BigInteger real;
     public BigInteger imaginary;
 
     public GaussianInteger(BigInteger real, BigInteger imaginary) {
         this.real = real;
         this.imaginary = imaginary;
-//        this.gaussianInteger = new BigInteger[]{real, imaginary};
     }
 
     public boolean isZero() {
@@ -22,7 +20,7 @@ public class GaussianInteger {
         return this.real.equals(b.real) && this.imaginary.equals(b.imaginary);
     }
     public boolean isMultiple(GaussianInteger b) {
-        // Avoid division by zero
+
         if (b.real.equals(BigInteger.ZERO) && b.imaginary.equals(BigInteger.ZERO)) {
             return false;
         }
@@ -30,18 +28,16 @@ public class GaussianInteger {
         GaussianInteger quotient = this.divide(b);
         GaussianInteger product = quotient.multiply(b);
 
-        // Check if multiplying the quotient by b results in a, without rounding
+
         return this.equals(product);
     }
 
     public GaussianInteger divide(GaussianInteger b) {
         BigInteger normB = b.real.pow(2).add(b.imaginary.pow(2));
 
-        // Compute the real part of the quotient
         BigInteger realNumerator = this.real.multiply(b.real).add(this.imaginary.multiply(b.imaginary));
         BigInteger realPart = MathMethods.roundHalfUp(realNumerator.divide(normB));
 
-        // Compute the imaginary part of the quotient
         BigInteger imagNumerator = this.imaginary.multiply(b.real).subtract(this.real.multiply(b.imaginary)); // Use subtraction here
         BigInteger imagPart = MathMethods.roundHalfUp(imagNumerator.divide(normB));
 
@@ -55,17 +51,26 @@ public class GaussianInteger {
         return new GaussianInteger(realPart, imaginaryPart);
     }
 
-    public GaussianInteger subtractGaussianInteger(GaussianInteger b) {
+    public GaussianInteger subtract(GaussianInteger b) {
         BigInteger realPart = this.real.subtract(b.real);
         BigInteger imaginaryPart = this.imaginary.subtract(b.imaginary);
         return new GaussianInteger(realPart, imaginaryPart);
     }
-    public GaussianInteger addGaussianIntegers(GaussianInteger b) {
+    public GaussianInteger add(GaussianInteger b) {
         BigInteger realPart = this.real.add(b.real);
         BigInteger imaginaryPart = this.imaginary.add(b.imaginary);
         return new GaussianInteger(realPart, imaginaryPart);
     }
 
+    /**
+     * Normalizes the GaussianInteger object by removing any common factors of the real and imaginary parts.
+     * If both the real and imaginary parts are zero, it returns a new GaussianInteger object with zero values.
+     * If the real part is zero, it returns a new GaussianInteger object with only the imaginary part.
+     * If the imaginary part is zero, it returns a new GaussianInteger object with only the real part.
+     * Otherwise, it returns the unchanged GaussianInteger object.
+     *
+     * @return the normalized GaussianInteger object
+     */
     public GaussianInteger normalizeGCD() {
         if (this.real.equals(BigInteger.ZERO) && this.imaginary.equals(BigInteger.ZERO)) {
             return new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);

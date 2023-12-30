@@ -1,17 +1,14 @@
 
-import rsa.MethodenFromRSA;
+import rsa.RSA;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 
 public class CommunicationPanel extends JFrame {
     private static final CommunicationPanel singleton = new CommunicationPanel();
 
-    private int blockSize;
 
     private static JPanel panel;
     private static JTextField nonCubicNumberMField;
@@ -50,38 +47,36 @@ public class CommunicationPanel extends JFrame {
 
         nonCubicNumberMField.setText("844");
         onlyAllowNumbers(nonCubicNumberMField);
-        numberSystemBaseField.setText("55926");
+        numberSystemBaseField.setText("55296");
         onlyAllowNumbers(numberSystemBaseField);
         millerRabinStepsField.setText("100");
         onlyAllowNumbers(millerRabinStepsField);
         primeBitLengthField.setText("1024");
         onlyAllowNumbers(primeBitLengthField);
 
-        calculateBlockSize();
 
         generateCommunicators.addActionListener(e -> {
             disposeCommunicators();
 
+            RSA.setNumberSystemBase(getIntOfField(numberSystemBaseField));
+            RSA.setBitLengthN(getIntOfField(primeBitLengthField));
+            RSA.setMillerRabinSteps(getIntOfField(millerRabinStepsField));
+            RSA.setM(getBigIntegerOfField(nonCubicNumberMField));
             // Generate unique prime numbers and keys for Alice
-            BigInteger AliceTempP = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps());
-            BigInteger AliceTempQ = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps(), AliceTempP);
-            BigInteger AliceN = AliceTempP.multiply(AliceTempQ);
-            BigInteger AlicePhiN = (AliceTempP.subtract(BigInteger.ONE)).multiply(AliceTempQ.subtract(BigInteger.ONE));
+            RSA.generateRSAKeys();
+
             try{
-                Alice = new Communicator("Alice", AliceN, AlicePhiN, new Point(900, 0));
+                Alice = new Communicator("Alice", RSA.getN(), RSA.getPhiN(), new Point(900, 0));
             } catch (Exception f){
                 JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e.toString());
                 disposeCommunicators();
                 return;
             }
 
-            // Generate unique prime numbers and keys for Bob
-            BigInteger BobTempP = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps());
-            BigInteger BobTempQ = MethodenFromRSA.calculatePrimeByBitLength(getPrimeBitLength().divide(BigInteger.TWO), getM(), getMillerRabinSteps(), BobTempP);
-            BigInteger BobN = BobTempP.multiply(BobTempQ);
-            BigInteger BobPhiN = (BobTempP.subtract(BigInteger.ONE)).multiply(BobTempQ.subtract(BigInteger.ONE));
+            RSA.generateRSAKeys();
+
             try{
-                Bob = new Communicator("Bob", BobN, BobPhiN, new Point(900, 400));
+                Bob = new Communicator("Bob", RSA.getN(), RSA.getPhiN(), new Point(900, 400));
             } catch (Exception f){
                 JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e.toString());
                 disposeCommunicators();
@@ -106,18 +101,6 @@ public class CommunicationPanel extends JFrame {
                     nonCubicNumberMField.setText("");
                     JOptionPane.showMessageDialog(null, "Input must be a non-square number");
                 }
-            }
-        });
-        numberSystemBaseField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                calculateBlockSize();
-            }
-        });
-        primeBitLengthField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                calculateBlockSize();
             }
         });
 
@@ -206,33 +189,22 @@ public class CommunicationPanel extends JFrame {
     private BigInteger getBigIntegerOfField(JTextField field) throws NumberFormatException{
         return BigInteger.valueOf(Long.parseLong(field.getText()));
     }
+    private int getIntOfField(JTextField field) throws NumberFormatException{
+        return Integer.parseInt(field.getText());
+    }
 
-    public int getMillerRabinSteps() throws NumberFormatException {return getBigIntegerOfField(millerRabinStepsField).intValue();
+    public int getMillerRabinSteps() throws NumberFormatException {
+        return getBigIntegerOfField(millerRabinStepsField).intValue();
     }
+
     public BigInteger getM() throws NumberFormatException {
-        BigInteger m = getBigIntegerOfField(nonCubicNumberMField);
-        BigDecimal mSqrt = new BigDecimal(m).sqrt(new MathContext(100));
-        if(!m.equals(BigInteger.TWO) && mSqrt.divide(BigDecimal.ONE) != BigDecimal.ZERO) {
-            return getBigIntegerOfField(nonCubicNumberMField);
-        } else {
-            throw new NumberFormatException("M ist eine Quadratzahl");
-        }
+        return getBigIntegerOfField(nonCubicNumberMField);
     }
-    public int getNumberSystemBase() throws NumberFormatException {
-        return Integer.parseInt(numberSystemBaseField.getText());
-    }
+
     public BigInteger getPrimeBitLength() throws NumberFormatException {
         return getBigIntegerOfField(primeBitLengthField);
     }
-    public void calculateBlockSize(){
-        try{
-            this.blockSize = (int)(Integer.parseInt(primeBitLengthField.getText()) * (Math.log(2) / Math.log(Integer.parseInt(numberSystemBaseField.getText()))));
-        } catch(Exception e){
-            JOptionPane.showMessageDialog(null, "Error in calculation of blockSize");
-            this.blockSize = 0;
-        }
-    }
-    public int getBlockSize() {
-        return blockSize;
-    }
+
+
+
 }
