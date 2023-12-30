@@ -19,6 +19,16 @@ public class GaussianInteger {
     public boolean equals(GaussianInteger b) {
         return this.real.equals(b.real) && this.imaginary.equals(b.imaginary);
     }
+
+    public boolean isSymmetricallyEqualTo(GaussianInteger b) {
+        return this.real.equals(b.imaginary) && this.imaginary.equals(b.real);
+    }
+    /**
+     * Checks if this GaussianInteger is a multiple of the given GaussianInteger.
+     *
+     * @param b the GaussianInteger to check for multiple
+     * @return true if this GaussianInteger is a multiple of the given GaussianInteger, false otherwise
+     */
     public boolean isMultiple(GaussianInteger b) {
 
         if (b.real.equals(BigInteger.ZERO) && b.imaginary.equals(BigInteger.ZERO)) {
@@ -30,6 +40,9 @@ public class GaussianInteger {
 
 
         return this.equals(product);
+    }
+    public boolean isSymmetricTo(GaussianInteger b) {
+        return this.real.equals(b.imaginary) && this.imaginary.equals(b.real);
     }
 
     public GaussianInteger divide(GaussianInteger b) {

@@ -334,9 +334,11 @@ public class MathMethods {
             ck = gk_minus1.divide(gk);
             gk_plus1 = gk_minus1.subtract(gk.multiply(ck));
 
-            if (gk.equals(gk_plus1)) {
+
+            if (gk.equals(gk_plus1) || gk.isSymmetricallyEqualTo(gk_plus1)) {
                 break;
             }
+
             gk_minus1 = gk;
             gk = gk_plus1;
         }

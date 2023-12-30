@@ -479,6 +479,14 @@ void testGeneratePrimeNumbersPerformance() {
     }
 
     @Test
+    void testCalculateBlockSize(){
+        RSA.setBitLengthN(2048);
+        RSA.setNumberSystemBase(55296);
+        System.out.println(RSA.getBlockSize());
+        assertTrue(RSA.getBlockSize() == 129);
+    }
+
+    @Test
     void testPrepareMessageForDecryption() {
         BigInteger message = new BigInteger("1234567890");
         int blockSize = 4;
@@ -544,17 +552,17 @@ void testGeneratePrimeNumbersPerformance() {
         assertEquals(b.imaginary, gcd.imaginary, "Imaginary part of GCD with zero input is incorrect");
     }
 
-//    @Test
-//    void testGaussianExtendedEuclideanSymmetryOfValues() {
-//        BigInteger[] a = {new BigInteger("3"), new BigInteger("2")}; // 3 + 2i
-//        BigInteger[] b = {new BigInteger("2"), new BigInteger("3")}; // 2 + 3i
-//
-//        BigInteger[] gcdAB = extendedEuclideanInZi(a, b);
-//        BigInteger[] gcdBA = extendedEuclideanInZi(b, a);
-//
-//        assertEquals(gcdAB[0], gcdBA[0], "Real part of GCD should be symmetric");
-//        assertEquals(gcdAB[1], gcdBA[1], "Imaginary part of GCD should be symmetric");
-//    }
+    @Test
+    void testGaussianExtendedEuclideanSymmetryOfValues() {
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), BigInteger.TWO); // 3 + 2i
+        GaussianInteger b = new GaussianInteger(BigInteger.TWO, new BigInteger("3")); // 2 + 3i
+
+        GaussianInteger gcdAB = extendedEuclideanInZi(a, b);
+        GaussianInteger gcdBA = extendedEuclideanInZi(b, a);
+
+        assertEquals(gcdAB.real, gcdBA.imaginary, "Real part of GCD should be symmetric");
+        assertEquals(gcdAB.imaginary, gcdBA.real, "Imaginary part of GCD should be symmetric");
+    }
 
 
     @Test

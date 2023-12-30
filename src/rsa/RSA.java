@@ -96,6 +96,9 @@ public class RSA {
     public static int getBitLengthN(){
         return bitLengthN;
     }
+    public static int getBlockSize(){
+        return blockSize;
+    }
     public static int getMillerRabinSteps(){
         return millerRabinSteps;
     }
