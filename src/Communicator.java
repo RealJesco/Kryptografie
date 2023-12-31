@@ -96,7 +96,7 @@ public class Communicator extends JFrame {
                 inputAndOutput.setText(encryptedMessage);
                 currentMessageIsEncrypted.set(true);
             } catch (Exception f){
-                JOptionPane.showMessageDialog(null, "Error while Encryption" + f.toString());
+                JOptionPane.showMessageDialog(null, "Error while Encryption" + f);
                 return;
             }
         });
@@ -131,7 +131,6 @@ public class Communicator extends JFrame {
         });
         startEncode.setPreferredSize(new Dimension(250,25));
         JButton startDecode = new JButton("Entschlüsseln");
-        startDecode = new JButton("Entschlüsseln");
         startDecode.addActionListener(e -> {
             Message selectedMessage = messageListJ.getSelectedValue(); // Get selected message
             //If none are selected, get the last one
@@ -146,7 +145,7 @@ public class Communicator extends JFrame {
                         try {
                             messageToUse = RSA.decrypt(selectedMessage.message, d, n);
                         } catch (Exception f){
-                            JOptionPane.showMessageDialog(null, "Error while Decryption" + f.toString());
+                            JOptionPane.showMessageDialog(null, "Error while Decryption" + f);
                             return;
                         }
                     } else {
@@ -210,9 +209,6 @@ public class Communicator extends JFrame {
         c1.fill = GridBagConstraints.HORIZONTAL;
         c1.gridx = 0;
         c1.gridy = i++;
-        c1.fill = GridBagConstraints.HORIZONTAL;
-        c1.gridx = 0;
-        c1.gridy = i++;
         buttons.add(sendMessage,c1);
         c1.fill = GridBagConstraints.HORIZONTAL;
         c1.gridx = 0;
@@ -238,7 +234,7 @@ public class Communicator extends JFrame {
                 signings.setText(signature);
                 currentMessageIsSigned.set(true);
             } catch (NoSuchAlgorithmException ex) {
-                System.out.println("Error while Signing" + ex.toString());
+                System.out.println("Error while Signing" + ex);
                 throw new RuntimeException(ex);
             }
         });
