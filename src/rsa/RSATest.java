@@ -9,7 +9,7 @@ public class RSATest {
 
     @Test
     public void encryptionAndDecryptionShouldReturnOriginalMessage() {
-        RSA rsa = new RSA(1000, 4096, 55926, BigInteger.valueOf(844));
+        RSA rsa = new RSA(1000, 512, 55926, BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String originalMessage = "Mathematik ist spannend";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
@@ -19,7 +19,7 @@ public class RSATest {
     //Test again
     @Test
     public void encryptionAndDecryptionShouldReturnOriginalMessageAgain() {
-        RSA rsa = new RSA(40, 1024, 55926, BigInteger.valueOf(844));
+        RSA rsa = new RSA(40, 512, 55926, BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String originalMessage = "Hello, World!";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
@@ -32,7 +32,7 @@ public class RSATest {
         RSA.setMillerRabinSteps(10);
         RSA.setBitLengthN(256);
         RSA.setNumberSystemBase(55926);
-        RSA.setM(BigInteger.valueOf(100));
+        RSA.setM(BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String originalMessage = "";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
@@ -45,7 +45,7 @@ public class RSATest {
         RSA.setMillerRabinSteps(10);
         RSA.setBitLengthN(256);
         RSA.setNumberSystemBase(55926);
-        RSA.setM(BigInteger.valueOf(100));
+        RSA.setM(BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String message = "Hello, World!";
         String signature = RSA.sign(message);
@@ -57,7 +57,7 @@ public class RSATest {
         RSA.setMillerRabinSteps(10);
         RSA.setBitLengthN(256);
         RSA.setNumberSystemBase(55926);
-        RSA.setM(BigInteger.valueOf(100));
+        RSA.setM(BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String message = "Hello, World!";
         String invalidSignature = "InvalidSignature";
@@ -67,20 +67,35 @@ public class RSATest {
     }
     //Test if non-hex presentation throws exception
     @Test
-    public void signatureVerificationShouldThrowExceptionForNonHexPresentation() throws NoSuchAlgorithmException {
+    public void signatureVerificationShouldThrowExceptionForNonHexPresentation() {
         RSA.setMillerRabinSteps(10);
         RSA.setBitLengthN(256);
         RSA.setNumberSystemBase(55926);
-        RSA.setM(BigInteger.valueOf(100));
+        RSA.setM(BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String message = "Hello, World!";
         String invalidSignature = "InvalidSignature";
         assertThrows(IllegalArgumentException.class, () -> RSA.verifySignature(message, invalidSignature));
     }
+    @Test
+    public void illegalMValue() {
+        assertThrows(IllegalArgumentException.class, () -> RSA.setM(BigInteger.valueOf(100)));
+    }
+    @Test
+    public void bitLengthOfNIsOdd() {
+        RSA.setMillerRabinSteps(10);
+        RSA.setBitLengthN(257);
+        RSA.setNumberSystemBase(55926);
+        RSA.setM(BigInteger.valueOf(844));
+        RSA.generateRSAKeys();
+
+        assertEquals(RSA.getBitLengthN(), RSA.getN().bitLength());
+    }
+
     //Speed tests
     @Test
     public void speedTestForEncryptionAndDecryption() {
-        RSA rsa = new RSA(40, 1024, 55926, BigInteger.valueOf(844));
+        RSA rsa = new RSA(40, 512, 55926, BigInteger.valueOf(844));
 //        RSA.setMillerRabinSteps(40);
 //        RSA.setBitLengthN(1024);
 //        RSA.setNumberSystemBase(55926);
@@ -101,9 +116,9 @@ public class RSATest {
     @Test
     public void speedTestForOnlyCalculatingP(){
         RSA.setMillerRabinSteps(100);
-        RSA.setBitLengthN(2048);
+        RSA.setBitLengthN(512);
         RSA.setNumberSystemBase(55926);
-        RSA.setM(BigInteger.valueOf(100));
+        RSA.setM(BigInteger.valueOf(844));
         long start = System.nanoTime();
         RSA.calculateP(BigInteger.valueOf(RSA.getBitLengthN()/2));
         System.out.println("Time needed only to generate p: " + (System.nanoTime()-start) / 1000000 + " ms");

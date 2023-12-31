@@ -57,18 +57,24 @@ public class CommunicationPanel extends JFrame {
 
         generateCommunicators.addActionListener(e -> {
             disposeCommunicators();
+            try{
 
-            RSA.setNumberSystemBase(getIntOfField(numberSystemBaseField));
-            RSA.setBitLengthN(getIntOfField(primeBitLengthField));
-            RSA.setMillerRabinSteps(getIntOfField(millerRabinStepsField));
-            RSA.setM(getBigIntegerOfField(nonCubicNumberMField));
-            // Generate unique prime numbers and keys for Alice
-            RSA.generateRSAKeys();
+                RSA.setNumberSystemBase(getIntOfField(numberSystemBaseField));
+                RSA.setBitLengthN(getIntOfField(primeBitLengthField));
+                RSA.setMillerRabinSteps(getIntOfField(millerRabinStepsField));
+                RSA.setM(getBigIntegerOfField(nonCubicNumberMField));
+                // Generate unique prime numbers and keys for Alice
+                RSA.generateRSAKeys();
+            } catch (Exception f){
+                JOptionPane.showMessageDialog(null, "Error in Generation of RSA-Instance: " + e);
+                disposeCommunicators();
+                return;
+            }
 
             try{
                 Alice = new Communicator("Alice", RSA.getN(), RSA.getPhiN(), new Point(900, 0));
             } catch (Exception f){
-                JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e.toString());
+                JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e);
                 disposeCommunicators();
                 return;
             }
@@ -78,7 +84,7 @@ public class CommunicationPanel extends JFrame {
             try{
                 Bob = new Communicator("Bob", RSA.getN(), RSA.getPhiN(), new Point(900, 400));
             } catch (Exception f){
-                JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e.toString());
+                JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e);
                 disposeCommunicators();
                 return;
             }
@@ -95,7 +101,7 @@ public class CommunicationPanel extends JFrame {
             public void focusLost(FocusEvent e) {
                 int value = Integer.parseInt(nonCubicNumberMField.getText());
                 double sqrt = Math.sqrt(value);
-                if(!(sqrt != Math.floor(sqrt) && value > 2)) {
+                if(sqrt == Math.floor(sqrt)) {
                     // Handle the case where the input is a perfect square
                     // For example, you could reset the field and show an error message
                     nonCubicNumberMField.setText("");

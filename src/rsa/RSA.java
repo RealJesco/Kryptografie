@@ -121,6 +121,10 @@ public class RSA {
         RSA.blockSizePlusOne = blockSizePlusOne;
     }
     public static void setM(BigInteger m){
+        double sqrt = Math.sqrt(m.intValue());
+        if(sqrt == Math.floor(sqrt)){
+            throw new IllegalArgumentException("Cubic-numbers aren't allowed here");
+        }
         RSA.m = m;
     }
     public static void setCountOfN(BigInteger countOfN){
@@ -180,9 +184,15 @@ public class RSA {
     private static void keyGenerator(){
         // Calculate bit length of p and q
         int bitLengthPQ = bitLengthN / 2;
-        calculateP(BigInteger.valueOf(bitLengthPQ));
-        calculateQ(BigInteger.valueOf(bitLengthPQ));
-        calculateN(p, q);
+        do{
+            calculateP(BigInteger.valueOf(bitLengthPQ));
+            if(bitLengthN % 2 == 1){
+                calculateQ(BigInteger.valueOf(bitLengthPQ+1));
+            } else {
+                calculateQ(BigInteger.valueOf(bitLengthPQ));
+            }
+            calculateN(p, q);
+        } while(n.bitLength()!=bitLengthN);
         calculatePhiN(p, q);
         calculateE(phiN);
         calculateD(e, phiN);
