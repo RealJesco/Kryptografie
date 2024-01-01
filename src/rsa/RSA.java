@@ -154,23 +154,46 @@ public class RSA {
     public static void calculateD(BigInteger e, BigInteger phiN){
         d = MathMethods.extendedEuclidean(e, phiN)[1].mod(phiN);
     }
-    public static void calculateP(BigInteger bitLengthP){
-        BigInteger possibleP;
-        a = TWO.pow(bitLengthP.intValue() - 1);
-        b = TWO.pow(bitLengthP.intValue());
-        do {
-            possibleP = generateRandomPrime(m,a, b, millerRabinSteps);
-        } while (possibleP.equals(q));
-        p = possibleP;
+
+    /**
+     * This method is used to generate and set the prime number 'P'
+     * of the RSA Key pair
+     *
+     * @param halfBitLength The half bit length of N.
+     */
+    public static void generateP(BigInteger halfBitLength){
+        p = generateUniquePrime(halfBitLength);
     }
-    public static void calculateQ(BigInteger bitLengthQ){
-        BigInteger possibleQ;
-        a = TWO.pow(bitLengthQ.intValue() -1);
-        b = TWO.pow(bitLengthQ.intValue());
-        do {
-            possibleQ = generateRandomPrime(m,a, b, millerRabinSteps);
-        } while (possibleQ.equals(p));
-        q = possibleQ;
+
+    /**
+     * This method is used to generate and set the prime number 'Q'
+     * of the RSA Key pairs
+     *
+     * @param halfBitLength The half bit length of N.
+     */
+    public static void generateQ(BigInteger halfBitLength){
+        q = generateUniquePrime(halfBitLength);
+    }
+
+    /**
+     * This private helper method helps to generate a unique prime number
+     * for the RSA Key pair.
+     *
+     * It generates a random prime number in the range of the provided bit length.
+     * If the generated prime number is equal to the provided BigInteger to compare with,
+     * the process will be repeated until a different prime number is generated.
+     * It no longer needs to check for equality with the other prime number, since a
+     * global counter is used to ensure that the displacement in the seed of randomElsner can never be the same at runtime.
+     *
+     * @param bitLength The bit length of the prime number to generate.
+     * @return BigInteger A prime number
+     */
+    private static BigInteger generateUniquePrime(BigInteger bitLength) {
+        BigInteger possiblePrime;
+        BigInteger lowerBound = TWO.pow(bitLength.intValue() - 1);
+        BigInteger upperBound = TWO.pow(bitLength.intValue());
+            possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps);
+        return possiblePrime;
     }
 
 
@@ -185,11 +208,11 @@ public class RSA {
         // Calculate bit length of p and q
         int bitLengthPQ = bitLengthN / 2;
         do{
-            calculateP(BigInteger.valueOf(bitLengthPQ));
+            generateP(BigInteger.valueOf(bitLengthPQ));
             if(bitLengthN % 2 == 1){
-                calculateQ(BigInteger.valueOf(bitLengthPQ+1));
+                generateQ(BigInteger.valueOf(bitLengthPQ+1));
             } else {
-                calculateQ(BigInteger.valueOf(bitLengthPQ));
+                generateQ(BigInteger.valueOf(bitLengthPQ));
             }
             calculateN(p, q);
         } while(n.bitLength()!=bitLengthN);

@@ -120,7 +120,7 @@ public class RSATest {
         RSA.setNumberSystemBase(55926);
         RSA.setM(BigInteger.valueOf(844));
         long start = System.nanoTime();
-        RSA.calculateP(BigInteger.valueOf(RSA.getBitLengthN()/2));
+        RSA.generateP(BigInteger.valueOf(RSA.getBitLengthN()/2));
         System.out.println("Time needed only to generate p: " + (System.nanoTime()-start) / 1000000 + " ms");
     }
 }

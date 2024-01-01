@@ -203,20 +203,21 @@ public class MathMethods {
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
         if (exp.signum() < 0) throw new IllegalArgumentException("Exponent must be positive");
-        if(exp.equals(ZERO) && mod.equals(ONE)) {
+        if (exp.equals(ZERO) && mod.equals(ONE)) {
             System.out.println("0^0 mod 1 is not defined.");
             return ZERO;
         }
+
         BigInteger result = ONE;
         base = base.mod(mod);
 
         while (exp.signum() != 0) {
             if (exp.testBit(0)) { // Check if exponent is odd
-                result = result.multiply(base).mod(mod);
+                result = (result.multiply(base)).mod(mod);
             }
             exp = exp.shiftRight(1); // Halve the exponent
-            if (exp.signum() != 0) { // Only square base if more iterations are required
-                base = base.multiply(base).mod(mod);
+            if (exp.signum() != 0) {
+                base = (base.multiply(base)).mod(mod);
             }
         }
 
@@ -383,9 +384,19 @@ public class MathMethods {
 
 
     private static final MathContext context = new MathContext(10);
+    private static BigInteger randomElsnerA = BigInteger.ZERO;
+    private static BigInteger randomElsnerB = BigInteger.ZERO;
+    private static BigInteger randomElsnerM = BigInteger.ZERO;
+    private static BigDecimal randomElsnerDecimalA = BigDecimal.ZERO;
+    private static BigDecimal randomElsnerDecimalB = BigDecimal.ZERO;
+    private static BigDecimal randomElsnerDecimalM = BigDecimal.ZERO;
+    private static BigDecimal range = BigDecimal.ZERO;
     /**
      * Generates a random BigInteger within the range [a, b] using Elsner's algorithm.
-     *
+     * The precision was chosen to be 10 decimal places for the sake of performance.
+     * This precision only affects the decimal part of the number, not the binary bit length.
+     * The binary bit length will still be the proper length and the numbers don't suddenly have trailing zeros.
+     * TODO Add a test that proves it. So far it has only been tested manually.
      * @param m the random seed
      * @param n the range of randomness
      * @param a the lower bound inclusive
@@ -393,26 +404,34 @@ public class MathMethods {
      * @return a random BigInteger within the range [a, b]
      */
     public static BigInteger randomElsner(BigInteger m, BigInteger n, BigInteger a, BigInteger b) {
-        BigDecimal decimalM = new BigDecimal(m);
+        if(!randomElsnerM.equals(m) || !randomElsnerA.equals(a) || !randomElsnerB.equals(b)) {
+            randomElsnerDecimalM = new BigDecimal(m);
+            randomElsnerDecimalA = new BigDecimal(a);
+            randomElsnerDecimalB = new BigDecimal(b);
+            randomElsnerM = m;
+            randomElsnerA = a;
+            randomElsnerB = b;
+            range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(DECIMAL_ONE);
+        }
+//        BigDecimal decimalM = new BigDecimal(m);
         BigDecimal decimalN = new BigDecimal(n);
-        BigDecimal decimalA = new BigDecimal(a);
-        BigDecimal decimalB = new BigDecimal(b);
+//        BigDecimal decimalA = new BigDecimal(a);
+//        BigDecimal decimalB = new BigDecimal(b);
 
-        BigDecimal range = decimalB.subtract(decimalA).add(DECIMAL_ONE);
-        //TODO Check if this is mathematically correct
+//        BigDecimal range = decimalB.subtract(decimalA).add(DECIMAL_ONE);
 //        BigDecimal mathContextRange = range.add(decimalN);
 
         // If the decimal precision does change much between calls, compute it here as previously
-        // int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
-        // MathContext context = new MathContext(decadicLogarithm);
+//         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
+//         MathContext context = new MathContext(decadicLogarithm);
 
         // In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
         // So this condition will never be true. We can comment/remove this condition
-        // if (decimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
-        //     decimalM = decimalM.add(DECIMAL_ONE);
-        // }
+         if (randomElsnerDecimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
+             randomElsnerDecimalM = randomElsnerDecimalM.add(DECIMAL_ONE);
+         }
 
-        BigDecimal randomSeededNumber = decimalN.multiply(decimalM.sqrt(context)).remainder(DECIMAL_ONE);
+        BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         return a.add(randomSeedNumberOffset.toBigInteger());
     }
