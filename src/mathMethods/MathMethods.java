@@ -421,15 +421,15 @@ public class MathMethods {
 //        BigDecimal range = decimalB.subtract(decimalA).add(DECIMAL_ONE);
 //        BigDecimal mathContextRange = range.add(decimalN);
 
-        // If the decimal precision does change much between calls, compute it here as previously
 //         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
 //         MathContext context = new MathContext(decadicLogarithm);
 
         // In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
         // So this condition will never be true. We can comment/remove this condition
-         if (randomElsnerDecimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
-             randomElsnerDecimalM = randomElsnerDecimalM.add(DECIMAL_ONE);
-         }
+//         if (randomElsnerDecimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
+//             System.out.println("It happens");
+//             randomElsnerDecimalM = randomElsnerDecimalM.add(DECIMAL_ONE);
+//         }
 
         BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
