@@ -397,7 +397,7 @@ public class MathMethods {
      * This precision only affects the decimal part of the number, not the binary bit length.
      * The binary bit length will still be the proper length and the numbers don't suddenly have trailing zeros.
      * TODO Add a test that proves it. So far it has only been tested manually.
-     * @param m the random seed
+     * @param m the random seed (must be greater than 0 and non-square)
      * @param n the range of randomness
      * @param a the lower bound inclusive
      * @param b the upper bound inclusive
