@@ -3,15 +3,24 @@ import rsa.RSA;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.awt.datatransfer.DataFlavor;
 
 public class Communicator extends JFrame {
     public String name;
@@ -25,6 +34,7 @@ public class Communicator extends JFrame {
     private final JList<Message> messageListJ;
     private final JTextField signings;
     private JTextField signingValid;
+    private JTextField receivedSignature;
     private static GridBagConstraints c;
     private final Communicator thisInstance;
     private final ArrayList<Message> messageList = new ArrayList<>();
@@ -54,6 +64,19 @@ public class Communicator extends JFrame {
         AtomicReference<String> currentClearMessage = new AtomicReference<>("");
         inputAndOutput = new JTextArea();
         inputAndOutput.setLineWrap(true);
+
+        inputAndOutput.setDropTarget(new DropTarget() {
+            public synchronized void drop(DropTargetDropEvent evt) {
+                try {
+                    evt.acceptDrop(DnDConstants.ACTION_COPY);
+                    String droppedText = (String) evt.getTransferable().getTransferData(DataFlavor.stringFlavor);
+                    inputAndOutput.setText(droppedText);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(inputAndOutput);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setPreferredSize(new Dimension(450, 60));
@@ -75,6 +98,16 @@ public class Communicator extends JFrame {
             }
         });
 
+        messageListJ.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                JList list = (JList)evt.getSource();
+                if (evt.getClickCount() == 2) { // Double-click detected
+                    int index = list.locationToIndex(evt.getPoint());
+                    Message selectedMessage = messageListJ.getModel().getElementAt(index);
+                    inputAndOutput.setText(selectedMessage.message);
+                }
+            }
+        });
 
         JScrollPane messageListScrollPane = new JScrollPane(messageListJ);
         messageListScrollPane.setPreferredSize(new Dimension(450, 200));
@@ -109,6 +142,8 @@ public class Communicator extends JFrame {
                 //Remove the signature if the message is changed
                 signature = null;
                 signings.setText("");
+                receivedSignature.setText("");
+                signingValid.setText("");
             }
 
             @Override
@@ -118,6 +153,8 @@ public class Communicator extends JFrame {
                 //Remove the signature if the message is changed
                 signature = null;
                 signings.setText("");
+                receivedSignature.setText("");
+                signingValid.setText("");
             }
 
             @Override
@@ -127,6 +164,8 @@ public class Communicator extends JFrame {
                 //Remove the signature if the message is changed
                 signature = null;
                 signings.setText("");
+                receivedSignature.setText("");
+                signingValid.setText("");
             }
         });
         startEncode.setPreferredSize(new Dimension(250,25));
@@ -162,6 +201,7 @@ public class Communicator extends JFrame {
                         } else {
                             signingValid.setText("" + RSA.verifySignature(messageToUse, selectedMessage.signature, selectedMessage.e, selectedMessage.n));
                         }
+                        receivedSignature.setText(selectedMessage.signature);
                     } catch (NoSuchAlgorithmException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -181,6 +221,7 @@ public class Communicator extends JFrame {
             Message message = new Message(inputAndOutput.getText(), signature, thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get(), thisInstance, getReceiver(thisInstance), currentClearMessage.get());
             getReceiver(thisInstance).sendAMessage(message);
             messageListModel.addElement(message);
+            inputAndOutput.setText("");
         });
         sendMessage.setPreferredSize(new Dimension(250,25));
         JButton clearEverything = new JButton("Alle Eingaben und Nachrichten löschen");
@@ -191,6 +232,10 @@ public class Communicator extends JFrame {
                 signings.setText("");
                 signingValid.setText("");
                 signature = null;
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                currentClearMessage.set("");
+                messageListModel.clear();
             }
         });
         clearEverything.setPreferredSize(new Dimension(250,25));
@@ -240,15 +285,42 @@ public class Communicator extends JFrame {
         });
         signMessage.setPreferredSize(new Dimension(250,25));
         buttons.add(signMessage,c1);
+        JButton loadTextFileButton = new JButton("Load Text File");
+
+        loadTextFileButton.setPreferredSize(new Dimension(250, 25));
+        loadTextFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+
+                int option = fileChooser.showOpenDialog(Communicator.this);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    try {
+                        String content = new String(Files.readAllBytes(((File) selectedFile).toPath()), StandardCharsets.UTF_8);
+                        inputAndOutput.setText(content);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(Communicator.this, "Error reading file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+        c1.gridy = i++;
+        buttons.add(loadTextFileButton, c1);
 
         signingValid = getNewTextfield(2, "Empfangene Signatur gültig");
+        receivedSignature = getNewTextfield(3, "Empfangene Signatur");
+
         JTextArea secretField = new JTextArea();
         secretField.setLineWrap(true);
         secretField.setEditable(false);
         secretField.setBackground(new Color(238,238,238));
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         JPanel j = new JPanel();
         JTextField t = new JTextField("Geheimer Schlüssel d");
         t.setPreferredSize(new Dimension(200, 60));

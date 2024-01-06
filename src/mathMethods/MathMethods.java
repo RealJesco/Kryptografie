@@ -619,7 +619,7 @@ public class MathMethods {
     }
 
     /**
-     * This is the block cipher encryption method.
+     * This is part of the block cipher encryption method.
      * It takes a message and encrypts it using the RSA algorithm.
      * It has been renamed to encryptMessage to avoid confusion, since it is not strictly speaking a pure block cipher encryption method.
      * It is used to encrypt the message before it is converted to a list of integers, which is then encrypted using the block cipher.
