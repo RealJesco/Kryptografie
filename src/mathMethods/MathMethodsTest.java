@@ -1,36 +1,14 @@
 package mathMethods;
 
 import org.junit.jupiter.api.Test;
-import rsa.RSA;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static mathMethods.MathMethods.extendedEuclideanInZi;
-import static org.junit.jupiter.api.Assertions.*;
-
 public class MathMethodsTest {
-
-    @Test
-    void testIfBitlengthIsCorrect() {
-        RSA.setBitLengthN(4000);
-        RSA.setM(BigInteger.valueOf(844));
-        RSA.setMillerRabinSteps(10);
-        RSA.setNumberSystemBase(55296);
-        RSA.generateRSAKeys();
-        System.out.println(RSA.getN().bitLength());
-        //Can be 5000 or 4999
-        assertTrue(RSA.getN().bitLength() == 4000 || RSA.getN().bitLength() == 3999);
-    }
-
-    @Test
-    void testIfBitlengthIsCorrectWithFunctionParameters() {
-        RSA.generateRSAKeys(BigInteger.valueOf(844), 10, 55296, 4000);
-        //Can be 5000 or 4999
-        assertTrue(RSA.getN().bitLength() == 4000 || RSA.getN().bitLength() == 3999);
-    }
 
 
     @Test
@@ -475,14 +453,6 @@ public class MathMethodsTest {
         List<BigInteger> result = MathMethods.prepareMessageForEncryption(message, blockSize, numberSystem);
 
         assertEquals(2, result.size(), "The prepareMessageForEncryption method should divide the message into blocks of the specified size.");
-    }
-
-    @Test
-    void testCalculateBlockSize(){
-        RSA.setBitLengthN(2048);
-        RSA.setNumberSystemBase(55296);
-        System.out.println(RSA.getBlockSize());
-        assertEquals(129, RSA.getBlockSize());
     }
 
     @Test

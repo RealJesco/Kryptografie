@@ -9,7 +9,7 @@ public class RSATest {
 
     @Test
     public void encryptionAndDecryptionShouldReturnOriginalMessage() {
-        RSA rsa = new RSA(1000, 512, 55926, BigInteger.valueOf(844));
+        new RSA(1000, 512, 55926, BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String originalMessage = "Mathematik ist spannend";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
@@ -19,7 +19,7 @@ public class RSATest {
     //Test again
     @Test
     public void encryptionAndDecryptionShouldReturnOriginalMessageAgain() {
-        RSA rsa = new RSA(40, 512, 55926, BigInteger.valueOf(844));
+        new RSA(40, 512, 55926, BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String originalMessage = "Hello, World!";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
@@ -78,24 +78,114 @@ public class RSATest {
         assertThrows(IllegalArgumentException.class, () -> RSA.verifySignature(message, invalidSignature));
     }
     @Test
-    public void illegalMValue() {
+    public void illegalMValueOne() {
         assertThrows(IllegalArgumentException.class, () -> RSA.setM(BigInteger.valueOf(100)));
     }
     @Test
-    public void bitLengthOfNIsOdd() {
-        RSA.setMillerRabinSteps(10);
-        RSA.setBitLengthN(257);
-        RSA.setNumberSystemBase(55926);
-        RSA.setM(BigInteger.valueOf(844));
-        RSA.generateRSAKeys();
+    public void illegalMValueTwo() {
+        assertThrows(IllegalArgumentException.class, () -> RSA.setM(BigInteger.valueOf(4)));
+    }
+    @Test
+    public void illegalMValueThree() {
+        assertThrows(IllegalArgumentException.class, () -> RSA.setM(new BigInteger("9869600294464")));
+    }
+    @Test
+    public void illegalMValueFour() {
+        assertThrows(IllegalArgumentException.class, () -> RSA.setM(BigInteger.valueOf(-23454545)));
+    }
+    @Test
+    public void illegalMValueFive() {
+        assertThrows(IllegalArgumentException.class, () -> RSA.setM(new BigInteger("-9869600294464")));
+    }
+    @Test
+    public void bitLengthOfNIsOddOne() {
+        int MillerRabinSteps = 10;
+        int NumberSystemBase = 55926;
+        BigInteger M = BigInteger.valueOf(844);
+        int wishedBitLength = 257;
+        RSA.generateRSAKeys(M, MillerRabinSteps, NumberSystemBase, wishedBitLength);
 
-        assertEquals(RSA.getBitLengthN(), RSA.getN().bitLength());
+        assertEquals(wishedBitLength, RSA.getN().bitLength());
+    }
+    @Test
+    public void bitLengthOfNIsOddTwo() {
+        int MillerRabinSteps = 10;
+        int NumberSystemBase = 55926;
+        BigInteger M = BigInteger.valueOf(41);
+        int wishedBitLength = 317;
+        RSA.generateRSAKeys(M, MillerRabinSteps, NumberSystemBase, wishedBitLength);
+
+        assertEquals(wishedBitLength, RSA.getN().bitLength());
+    }
+    @Test
+    public void bitLengthOfNIsOddThree() {
+        int MillerRabinSteps = 10;
+        int NumberSystemBase = 55926;
+        BigInteger M = BigInteger.valueOf(73);
+        int wishedBitLength = 1001;
+        RSA.generateRSAKeys(M, MillerRabinSteps, NumberSystemBase, wishedBitLength);
+
+        assertEquals(wishedBitLength, RSA.getN().bitLength());
+    }
+    @Test
+    public void bitLengthOfNIsOddFour() {
+        int MillerRabinSteps = 10;
+        int NumberSystemBase = 55926;
+        BigInteger M = BigInteger.valueOf(1753);
+        int wishedBitLength = 755;
+        RSA.generateRSAKeys(M, MillerRabinSteps, NumberSystemBase, wishedBitLength);
+
+        assertEquals(wishedBitLength, RSA.getN().bitLength());
+    }
+
+    @Test
+    void bitLengthOfNIsEvenOne() {
+        int MillerRabinSteps = 10;
+        int NumberSystemBase = 55926;
+        BigInteger M = BigInteger.valueOf(845);
+        int wishedBitLength = 270;
+        RSA.generateRSAKeys(M, MillerRabinSteps, NumberSystemBase, wishedBitLength);
+        assertEquals(wishedBitLength, RSA.getN().bitLength());
+    }
+    @Test
+    void bitLengthOfNIsEvenTwo() {
+        int MillerRabinSteps = 10;
+        int NumberSystemBase = 55926;
+        BigInteger M = BigInteger.valueOf(41);
+        int wishedBitLength = 4460;
+        RSA.generateRSAKeys(M, MillerRabinSteps, NumberSystemBase, wishedBitLength);
+        assertEquals(wishedBitLength, RSA.getN().bitLength());
+    }
+    @Test
+    void bitLengthOfNIsEvenThree() {
+        int MillerRabinSteps = 10;
+        int NumberSystemBase = 55926;
+        BigInteger M = BigInteger.valueOf(73);
+        int wishedBitLength = 2306;
+        RSA.generateRSAKeys(M, MillerRabinSteps, NumberSystemBase, wishedBitLength);
+        assertEquals(wishedBitLength, RSA.getN().bitLength());
+    }
+    @Test
+    void bitLengthOfNIsEvenFour() {
+        int MillerRabinSteps = 10;
+        int NumberSystemBase = 55926;
+        BigInteger M = BigInteger.valueOf(1753);
+        int wishedBitLength = 890;
+        RSA.generateRSAKeys(M, MillerRabinSteps, NumberSystemBase, wishedBitLength);
+        assertEquals(wishedBitLength, RSA.getN().bitLength());
+    }
+
+    @Test
+    void testCalculateBlockSize(){
+        RSA.setBitLengthN(2048);
+        RSA.setNumberSystemBase(55296);
+        assertEquals(129, RSA.getBlockSize());
     }
 
     //Speed tests
     @Test
     public void speedTestForEncryptionAndDecryption() {
-        RSA rsa = new RSA(40, 512, 55926, BigInteger.valueOf(844));
+        new RSA(40, 512, 55926, BigInteger.valueOf(844));
 //        RSA.setMillerRabinSteps(40);
 //        RSA.setBitLengthN(1024);
 //        RSA.setNumberSystemBase(55926);

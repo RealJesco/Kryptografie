@@ -1,6 +1,8 @@
 package rsa;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -121,8 +123,11 @@ public class RSA {
         RSA.blockSizePlusOne = blockSizePlusOne;
     }
     public static void setM(BigInteger m){
-        double sqrt = Math.sqrt(m.intValue());
-        if(sqrt == Math.floor(sqrt)){
+        if (m.compareTo(BigInteger.ZERO) < 0) {
+            throw new IllegalArgumentException("Negative Numbers aren't allowed here");
+        }
+        BigDecimal sqrt = new BigDecimal(m).sqrt(new MathContext(1000));
+        if(sqrt.compareTo(sqrt.divideAndRemainder(BigDecimal.ONE)[0]) == 0){
             throw new IllegalArgumentException("Cubic-numbers aren't allowed here");
         }
         RSA.m = m;
@@ -206,14 +211,14 @@ public class RSA {
      */
     private static void keyGenerator(){
         // Calculate bit length of p and q
-        int bitLengthPQ = bitLengthN / 2;
+        int bitLengthP = bitLengthN / 2;
+        int bitLengthQ = bitLengthN / 2;
+        if(bitLengthN != bitLengthQ + bitLengthP){
+            bitLengthQ++;
+        }
         do{
-            generateP(BigInteger.valueOf(bitLengthPQ));
-            if(bitLengthN % 2 == 1){
-                generateQ(BigInteger.valueOf(bitLengthPQ+1));
-            } else {
-                generateQ(BigInteger.valueOf(bitLengthPQ));
-            }
+            generateP(BigInteger.valueOf(bitLengthP));
+            generateQ(BigInteger.valueOf(bitLengthQ));
             calculateN(p, q);
         } while(n.bitLength()!=bitLengthN);
         calculatePhiN(p, q);
