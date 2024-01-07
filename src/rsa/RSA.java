@@ -116,12 +116,7 @@ public class RSA {
         RSA.numberSystemBase = numberSystemBase;
         calculateAndSetBlockSizes(bitLengthN, numberSystemBase);
     }
-    public static void setBlockSize(int blockSize){
-        RSA.blockSize = blockSize;
-    }
-    public static void setBlockSizePlusOne(int blockSizePlusOne){
-        RSA.blockSizePlusOne = blockSizePlusOne;
-    }
+
     public static void setM(BigInteger m){
         if (m.compareTo(BigInteger.ZERO) < 0) {
             throw new IllegalArgumentException("Negative Numbers aren't allowed here");
