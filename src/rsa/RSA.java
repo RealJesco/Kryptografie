@@ -330,7 +330,6 @@ public class RSA {
      * @return A list of encrypted numeric blocks.
      */
     private static List<BigInteger> encryptNumericBlocks(List<BigInteger> numericMessage, BigInteger e, BigInteger n) {
-        // Implementation of encrypting numeric blocks
         List<BigInteger> encryptedBlocks = new ArrayList<>();
         for (BigInteger block : numericMessage) {
             encryptedBlocks.add(MathMethods.alternativeQuickExponentiation(block, e, n));
@@ -345,7 +344,6 @@ public class RSA {
      * @return The encrypted blocks as a string.
      */
     private static String processEncryptedBlocksToString(List<BigInteger> encryptedBlocks) {
-        // Implementation of processing encrypted blocks into string
         StringBuilder encryptedNumericMessageStr = new StringBuilder();
         for (BigInteger block : encryptedBlocks) {
             encryptedNumericMessageStr.append(convertBlockToString(block));
@@ -360,7 +358,6 @@ public class RSA {
      * @return The string representation of the encrypted block.
      */
     private static String convertBlockToString(BigInteger block) {
-        // Convert a single encrypted block into a string representation
         List<Integer> tempList = convertBlockToNumberList(block);
         return MathMethods.convertUniCodeToText(tempList);
     }
@@ -372,7 +369,6 @@ public class RSA {
      * @return A list of numbers representing the encrypted block.
      */
     private static List<Integer> convertBlockToNumberList(BigInteger block) {
-        // Convert a single encrypted block into a list of numbers
         List<Integer> numberList = new ArrayList<>();
         int count = 0;
         while (!block.equals(ZERO)) {
@@ -531,7 +527,6 @@ public class RSA {
         BigInteger hashedBigInteger = hashAndConvertMessageToBigInteger(message);
         BigInteger encryptedHash = MathMethods.alternativeQuickExponentiation(hashedBigInteger, d, n);
 
-        // Convert the encrypted hash to a hex string (or you can use another format as needed)
         return encryptedHash.toString(16);
     }
 
@@ -543,8 +538,6 @@ public class RSA {
      * @throws NoSuchAlgorithmException if the required algorithm is not supported
      */
     public static String sign(String message) throws NoSuchAlgorithmException {
-        // This should refer to class fields or constants, but I'm going to skip this part
-        // since the full context isn't available
         return sign(message, d, n);
     }
 
@@ -569,11 +562,9 @@ public class RSA {
      * @throws NoSuchAlgorithmException if the SHA3-256 algorithm is not available.
      */
     private static BigInteger hashAndConvertMessageToBigInteger(String message) throws NoSuchAlgorithmException {
-        // Hash the message using SHA3-256
         final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
         final byte[] hashbytes = digest.digest(message.getBytes(StandardCharsets.UTF_8));
 
-        // Convert the hashed bytes to a BigInteger
         return new BigInteger(1, hashbytes);
     }
 

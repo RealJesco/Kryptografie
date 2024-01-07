@@ -280,7 +280,6 @@ public class MathMethods {
             throw new IllegalArgumentException("The number " + p + " cannot be represented as a sum of two squares.");
         }
 
-        //Use the extended Euclidean algorithm in Z[i] to find a Gaussian integer x such that x^2 = -1 mod p
         GaussianInteger x = extendedEuclideanInZi(new GaussianInteger(ZERO, ONE), new GaussianInteger(p, ZERO));
         // Check if x is a multiple of p
         if (x.isMultiple(new GaussianInteger(p, ZERO))) {
@@ -300,7 +299,7 @@ public class MathMethods {
         GaussianInteger p_0 = new GaussianInteger(p, ZERO);
 
         GaussianInteger result = extendedEuclideanInZi(w_i, p_0);
-        //Make sure that results are positive by multiplying with -1 if necessary
+        //Make sure that results are positive by multiplying with -1
         if (result.real.compareTo(ZERO) < 0) {
             result.real = result.real.multiply(MINUSONE);
         }
@@ -369,7 +368,6 @@ public class MathMethods {
      */
     // Rounds a BigInteger to the nearest integer
     public static BigInteger roundHalfUp(BigInteger number) {
-        // The rounding logic needs to handle negative numbers differently than positive numbers
         BigInteger halfDivisor = new BigInteger("5");
         BigInteger scaledNumber = number.multiply(TEN);
 
@@ -493,14 +491,13 @@ public class MathMethods {
             }
             if (isComposite) {
                 copyOfCountOfN = copyOfCountOfN.add(ONE);
-                continue; // Skip to the next candidate
+                continue;
             }
-            // Perform the expensive primality check
+
             if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, m, copyOfCountOfN)) {
-                break; // Prime is found
+                break;
             }
             copyOfCountOfN = copyOfCountOfN.add(ONE);
-            // Otherwise, loop again and generate a new primeCandidate
         }
         RSA.setCountOfN(copyOfCountOfN.add(ONE));
         return primeCandidate;
@@ -516,7 +513,6 @@ public class MathMethods {
      * @param countOfN       a value to increase the randomness of the tests
      * @return true if the number is probably prime, false otherwise
      */
-    //Check if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
 
         if (possiblePrime.equals(ONE)) {
@@ -583,7 +579,7 @@ public class MathMethods {
 
         int s = possiblePrime.subtract(ONE).getLowestSetBit();
         BigInteger finalD = possiblePrime.subtract(ONE).shiftRight(s);
-        // ForkJoinPool can potentially be more efficient for certain tasks
+
         ForkJoinPool forkJoinPool = new ForkJoinPool();
         BigInteger possiblePrimeMinusOne = possiblePrime.subtract(ONE);
         BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
