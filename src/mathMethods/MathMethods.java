@@ -413,14 +413,11 @@ public class MathMethods {
             randomElsnerB = b;
             range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(DECIMAL_ONE);
         }
-//        BigDecimal decimalM = new BigDecimal(m);
         BigDecimal decimalN = new BigDecimal(n);
-//        BigDecimal decimalA = new BigDecimal(a);
-//        BigDecimal decimalB = new BigDecimal(b);
 
-//        BigDecimal range = decimalB.subtract(decimalA).add(DECIMAL_ONE);
+//        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(DECIMAL_ONE);
 //        BigDecimal mathContextRange = range.add(decimalN);
-
+//
 //         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
 //         MathContext context = new MathContext(decadicLogarithm);
 
