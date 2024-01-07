@@ -259,6 +259,33 @@ public class RSA {
     }
 
     /**
+     * Performs block cipher encryption on the given message using the provided encryption key.
+     *
+     * @param message the message to be encrypted
+     * @param e the encryption key exponent
+     * @param n the encryption key modulo
+     * @return the encrypted message as a string representation
+     * @throws IllegalArgumentException if any Unicode value in the message is equal to or larger than the numberSystemBase
+     */
+    private static String blockCipherEncrypt(String message, BigInteger e, BigInteger n){
+        // Step 1: Convert text to Unicode
+        List<Integer> unicodeMessage = convertTextToUnicode(message);
+        //Unicode values should not be equal or larger than numberSystemBase
+        for(int i = 0; i < unicodeMessage.size(); i++){
+            if(unicodeMessage.get(i) >= numberSystemBase){
+                throw new IllegalArgumentException("Unicode value is equal or larger than numberSystemBase");
+            }
+        }
+        // Step 2: Prepare message for encryption (Block cipher)
+        List<BigInteger> numericMessage = prepareMessageForEncryption(unicodeMessage);
+        // Step 3: Encrypt the numeric representation
+        List<BigInteger> encryptedBlocks = encryptNumericBlocks(numericMessage, e, n);
+        // Step 4: Process the encrypted blocks into a string representation
+
+        return processEncryptedBlocksToString(encryptedBlocks);
+    }
+
+    /**
      * Encrypts a given message using the RSA algorithm.
      *
      * @param message The message to be encrypted.
@@ -275,13 +302,8 @@ public class RSA {
                 throw new IllegalArgumentException("Unicode value is equal or larger than numberSystemBase");
             }
         }
-        // Step 2: Prepare message for encryption (Block cipher)
-        List<BigInteger> numericMessage = prepareMessageForEncryption(unicodeMessage);
-        // Step 3: Encrypt the numeric representation
-        List<BigInteger> encryptedBlocks = encryptNumericBlocks(numericMessage, e, n);
-        // Step 4: Process the encrypted blocks into a string representation
 
-        return processEncryptedBlocksToString(encryptedBlocks);
+        return blockCipherEncrypt(message, e, n);
     }
 
     /**
@@ -371,14 +393,14 @@ public class RSA {
     }
 
     /**
-     * Decrypts a given encrypted numeric message using the RSA algorithm.
+     * Decrypts a numeric message using block cipher encryption algorithm.
      *
-     * @param encryptedNumericMessageStr The encrypted message to be decrypted.
-     * @param d                          The private exponent.
-     * @param n                          The modulus.
-     * @return The decrypted message.
+     * @param encryptedNumericMessageStr the encrypted numeric message in string format
+     * @param d the private key parameter
+     * @param n the modulus parameter
+     * @return the decrypted message as a string
      */
-    public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
+    public static String blockCipherDecrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n){
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUnicode(encryptedNumericMessageStr);
         // Step 2: Create encrypted blocks from Unicode
@@ -393,6 +415,18 @@ public class RSA {
         String decryptedMessageStr = convertIntegersToText(decryptedMessage);
         // Step 7: Remove padding from the decrypted string
         return removePadding(decryptedMessageStr);
+    }
+
+    /**
+     * Decrypts a given encrypted numeric message using the RSA algorithm.
+     *
+     * @param encryptedNumericMessageStr The encrypted message to be decrypted.
+     * @param d                          The private exponent.
+     * @param n                          The modulus.
+     * @return The decrypted message.
+     */
+    public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
+        return blockCipherDecrypt(encryptedNumericMessageStr, d, n);
     }
 
 

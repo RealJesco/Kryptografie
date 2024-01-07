@@ -338,7 +338,7 @@ public class MathMethodsTest {
      * This test is for testing the methods that are used in the encrypt and decrypt methods.
      */
     @Test
-    void testMessagePreparationAndEncryptionDecryptionCycle() {
+    void testMessageBlockCipherCycle() {
         // Assuming we have a small RSA key pair for testing (not secure for real use)
         BigInteger e = new BigInteger("18217281770421758450086481999749147637"); // public exponent
         BigInteger d = new BigInteger("69856630177376283805385594524728944213"); // private exponent
