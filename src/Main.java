@@ -1,3 +1,5 @@
+import GUI.CommunicationPanel;
+import GUI.Zusatzaufgabe;
 import rsa.RSA;
 
 import java.math.BigInteger;

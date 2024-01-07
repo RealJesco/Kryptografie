@@ -1,3 +1,4 @@
+package GUI;
 
 import rsa.RSA;
 
@@ -25,7 +26,7 @@ public class CommunicationPanel extends JFrame {
     private static GridBagConstraints c = null;
 
     private CommunicationPanel() {
-        super("CommunicationPanel");
+        super("GUI.CommunicationPanel");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(650, 500));
         setSize(new Dimension(650, 500));

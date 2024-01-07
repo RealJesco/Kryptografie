@@ -1,7 +1,7 @@
+package GUI;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.math.BigInteger;
 import mathMethods.MathMethods;
 import mathMethods.GaussianInteger;
@@ -19,7 +19,7 @@ public class Zusatzaufgabe extends JFrame {
     }
 
     private Zusatzaufgabe() {
-        super("Zusatzaufgabe");
+        super("GUI.Zusatzaufgabe");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Percentage of the screen
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

@@ -1,3 +1,6 @@
+package GUI;
+
+import GUI.HelperClasses.Message;
 import rsa.RSA;
 
 import javax.swing.*;
@@ -15,7 +18,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,8 +35,8 @@ public class Communicator extends JFrame {
     private final DefaultListModel<Message> messageListModel;
     private final JList<Message> messageListJ;
     private final JTextField signings;
-    private JTextField signingValid;
-    private JTextField receivedSignature;
+    private final JTextField signingValid;
+    private final JTextField receivedSignature;
     private static GridBagConstraints c;
     private final Communicator thisInstance;
     private final ArrayList<Message> messageList = new ArrayList<>();
@@ -65,6 +67,104 @@ public class Communicator extends JFrame {
         inputAndOutput = new JTextArea();
         inputAndOutput.setLineWrap(true);
 
+        JScrollPane scrollPane = new JScrollPane(inputAndOutput);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(450, 60));
+
+
+        // Create the list for displaying messages
+        messageListModel = new DefaultListModel<>();
+        messageListJ = new JList<>(messageListModel);
+
+
+        JScrollPane messageListScrollPane = new JScrollPane(messageListJ);
+        messageListScrollPane.setPreferredSize(new Dimension(450, 200));
+
+        // Add the new components to the panel
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 5;  // Adjust this as needed
+        panel.add(messageListScrollPane, c);
+
+
+        JButton startEncode = new JButton("Verschlüsseln");
+        startEncode.setPreferredSize(new Dimension(250,25));
+        JButton startDecode = new JButton("Entschlüsseln");
+
+
+        startDecode.setPreferredSize(new Dimension(250,25));
+
+        JButton sendMessage = new JButton("Nachricht versenden");
+        sendMessage.setPreferredSize(new Dimension(250,25));
+        JButton clearEverything = new JButton("Alle Eingaben und Nachrichten löschen");
+        clearEverything.setPreferredSize(new Dimension(250,25));
+
+        JPanel buttons = new JPanel();
+        GridBagConstraints c1 = new GridBagConstraints();
+        int i = 0;
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
+        buttons.add(startEncode,c1);
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
+        buttons.add(startDecode,c1);
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
+        buttons.add(sendMessage,c1);
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
+        buttons.add(clearEverything,c1);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        scrollPane.setPreferredSize(new Dimension(650,200));
+        panel.add(scrollPane,c);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 0;
+        buttons.setPreferredSize(new Dimension(300,200));
+        panel.add(buttons,c);
+        signings = getNewTextfield(1, "Eigene Signatur");
+
+        JButton signMessage = new JButton("Signieren der Nachricht");
+        signMessage.setPreferredSize(new Dimension(250,25));
+        buttons.add(signMessage,c1);
+        JButton loadTextFileButton = new JButton("Load Text File");
+
+        loadTextFileButton.setPreferredSize(new Dimension(250, 25));
+        c1.gridy = i++;
+        buttons.add(loadTextFileButton, c1);
+
+        signingValid = getNewTextfield(2, "Empfangene Signatur gültig");
+        receivedSignature = getNewTextfield(3, "Empfangene Signatur");
+
+        JTextArea secretField = new JTextArea();
+        secretField.setLineWrap(true);
+        secretField.setEditable(false);
+        secretField.setBackground(new Color(238,238,238));
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 4;
+        JPanel j = new JPanel();
+        JTextField t = new JTextField("Geheimer Schlüssel d");
+        t.setPreferredSize(new Dimension(200, 60));
+        t.setEditable(false);
+        j.add(t);
+        scrollPane = new JScrollPane(secretField);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(450, 60));
+        j.add(scrollPane);
+        panel.add(j, c);
+        secretField.setText(this.d.toString());
+
+
+        //ADDING LISTENERS
         inputAndOutput.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent evt) {
                 try {
@@ -76,23 +176,13 @@ public class Communicator extends JFrame {
                 }
             }
         });
-
-        JScrollPane scrollPane = new JScrollPane(inputAndOutput);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(450, 60));
-
-
-        // Create the list for displaying messages
-        messageListModel = new DefaultListModel<>();
-        messageListJ = new JList<>(messageListModel);
-
         messageListJ.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof Message) {
                     Message message = (Message) value;
-                    setText("Message from " + message.getSender().name + ": " + message.message);
+                    setText("GUI.HelperClasses.Message from " + message.getSender().name + ": " + message.message);
                 }
                 return renderer;
             }
@@ -108,19 +198,6 @@ public class Communicator extends JFrame {
                 }
             }
         });
-
-        JScrollPane messageListScrollPane = new JScrollPane(messageListJ);
-        messageListScrollPane.setPreferredSize(new Dimension(450, 200));
-
-        // Add the new components to the panel
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 0;
-        c.gridy = 5;  // Adjust this as needed
-        panel.add(messageListScrollPane, c);
-
-
-        JButton startEncode = new JButton("Verschlüsseln");
         startEncode.addActionListener(e -> {
             Communicator receiver = getReceiver(thisInstance);
             try{
@@ -168,13 +245,64 @@ public class Communicator extends JFrame {
                 signingValid.setText("");
             }
         });
-        startEncode.setPreferredSize(new Dimension(250,25));
-        JButton startDecode = new JButton("Entschlüsseln");
+        sendMessage.addActionListener(e -> {
+            Message message = new Message(inputAndOutput.getText(), signature, thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get(), thisInstance, getReceiver(thisInstance), currentClearMessage.get());
+            getReceiver(thisInstance).sendAMessage(message);
+            messageListModel.addElement(message);
+            inputAndOutput.setText("");
+        });
+        clearEverything.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inputAndOutput.setText("");
+                signings.setText("");
+                signingValid.setText("");
+                signature = null;
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                currentClearMessage.set("");
+                messageListModel.clear();
+            }
+        });
+        signMessage.addActionListener(e -> {
+            try {
+                signature = RSA.sign(inputAndOutput.getText(), d, n);
+                signings.setText(signature);
+                currentMessageIsSigned.set(true);
+            } catch (NoSuchAlgorithmException ex) {
+                System.out.println("Error while Signing" + ex);
+                throw new RuntimeException(ex);
+            }
+        });
+        loadTextFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+
+                int option = fileChooser.showOpenDialog(Communicator.this);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    try {
+                        String content = new String(Files.readAllBytes(((File) selectedFile).toPath()), StandardCharsets.UTF_8);
+                        inputAndOutput.setText(content);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(Communicator.this, "Error reading file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
         startDecode.addActionListener(e -> {
             Message selectedMessage = messageListJ.getSelectedValue(); // Get selected message
             //If none are selected, get the last one
             if(selectedMessage == null) {
-                selectedMessage = messageList.get(messageList.size()-1);
+                if(messageList.size() != 0){
+                    selectedMessage = messageList.get(messageList.size()-1);
+                } else {
+                    selectedMessage = null;
+                }
             }
             if (selectedMessage != null) { // Check if a message is selected
                 String messageToUse;
@@ -197,11 +325,11 @@ public class Communicator extends JFrame {
                 if(selectedMessage.isSigned()){
                     try {
                         if(selectedMessage.isEncrypted){
-                            signingValid.setText("" + RSA.verifySignature(selectedMessage.message, selectedMessage.signature, selectedMessage.e, selectedMessage.n));
+                            signingValid.setText("" + RSA.verifySignature(selectedMessage.message, selectedMessage.getSignature(), selectedMessage.getE(), selectedMessage.getN()));
                         } else {
-                            signingValid.setText("" + RSA.verifySignature(messageToUse, selectedMessage.signature, selectedMessage.e, selectedMessage.n));
+                            signingValid.setText("" + RSA.verifySignature(messageToUse, selectedMessage.getSignature(), selectedMessage.getE(), selectedMessage.getN()));
                         }
-                        receivedSignature.setText(selectedMessage.signature);
+                        receivedSignature.setText(selectedMessage.getSignature());
                     } catch (NoSuchAlgorithmException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -212,126 +340,6 @@ public class Communicator extends JFrame {
                 // Optionally handle the case where no message is selected
             }
         });
-
-
-        startDecode.setPreferredSize(new Dimension(250,25));
-
-        JButton sendMessage = new JButton("Nachricht versenden");
-        sendMessage.addActionListener(e -> {
-            Message message = new Message(inputAndOutput.getText(), signature, thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get(), thisInstance, getReceiver(thisInstance), currentClearMessage.get());
-            getReceiver(thisInstance).sendAMessage(message);
-            messageListModel.addElement(message);
-            inputAndOutput.setText("");
-        });
-        sendMessage.setPreferredSize(new Dimension(250,25));
-        JButton clearEverything = new JButton("Alle Eingaben und Nachrichten löschen");
-        clearEverything.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                inputAndOutput.setText("");
-                signings.setText("");
-                signingValid.setText("");
-                signature = null;
-                currentMessageIsEncrypted.set(false);
-                currentMessageIsSigned.set(false);
-                currentClearMessage.set("");
-                messageListModel.clear();
-            }
-        });
-        clearEverything.setPreferredSize(new Dimension(250,25));
-
-        JPanel buttons = new JPanel();
-        GridBagConstraints c1 = new GridBagConstraints();
-        int i = 0;
-        c1.fill = GridBagConstraints.HORIZONTAL;
-        c1.gridx = 0;
-        c1.gridy = i++;
-        buttons.add(startEncode,c1);
-        c1.fill = GridBagConstraints.HORIZONTAL;
-        c1.gridx = 0;
-        c1.gridy = i++;
-        buttons.add(startDecode,c1);
-        c1.fill = GridBagConstraints.HORIZONTAL;
-        c1.gridx = 0;
-        c1.gridy = i++;
-        buttons.add(sendMessage,c1);
-        c1.fill = GridBagConstraints.HORIZONTAL;
-        c1.gridx = 0;
-        c1.gridy = i++;
-        buttons.add(clearEverything,c1);
-
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 0;
-        c.gridy = 0;
-        scrollPane.setPreferredSize(new Dimension(650,200));
-        panel.add(scrollPane,c);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1;
-        c.gridy = 0;
-        buttons.setPreferredSize(new Dimension(300,200));
-        panel.add(buttons,c);
-        signings = getNewTextfield(1, "Eigene Signatur");
-
-        JButton signMessage = new JButton("Signieren der Nachricht");
-        signMessage.addActionListener(e -> {
-            try {
-                signature = RSA.sign(inputAndOutput.getText(), d, n);
-                signings.setText(signature);
-                currentMessageIsSigned.set(true);
-            } catch (NoSuchAlgorithmException ex) {
-                System.out.println("Error while Signing" + ex);
-                throw new RuntimeException(ex);
-            }
-        });
-        signMessage.setPreferredSize(new Dimension(250,25));
-        buttons.add(signMessage,c1);
-        JButton loadTextFileButton = new JButton("Load Text File");
-
-        loadTextFileButton.setPreferredSize(new Dimension(250, 25));
-        loadTextFileButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
-
-                int option = fileChooser.showOpenDialog(Communicator.this);
-                if (option == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    try {
-                        String content = new String(Files.readAllBytes(((File) selectedFile).toPath()), StandardCharsets.UTF_8);
-                        inputAndOutput.setText(content);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(Communicator.this, "Error reading file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            }
-        });
-        c1.gridy = i++;
-        buttons.add(loadTextFileButton, c1);
-
-        signingValid = getNewTextfield(2, "Empfangene Signatur gültig");
-        receivedSignature = getNewTextfield(3, "Empfangene Signatur");
-
-        JTextArea secretField = new JTextArea();
-        secretField.setLineWrap(true);
-        secretField.setEditable(false);
-        secretField.setBackground(new Color(238,238,238));
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 0;
-        c.gridy = 4;
-        JPanel j = new JPanel();
-        JTextField t = new JTextField("Geheimer Schlüssel d");
-        t.setPreferredSize(new Dimension(200, 60));
-        t.setEditable(false);
-        j.add(t);
-        scrollPane = new JScrollPane(secretField);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(450, 60));
-        j.add(scrollPane);
-        panel.add(j, c);
-        secretField.setText(this.d.toString());
 
         add(panel);
         panel.updateUI();

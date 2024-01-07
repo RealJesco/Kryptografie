@@ -1,3 +1,7 @@
+package GUI.HelperClasses;
+
+import GUI.Communicator;
+
 import java.math.BigInteger;
 
 public class Message {
@@ -8,7 +12,17 @@ public class Message {
     private final String clearMessage;
     public boolean isEncrypted;
     public boolean isSigned;
+
     String signature = null;
+
+    public BigInteger getE() {
+        return e;
+    }
+
+    public BigInteger getN() {
+        return n;
+    }
+
     final BigInteger e;
     final BigInteger n;
     public Message(String message, String signature, BigInteger e, BigInteger n, boolean isEncrypted, boolean isSigned, Communicator sender, Communicator receiver, String clearMessage){
@@ -41,5 +55,9 @@ public class Message {
         } else {
             return "You are not the sender of this message!";
         }
+    }
+
+    public String getSignature() {
+        return signature;
     }
 }
