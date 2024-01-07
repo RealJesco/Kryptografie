@@ -289,15 +289,6 @@ public class RSA {
      * @return The encrypted message.
      */
     public static String encrypt(String message, BigInteger e, BigInteger n) {
-        // Step 1: Convert text to Unicode
-        List<Integer> unicodeMessage = convertTextToUnicode(message);
-        //Unicode values should not be equal or larger than numberSystemBase
-        for(int i = 0; i < unicodeMessage.size(); i++){
-            if(unicodeMessage.get(i) >= numberSystemBase){
-                throw new IllegalArgumentException("Unicode value is equal or larger than numberSystemBase");
-            }
-        }
-
         return blockCipherEncrypt(message, e, n);
     }
 
