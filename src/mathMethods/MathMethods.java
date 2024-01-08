@@ -588,7 +588,7 @@ public class MathMethods {
                         return true;
                     }
 
-                    for (int r = 0; r < s; r++) {
+                    for (int r = 1; r < s; r++) {
                         x = alternativeQuickExponentiation(x, TWO, possiblePrime);
                         if (x.equals(possiblePrimeMinusOne)) return true;
                     }
