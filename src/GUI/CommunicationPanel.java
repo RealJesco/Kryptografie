@@ -46,7 +46,7 @@ public class CommunicationPanel extends JFrame {
         bobPublicKeyField = getNewTextArea(i++, "Öffentlicher Schlüssel e von Bob");
         bobPublicNField = getNewTextArea(i++, "Öffentlicher Schlüssel n von Bob");
 
-        nonCubicNumberMField.setText("844");
+        nonCubicNumberMField.setText("845");
         onlyAllowNumbers(nonCubicNumberMField);
         numberSystemBaseField.setText("55296");
         onlyAllowNumbers(numberSystemBaseField);
