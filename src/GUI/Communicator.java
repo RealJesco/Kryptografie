@@ -90,7 +90,7 @@ public class Communicator extends JFrame {
 
         JButton startEncode = new JButton("Verschlüsseln");
         startEncode.setPreferredSize(new Dimension(250,25));
-        JButton startDecode = new JButton("Entschlüsseln");
+        JButton startDecode = new JButton("Entschlüsseln & Verifizieren");
 
 
         startDecode.setPreferredSize(new Dimension(250,25));
