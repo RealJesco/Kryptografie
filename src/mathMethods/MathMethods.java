@@ -204,7 +204,6 @@ public class MathMethods {
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
         if (exp.signum() < 0) throw new IllegalArgumentException("Exponent must be positive");
         if (exp.equals(ZERO) && mod.equals(ONE)) {
-            System.out.println("0^0 mod 1 is not defined.");
             return ZERO;
         }
 
@@ -463,10 +462,6 @@ public class MathMethods {
             throw new IllegalArgumentException("The random seed must be greater than or equal to 0");
         }
         if (m.compareTo(b.subtract(a)) > 0) {
-            System.out.println("m: " + m);
-            System.out.println("b: " + b);
-            System.out.println("a: " + a);
-            System.out.println("b - a: " + b.subtract(a));
             throw new IllegalArgumentException("The random seed must be smaller than the range");
         }
         if (m.equals(ZERO)) {
