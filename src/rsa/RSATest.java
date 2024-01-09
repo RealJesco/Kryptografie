@@ -16,16 +16,28 @@ public class RSATest {
         String decryptedMessage = RSA.decrypt(encryptedMessage, RSA.getD(), RSA.getN());
         assertEquals(originalMessage, decryptedMessage);
     }
-    //Test again
     @Test
-    public void encryptionAndDecryptionShouldReturnOriginalMessageAgain() {
+    public void encryptionAndDecryptionShouldReturnFalseIfMessageChanged() {
         new RSA(40, 512, 55926, BigInteger.valueOf(844));
         RSA.generateRSAKeys();
-        String originalMessage = "Hello, World!";
-        String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
+        String originalMessage = "Hello, World!0";
+        String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN()) + "䟭謦燩Ԕ㫫";
         String decryptedMessage = RSA.decrypt(encryptedMessage, RSA.getD(), RSA.getN());
-        assertEquals(originalMessage, decryptedMessage);
+        //assert not equals
+        assertNotEquals(originalMessage, decryptedMessage);
     }
+
+    //Test characters outside of number system base
+    @Test
+    public void charactersOutsideOfNumberSystemBaseShouldThrowException() {
+        new RSA(40, 512, 55926, BigInteger.valueOf(844));
+        RSA.generateRSAKeys();
+        String originalMessage = "" + (char) 55927;
+        assertThrows(IllegalArgumentException.class, () -> RSA.encrypt(originalMessage, RSA.getD(), RSA.getN()));
+    }
+
+
+
 
     @Test
     public void encryptionAndDecryptionWithEmptyMessageShouldReturnEmptyString() {
@@ -60,7 +72,7 @@ public class RSATest {
         RSA.setM(BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String message = "Hello, World!";
-        String invalidSignature = "InvalidSignature";
+        String invalidSignature = message + "a";
         // Convert to hex presentation
         invalidSignature = new BigInteger(invalidSignature.getBytes()).toString(16);
         assertFalse(RSA.verifySignature(message, invalidSignature));

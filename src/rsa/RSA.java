@@ -276,7 +276,6 @@ public class RSA {
         // Step 3: Encrypt the numeric representation
         List<BigInteger> encryptedBlocks = encryptNumericBlocks(numericMessage, e, n);
         // Step 4: Process the encrypted blocks into a string representation
-
         return processEncryptedBlocksToString(encryptedBlocks);
     }
 
@@ -322,9 +321,11 @@ public class RSA {
      */
     private static List<BigInteger> encryptNumericBlocks(List<BigInteger> numericMessage, BigInteger e, BigInteger n) {
         List<BigInteger> encryptedBlocks = new ArrayList<>();
+        int count = 0;
         for (BigInteger block : numericMessage) {
             encryptedBlocks.add(MathMethods.alternativeQuickExponentiation(block, e, n));
         }
+        System.out.println("count: " + count);
         return encryptedBlocks;
     }
 
@@ -339,6 +340,13 @@ public class RSA {
         for (BigInteger block : encryptedBlocks) {
             encryptedNumericMessageStr.append(convertBlockToString(block));
         }
+        //Fill up with leading zeros
+        while(encryptedNumericMessageStr.length() % blockSizePlusOne != 0){
+            encryptedNumericMessageStr.insert(0, "0");
+        }
+        System.out.println(encryptedNumericMessageStr.length() % blockSizePlusOne);
+        System.out.println("encryptedNumericMessageStr: " + encryptedNumericMessageStr);
+
         return encryptedNumericMessageStr.toString();
     }
 
@@ -368,7 +376,7 @@ public class RSA {
             count++;
         }
         while (count < blockSizePlusOne) {
-            numberList.add(0, 0);
+//            numberList.add(0, 0);
             count++;
         }
         return numberList;
@@ -391,12 +399,15 @@ public class RSA {
         List<BigInteger> encryptedNumericMessages = convertBlocksToBigIntegers(encryptedBlocks);
         // Step 4: Decrypt the numeric representation
         List<BigInteger> numericMessage = decryptNumericMessages(encryptedNumericMessages, d, n);
+        System.out.println("numericMessage: " + numericMessage);
         // Step 5: Convert the numeric message to a list of integers
         List<Integer> decryptedMessage = convertNumericMessageToIntegers(numericMessage);
+        System.out.println("decryptedMessage: " + decryptedMessage);
+//        List<Integer> depaddedMessage = removePadding(decryptedMessage);
         // Step 6: Convert the list of integers to a string
-        String decryptedMessageStr = convertIntegersToText(decryptedMessage);
         // Step 7: Remove padding from the decrypted string
-        return removePadding(decryptedMessageStr);
+        String paddedString = convertIntegersToText(decryptedMessage);
+        return removePadding(paddedString);
     }
 
     /**
@@ -425,9 +436,10 @@ public class RSA {
             for (int j = 0; j < blockSizePlusOne; j++) {
                 if (i + j < unicodeMessage.size()) {
                     block.add(BigInteger.valueOf(unicodeMessage.get(i + j)));
-                } else {
-                    block.add(ZERO);
                 }
+//                else {
+//                    block.add(ZERO);
+//                }
             }
             encryptedBlocks.add(block);
         }
@@ -449,6 +461,7 @@ public class RSA {
                 sum = sum.add(temp);
             }
             encryptedNumericMessages.add(sum);
+            System.out.println("sum: " + sum);
         }
         return encryptedNumericMessages;
     }
@@ -493,15 +506,9 @@ public class RSA {
         return MathMethods.convertUniCodeToText(decryptedMessage);
     }
 
-    /**
-     * Removes padding from a decrypted message.
-     *
-     * @param decryptedMessageStr The decrypted message string.
-     * @return The decrypted message without padding.
-     */
+
     private static String removePadding(String decryptedMessageStr) {
-        int paddingIndex = decryptedMessageStr.indexOf(0);
-        return paddingIndex >= 0 ? decryptedMessageStr.substring(0, paddingIndex) : decryptedMessageStr;
+        return decryptedMessageStr.replace("\u0000", "");
     }
 
     /**

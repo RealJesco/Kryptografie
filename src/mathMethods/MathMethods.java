@@ -453,6 +453,7 @@ public class MathMethods {
         if (m.compareTo(ZERO) <= 0) {
             throw new IllegalArgumentException("The random seed must be greater than 0");
         }
+        //TODO Check if this is needed, else remove
         if (m.compareTo(b.subtract(a)) > 0) {
             throw new IllegalArgumentException("The random seed must be smaller than the range");
         }
@@ -630,6 +631,7 @@ public class MathMethods {
 
             encryptedBlocks.add(blockValue);
         }
+        System.out.println("Encrypted blocks: " + encryptedBlocks);
 
         return encryptedBlocks;
     }
@@ -659,6 +661,9 @@ public class MathMethods {
             for (int i = blockSize - 1; i >= 0; i--) {
                 BigInteger numberSystemToThePowerOfI = BigInteger.valueOf(numberSystem).pow(i);
                 BigInteger blockValue = block.divide(numberSystemToThePowerOfI);
+//                if(!blockValue.equals(ZERO)) {
+//                    decryptedMessage.add(blockValue.intValue());
+//                }
                 decryptedMessage.add(blockValue.intValue());
                 block = block.subtract(blockValue.multiply(numberSystemToThePowerOfI));
             }
@@ -676,6 +681,7 @@ public class MathMethods {
     public static List<Integer> convertTextToUniCode(String text) {
         List<Integer> unicode = new ArrayList<>();
         for (int i = 0; i < text.length(); i++) {
+            System.out.println((int) text.charAt(i));
             unicode.add((int) text.charAt(i));
         }
         return unicode;
