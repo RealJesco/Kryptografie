@@ -5,11 +5,40 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 
 import static mathMethods.MathMethods.extendedEuclideanInZi;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GaussianIntegerTests {
+
     @Test
-    void roundHalfUpTest() {
+    void testIsMultipleBIsZero() {
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
+        GaussianInteger b = new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
+
+        assertFalse(a.isMultiple(b));
+    }
+
+    @Test
+    void testAdd() {
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
+        GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("1"));
+
+        GaussianInteger expected = new GaussianInteger(new BigInteger("7"), new BigInteger("6"));
+
+        assertTrue(expected.equals(a.add(b)));
+    }
+
+    @Test
+    void testDivide() {
+        GaussianInteger a = new GaussianInteger(new BigInteger("8"), new BigInteger("6"));
+        GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("2"));
+
+        GaussianInteger expected = new GaussianInteger(new BigInteger("2"), new BigInteger("0"));
+
+        assertTrue(expected.equals(a.divide(b)));
+    }
+
+    @Test
+    void testRoundHalfUp() {
         BigInteger number = new BigInteger("3");
 
         BigInteger expected = new BigInteger("3");
@@ -119,5 +148,14 @@ public class GaussianIntegerTests {
 
         assertEquals(BigInteger.ONE, gcd.real);
         assertEquals(BigInteger.ZERO, gcd.imaginary);
+    }
+
+    @Test
+    void testNormalizeGCD() {
+        GaussianInteger input = new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
+
+        GaussianInteger expected = new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
+
+        assertTrue(expected.equals(input.normalizeGCD()));
     }
 }

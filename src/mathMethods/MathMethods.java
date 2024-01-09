@@ -243,7 +243,6 @@ public class MathMethods {
         }
     }
 
-
     /**
      * Generates a random BigInteger satisfying Euler's criterion for a given prime number.
      *
@@ -259,7 +258,6 @@ public class MathMethods {
 
         return z;
     }
-
 
     /**
      * Represents the given prime number as a sum of two squares.
@@ -311,11 +309,9 @@ public class MathMethods {
         if (p.equals(c.multiply(c).add(d.multiply(d)))) {
             return new GaussianInteger(c, d);
         } else {
-            throw new IllegalStateException("Etwas ist schief gelaufen bei der Berechnung des ggT.");
+            throw new IllegalStateException("Something went wrong while trying to find represent the given number as the sum of two squares.");
         }
     }
-
-
 
     /**
      * Calculates the extended Euclidean algorithm in Z[i].
@@ -343,7 +339,6 @@ public class MathMethods {
         }
         return gk_minus1.normalizeGCD();
     }
-
 
     /**
      * Returns the rounded value of the given array of BigIntegers.
@@ -379,7 +374,6 @@ public class MathMethods {
         }
     }
 
-
     private static final MathContext context = new MathContext(10);
     private static BigInteger randomElsnerA = BigInteger.ZERO;
     private static BigInteger randomElsnerB = BigInteger.ZERO;
@@ -388,6 +382,7 @@ public class MathMethods {
     private static BigDecimal randomElsnerDecimalB = BigDecimal.ZERO;
     private static BigDecimal randomElsnerDecimalM = BigDecimal.ZERO;
     private static BigDecimal range = BigDecimal.ZERO;
+
     /**
      * Generates a random BigInteger within the range [a, b] using Elsner's algorithm.
      * The precision was chosen to be 10 decimal places for the sake of performance.
@@ -430,12 +425,10 @@ public class MathMethods {
         return a.add(randomSeedNumberOffset.toBigInteger());
     }
 
-    private static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
+    public static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
         return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
-                primeCandidate.mod(smallPrime).equals(ZERO) || primeCandidate.equals(smallPrime)
-        );
+                primeCandidate.mod(smallPrime).equals(ZERO) || primeCandidate.equals(smallPrime));
     }
-
 
     /**
      * Generates a random prime number within a specified range using the Elsner algorithm and the Miller-Rabin primality test.
@@ -455,19 +448,14 @@ public class MathMethods {
         if (a.compareTo(ZERO) < 0) {
             throw new IllegalArgumentException("The lower bound must be greater than or equal to 0");
         }
-        if (b.compareTo(ZERO) < 0) {
-            throw new IllegalArgumentException("The upper bound must be greater than or equal to 0");
-        }
-        if (m.compareTo(ZERO) < 0) {
-            throw new IllegalArgumentException("The random seed must be greater than or equal to 0");
+        //The additional condition, b >= 0, does not need to be verified here. It can never be false at this point because one of the cases above would have to be true if this additional condition was not fulfilled. Thus, an exception would be thrown before reaching this point.
+
+        if (m.compareTo(ZERO) <= 0) {
+            throw new IllegalArgumentException("The random seed must be greater than 0");
         }
         if (m.compareTo(b.subtract(a)) > 0) {
             throw new IllegalArgumentException("The random seed must be smaller than the range");
         }
-        if (m.equals(ZERO)) {
-            throw new IllegalArgumentException("The random seed must be greater than 0");
-        }
-
 
         BigInteger primeCandidate;
         BigInteger copyOfCountOfN = RSA.getCountOfN();
@@ -541,7 +529,7 @@ public class MathMethods {
             int r;
             for (r = 1; r < s; r++) {
                 x = alternativeQuickExponentiation(x, TWO, possiblePrime);
-                if (x.equals(ONE)) {
+                if (x.equals(ONE)) { //TODO: Reach this
                     return false;
                 }
                 if (x.equals(possiblePrime.subtract(ONE))) {

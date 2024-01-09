@@ -41,9 +41,6 @@ public class GaussianInteger {
 
         return this.equals(product);
     }
-    public boolean isSymmetricTo(GaussianInteger b) {
-        return this.real.equals(b.imaginary) && this.imaginary.equals(b.real);
-    }
 
     public GaussianInteger divide(GaussianInteger b) {
         BigInteger normB = b.real.pow(2).add(b.imaginary.pow(2));

@@ -10,9 +10,8 @@ import java.util.List;
 
 public class MathMethodsTest {
 
-
     @Test
-    void alternativeQuickExponentiationFromMainOne() {
+    void testAlternativeQuickExponentiationFromMainOne() {
         BigInteger base = new BigInteger("5");
         BigInteger exp = new BigInteger("1");
         BigInteger mod = new BigInteger("1");
@@ -24,7 +23,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void alternativeQuickExponentiationFromMainTwo() {
+    void testAlternativeQuickExponentiationFromMainTwo() {
         BigInteger base = new BigInteger("5345890").pow(50).pow(40);
         BigInteger exp = new BigInteger("561563").pow(50);
         BigInteger mod = new BigInteger("402").pow(453);
@@ -36,7 +35,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void alternativeQuickExponentiationOne() {
+    void testAlternativeQuickExponentiationOne() {
         BigInteger base = new BigInteger("1234567890123456789012345678901234567890");
         BigInteger exp = new BigInteger("9876543210987654321098765432109876543210");
         BigInteger mod = new BigInteger("1928374651928374651928374651");
@@ -48,7 +47,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void alternativeQuickExponentiationTwo() {
+    void testAlternativeQuickExponentiationTwo() {
         BigInteger base = new BigInteger("9876543210987654321098765432109876543210");
         BigInteger exp = new BigInteger("1234567890123456789012345678901234567890");
         BigInteger mod = new BigInteger("987654321098765432109875643");
@@ -60,7 +59,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void alternativeQuickExponentiationThree() {
+    void testAlternativeQuickExponentiationThree() {
         BigInteger base = new BigInteger("987654321098765445321098765432109876543");
         BigInteger exp = new BigInteger("987654321098765432109876543210468435124");
         BigInteger mod = new BigInteger("1928374651928374651928374651");
@@ -72,7 +71,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void alternativeQuickExponentiationZero(){
+    void testAlternativeQuickExponentiationZero(){
         BigInteger base = new BigInteger("1");
         BigInteger exp = new BigInteger("0");
         BigInteger mod = new BigInteger("1");
@@ -84,7 +83,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void alternativeQuickExponentiationNegativeExponent() {
+    void testAlternativeQuickExponentiationNegativeExponent() {
         BigInteger base = new BigInteger("2");
         BigInteger exp = new BigInteger("-2");
         BigInteger mod = new BigInteger("5");
@@ -96,7 +95,7 @@ public class MathMethodsTest {
 
 
     @Test
-    void alternativeQuickExponentiation_edgeCases() {
+    void testAlternativeQuickExponentiation_edgeCases() {
         BigInteger base = BigInteger.ZERO;
         BigInteger exp = new BigInteger("9876543210987654321098765432109876543210");
         BigInteger mod = new BigInteger("1928374651928374651928374651");
@@ -119,7 +118,7 @@ public class MathMethodsTest {
 
 
     @Test
-    void extendedEuclideanOne() {
+    void testExtendedEuclideanOne() {
         BigInteger a = new BigInteger("56");
         BigInteger b = new BigInteger("15");
 
@@ -129,7 +128,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void extendedEuclideanTwo() {
+    void testExtendedEuclideanTwo() {
         BigInteger a = new BigInteger("123456789");
         BigInteger b = new BigInteger("9876543210");
 
@@ -139,7 +138,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void extendedEuclideanFromMain() {
+    void testExtendedEuclideanFromMain() {
         BigInteger a = new BigInteger("315");
         BigInteger b = new BigInteger("661643");
 
@@ -160,45 +159,56 @@ public class MathMethodsTest {
         assertArrayEquals(expexted, MathMethods.extendedEuclidean(b, b), "The extendedEuclidean method returned an incorrect result.");
     }
 
+    @Test
+    void testMillerRabinPossiblePrimeIsOne() {
+        BigInteger number = new BigInteger("1");
+        assertFalse(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
+    }
 
     @Test
-    void millerRabinOne() {
+    void testMillerRabinPossiblePrimeIsTwo() {
+        BigInteger number = new BigInteger("2");
+        assertTrue(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
+    }
+
+    @Test
+    void testMillerRabinOne() {
         BigInteger number = new BigInteger("12");
         assertFalse(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
-    void millerRabinTwo() {
+    void testMillerRabinTwo() {
         BigInteger number = new BigInteger("13");
         assertTrue(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
-    void millerRabinThree() {
+    void testMillerRabinThree() {
         BigInteger number = new BigInteger("2147483249");
         assertTrue(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
-    void millerRabinFour() {
+    void testMillerRabinFour() {
         BigInteger number = new BigInteger("685082020225370353384144714523");
         assertTrue(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
-    void millerRabinFive() {
+    void testMillerRabinFive() {
         BigInteger number = new BigInteger("685082020225370353384144714529"); // = 7 * 21827453 * 19154510483 * 234083288753
         assertFalse(MathMethods.millerRabinTest(number, 100, BigInteger.valueOf(2), BigInteger.valueOf(3)));
     }
 
     @Test
-    void parallelMillerRabinIsNotAPrime() {
+    void testParallelMillerRabinIsNotAPrime() {
         BigInteger number = new BigInteger("12");
         assertFalse(MathMethods.parallelMillerRabinTest(number, 100, BigInteger.valueOf(221), BigInteger.valueOf(3)));
     }
 
     @Test
-    void parallelMillerRabinIsAPrime() {
+    void testParallelMillerRabinIsAPrime() {
         BigInteger number = new BigInteger("13");
         assertTrue(MathMethods.parallelMillerRabinTest(number, 100, BigInteger.valueOf(844), BigInteger.valueOf(3)));
     }
@@ -252,7 +262,7 @@ public class MathMethodsTest {
     }
     //In ms
     System.out.println("Average time needed for generating prime numbers: " + (accumulatedTime / count / 1000 ) + " ms");
-}
+    }
 
     @Test
     void testGeneratePrimeNumbers() {
@@ -263,10 +273,113 @@ public class MathMethodsTest {
 
         BigInteger result = MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
         System.out.println(result);
-        //test countOfN from 0 to 100 and check if true, if not true print countOfN
-}
+        //TODO: test countOfN from 0 to 100 and check if true, if not true print countOfN
+    }
+
     @Test
-    void prepareForEncryptionOne() {
+    void testGeneratePrimeNumbersAGreaterThanB() {
+        BigInteger m = new BigInteger("10");
+        BigInteger a = new BigInteger("100");
+        BigInteger b = new BigInteger("1");
+        int millerRabinSteps = 20;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
+        });
+
+        String expectedMessage = "The lower bound must be smaller than the upper bound";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void testGeneratePrimeNumbersASmallerThan0() {
+        BigInteger m = new BigInteger("10");
+        BigInteger a = new BigInteger("-1");
+        BigInteger b = new BigInteger("100");
+        int millerRabinSteps = 20;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
+        });
+
+        String expectedMessage = "The lower bound must be greater than or equal to 0";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void testGeneratePrimeNumbersMSmallerThan0() {
+        BigInteger m = new BigInteger("-10");
+        BigInteger a = new BigInteger("1");
+        BigInteger b = new BigInteger("100");
+        int millerRabinSteps = 20;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
+        });
+
+        String expectedMessage = "The random seed must be greater than 0";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void testGeneratePrimeNumbersMIs0() {
+        BigInteger m = new BigInteger("0");
+        BigInteger a = new BigInteger("1");
+        BigInteger b = new BigInteger("100");
+        int millerRabinSteps = 20;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
+        });
+
+        String expectedMessage = "The random seed must be greater than 0";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void testGeneratePrimeNumbersMAsBigAsRange() {
+        BigInteger m = new BigInteger("10");
+        BigInteger a = new BigInteger("1");
+        BigInteger b = new BigInteger("10");
+        int millerRabinSteps = 20;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
+        });
+
+        String expectedMessage = "The random seed must be smaller than the range";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void testGeneratePrimeNumbersMLangerThanRange() {
+        BigInteger m = new BigInteger("11");
+        BigInteger a = new BigInteger("1");
+        BigInteger b = new BigInteger("10");
+        int millerRabinSteps = 20;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
+        });
+
+        String expectedMessage = "The random seed must be smaller than the range";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void testPrepareForEncryptionOne() {
         List<Integer> codeMessage = new ArrayList<>();
 //        12 0 19 7 4 12 0 19
         codeMessage.add(12);
@@ -284,7 +397,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void prepareForEncryptionTwo() {
+    void testPrepareForEncryptionTwo() {
         List<Integer> codeMessage = new ArrayList<>();
 //        12 0 19 7 4 12 0 20
         codeMessage.add(12);
@@ -302,7 +415,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void prepareForEncryptionThree() {
+    void testPrepareForEncryptionThree() {
         List<Integer> codeMessage = new ArrayList<>();
 //        12 0 19 7 4 12 1 19
         codeMessage.add(12);
@@ -320,7 +433,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void encryptToDecryptAlternativeQuickExponentiationOnlyWithNumbers() {
+    void testEncryptToDecryptAlternativeQuickExponentiationOnlyWithNumbers() {
         BigInteger message = new BigInteger("12345"); // Example message
         BigInteger e = new BigInteger("18217281770421758450086481999749147637"); // public exponent
         BigInteger d = new BigInteger("69856630177376283805385594524728944213"); // private exponent
@@ -415,6 +528,22 @@ public class MathMethodsTest {
     }
 
     @Test
+    void testF() {
+        BigInteger[] input = new BigInteger[2];
+        input[0] = new BigInteger("0");
+        input[1] = new BigInteger("0");
+
+        BigInteger[] expected = new BigInteger[2];
+        expected[0] = new BigInteger("0");
+        expected[1] = new BigInteger("0");
+
+        BigInteger[] result = MathMethods.f(input);
+
+        assertTrue(expected[0].equals(result[0]), "The real part of the result is wrong.");
+        assertTrue(expected[1].equals(result[1]), "The imaginary part of the result is wrong.");
+    }
+
+    @Test
     void testRandomElsner() {
         BigInteger m = new BigInteger("10");
         BigInteger n = new BigInteger("5");
@@ -424,6 +553,20 @@ public class MathMethodsTest {
         BigInteger result = MathMethods.randomElsner(m, n, a, b);
 
         assertTrue(result.compareTo(a) >= 0 && result.compareTo(b) <= 0, "The randomElsner method should return a BigInteger within the range [a, b].");
+    }
+
+    @Test
+    void testIsCompositeAgainstSmallPrimesIsPrime() {
+        BigInteger prime = new BigInteger("1201");
+
+        assertFalse(MathMethods.isCompositeAgainstSmallPrimes(prime));
+    }
+
+    @Test
+    void testIsCompositeAgainstSmallPrimesIsNotPrime() {
+        BigInteger notPrime = new BigInteger("390625");
+
+        assertTrue(MathMethods.isCompositeAgainstSmallPrimes(notPrime));
     }
 
     @Test
