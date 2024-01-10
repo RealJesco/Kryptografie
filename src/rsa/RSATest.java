@@ -229,7 +229,6 @@ public class RSATest {
 
     @Test
     public void checkIfLengthIsMoreThan256BitsThrowsException() {
-        //Sign message
         RSA.setMillerRabinSteps(10);
         RSA.setBitLengthN(255);
         RSA.setNumberSystemBase(55926);
@@ -241,15 +240,12 @@ public class RSATest {
 
     @Test
     public void test_calculateE_shouldBeCoprimeWithPhiN() {
-        // Arrange
         BigInteger phiN = BigInteger.valueOf(120);
         BigInteger commonFactor;
 
-        //Act
         RSA.calculateE(phiN);
         BigInteger e = RSA.getE();
 
-        // Assert: We check that e and phiN are co-prime i.e., their GCD is 1
         commonFactor = phiN.gcd(e);
         assertEquals(BigInteger.valueOf(1), commonFactor);
     }
@@ -260,17 +256,14 @@ public class RSATest {
      */
     @Test
     public void test_calculateE_shouldBeDeterministic() {
-        // Arrange
         BigInteger phiN = BigInteger.valueOf(120);
         BigInteger e1, e2;
 
-        // Act
         RSA.calculateE(phiN);
         e1 = RSA.getE();
         RSA.calculateE(phiN);
         e2 = RSA.getE();
 
-        // Assert:
         assertEquals(e1, e2);
     }
 
@@ -281,14 +274,11 @@ public class RSATest {
      */
     @Test
     public void testCalculateE_shouldHandleLargeInputs() {
-        // Arrange
         BigInteger phiN = new BigInteger("9223372036854775807");
 
-        // Act
         RSA.calculateE(phiN);
         BigInteger e = RSA.getE();
 
-        // Assert:
         assertNotEquals(0, e.compareTo(BigInteger.ZERO));
     }
 
@@ -297,12 +287,9 @@ public class RSATest {
      */
     @Test
     public void testCalculateE_shouldFailForUnsuitablePhiN() {
-        // Arrange
         BigInteger phiN = BigInteger.valueOf(2);
 
-        // Act
 
-        // Assert: check that the computed e is bigger than 3 because 3 is a factor of phiN
         assertThrows(IllegalArgumentException.class, () -> RSA.calculateE(phiN));
     }
 }
