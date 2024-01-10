@@ -344,39 +344,7 @@ public class MathMethodsTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
-    @Test
-    void testGeneratePrimeNumbersMAsBigAsRange() {
-        BigInteger m = new BigInteger("10");
-        BigInteger a = new BigInteger("1");
-        BigInteger b = new BigInteger("10");
-        int millerRabinSteps = 20;
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
-        });
-
-        String expectedMessage = "The random seed must be smaller than the range";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    void testGeneratePrimeNumbersMLangerThanRange() {
-        BigInteger m = new BigInteger("11");
-        BigInteger a = new BigInteger("1");
-        BigInteger b = new BigInteger("10");
-        int millerRabinSteps = 20;
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            MathMethods.generateRandomPrime(m, a, b, millerRabinSteps);
-        });
-
-        String expectedMessage = "The random seed must be smaller than the range";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
 
     @Test
     void testPrepareForEncryptionOne() {

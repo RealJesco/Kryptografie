@@ -226,4 +226,83 @@ public class RSATest {
         RSA.generateP(BigInteger.valueOf(RSA.getBitLengthN()/2));
         System.out.println("Time needed only to generate p: " + (System.nanoTime()-start) / 1000000 + " ms");
     }
+
+    @Test
+    public void checkIfLengthIsMoreThan256BitsThrowsException() {
+        //Sign message
+        RSA.setMillerRabinSteps(10);
+        RSA.setBitLengthN(255);
+        RSA.setNumberSystemBase(55926);
+        RSA.setM(BigInteger.valueOf(844));
+        RSA.generateRSAKeys();
+        String message = "Hello, World!";
+        assertThrows(IllegalArgumentException.class, () -> RSA.sign(message));
+    }
+
+    @Test
+    public void test_calculateE_shouldBeCoprimeWithPhiN() {
+        // Arrange
+        BigInteger phiN = BigInteger.valueOf(120);
+        BigInteger commonFactor;
+
+        //Act
+        RSA.calculateE(phiN);
+        BigInteger e = RSA.getE();
+
+        // Assert: We check that e and phiN are co-prime i.e., their GCD is 1
+        commonFactor = phiN.gcd(e);
+        assertEquals(BigInteger.valueOf(1), commonFactor);
+    }
+
+    /**
+     * This test verifies that the calculateE() method from the RSA class is deterministic. That is, given the same inputs,
+     * the method should always produce the same output.
+     */
+    @Test
+    public void test_calculateE_shouldBeDeterministic() {
+        // Arrange
+        BigInteger phiN = BigInteger.valueOf(120);
+        BigInteger e1, e2;
+
+        // Act
+        RSA.calculateE(phiN);
+        e1 = RSA.getE();
+        RSA.calculateE(phiN);
+        e2 = RSA.getE();
+
+        // Assert:
+        assertEquals(e1, e2);
+    }
+
+
+    /**
+     * This test verifies that the calculateE() method from RSA class can handle large input sizes.
+     * We check this by providing a large phiN value and then verifying that the operation completes successfully.
+     */
+    @Test
+    public void testCalculateE_shouldHandleLargeInputs() {
+        // Arrange
+        BigInteger phiN = new BigInteger("9223372036854775807");
+
+        // Act
+        RSA.calculateE(phiN);
+        BigInteger e = RSA.getE();
+
+        // Assert:
+        assertNotEquals(0, e.compareTo(BigInteger.ZERO));
+    }
+
+    /**
+     * This test verifies that the calculateE() method from the RSA class fails when an unsuitable phiN is provided.
+     */
+    @Test
+    public void testCalculateE_shouldFailForUnsuitablePhiN() {
+        // Arrange
+        BigInteger phiN = BigInteger.valueOf(2);
+
+        // Act
+
+        // Assert: check that the computed e is bigger than 3 because 3 is a factor of phiN
+        assertThrows(IllegalArgumentException.class, () -> RSA.calculateE(phiN));
+    }
 }

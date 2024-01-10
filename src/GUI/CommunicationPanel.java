@@ -73,7 +73,7 @@ public class CommunicationPanel extends JFrame {
             }
 
             try{
-                Alice = new Communicator("Alice", RSA.getN(), RSA.getPhiN(), new Point(900, 0));
+                Alice = new Communicator("Alice", RSA.getN(),  new Point(900, 0));
             } catch (Exception f){
                 JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e);
                 disposeCommunicators();
@@ -83,7 +83,7 @@ public class CommunicationPanel extends JFrame {
             RSA.generateRSAKeys();
 
             try{
-                Bob = new Communicator("Bob", RSA.getN(), RSA.getPhiN(), new Point(900, 400));
+                Bob = new Communicator("Bob", RSA.getN(), new Point(900, 400));
             } catch (Exception f){
                 JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e);
                 disposeCommunicators();

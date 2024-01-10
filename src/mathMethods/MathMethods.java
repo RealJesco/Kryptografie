@@ -453,10 +453,6 @@ public class MathMethods {
         if (m.compareTo(ZERO) <= 0) {
             throw new IllegalArgumentException("The random seed must be greater than 0");
         }
-        //TODO Check if this is needed, else remove
-        if (m.compareTo(b.subtract(a)) > 0) {
-            throw new IllegalArgumentException("The random seed must be smaller than the range");
-        }
 
         BigInteger primeCandidate;
         BigInteger copyOfCountOfN = RSA.getCountOfN();

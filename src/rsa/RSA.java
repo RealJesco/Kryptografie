@@ -35,7 +35,6 @@ public class RSA {
     private static int bitLengthN = 128;
 
 
-    //    Constructor
     public RSA(int millerRabinSteps, int bitLengthN, int numberSystemBase, BigInteger m) {
         RSA.millerRabinSteps = millerRabinSteps;
         RSA.bitLengthN = bitLengthN;
@@ -68,41 +67,11 @@ public class RSA {
     public static BigInteger getQ(){
         return q;
     }
-    public static BigInteger setN(BigInteger n){
-        return RSA.n = n;
-    }
-    public static BigInteger setE(BigInteger e){
-        return RSA.e = e;
-    }
-    public static BigInteger setD(BigInteger d){
-        return RSA.d = d;
-    }
-    public static BigInteger setP(BigInteger p){
-        return RSA.p = p;
-    }
-    public static BigInteger setQ(BigInteger q){
-        return RSA.q = q;
-    }
-    public static BigInteger getM(){
-        return m;
-    }
-    public static BigInteger getA(){
-        return a;
-    }
-    public static BigInteger getB(){
-        return b;
-    }
-    public static BigInteger getPhiN(){
-        return phiN;
-    }
     public static int getBitLengthN(){
         return bitLengthN;
     }
     public static int getBlockSize(){
         return blockSize;
-    }
-    public static int getMillerRabinSteps(){
-        return millerRabinSteps;
     }
     public static void setBitLengthN(int bitLengthN){
         RSA.bitLengthN = bitLengthN;
@@ -139,12 +108,16 @@ public class RSA {
     }
     // Initially try to use 65537 as the public exponent e
     public static void calculateE(BigInteger phiN){
+        if(phiN.compareTo(BigInteger.valueOf(3)) < 0){
+            throw new IllegalArgumentException("phiN is too small to calculate e");
+        }
         e = BigInteger.valueOf(65537);
         if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(ONE)) {
             e = BigInteger.valueOf(3);
             if (!e.gcd(phiN).equals(ONE)) {
                 BigInteger upperBoundForE = phiN.subtract(ONE); // e must be less than phiN
                 do {
+                    upperBoundForE = upperBoundForE.subtract(ONE);
                     e = generateRandomPrime(m, TWO, upperBoundForE, millerRabinSteps);
                 } while (!e.gcd(phiN).equals(ONE));
             }
@@ -205,7 +178,6 @@ public class RSA {
      * </p>
      */
     private static void keyGenerator(){
-        // Calculate bit length of p and q
         int bitLengthP = bitLengthN / 2;
         int bitLengthQ = bitLengthN / 2;
         if(bitLengthN != bitLengthQ + bitLengthP){
@@ -373,9 +345,6 @@ public class RSA {
      */
     private static String convertBlockToString(BigInteger block) {
         List<Integer> tempList = convertBlockToNumberList(block);
-        while(tempList.size() < blockSizePlusOne){
-            tempList.add(0, 0);
-        }
         return MathMethods.convertUniCodeToText(tempList);
     }
 
@@ -387,15 +356,9 @@ public class RSA {
      */
     private static List<Integer> convertBlockToNumberList(BigInteger block) {
         List<Integer> numberList = new ArrayList<>();
-        int count = 0;
         while (!block.equals(ZERO)) {
             numberList.add(0, block.mod(BigInteger.valueOf(numberSystemBase)).intValue());
             block = block.divide(BigInteger.valueOf(numberSystemBase));
-            count++;
-        }
-        while (count < blockSizePlusOne) {
-//            numberList.add(0, 0);
-            count++;
         }
         return numberList;
     }
@@ -628,7 +591,6 @@ public class RSA {
      * @return true if the signature is valid, false otherwise
      * @throws NoSuchAlgorithmException if the algorithm used for signature verification is not available
      */
-    // For situations where no public exponent and modulus parameters exist
     public static boolean verifySignature(String message, String signature) throws NoSuchAlgorithmException {
         BigInteger defaultExponent = e;
         BigInteger defaultModulus = n;

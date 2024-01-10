@@ -42,7 +42,7 @@ public class Communicator extends JFrame {
     private final ArrayList<Message> messageList = new ArrayList<>();
 
 
-    public Communicator(String name, BigInteger n, BigInteger phiN, Point point){
+    public Communicator(String name, BigInteger n, Point point){
         super(name);
         this.name = name;
         this.n = n;
@@ -182,7 +182,7 @@ public class Communicator extends JFrame {
                 Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof Message) {
                     Message message = (Message) value;
-                    setText("GUI.HelperClasses.Message from " + message.getSender().name + ": " + message.message);
+                    setText("Message from " + message.getSender().name + ": " + message.message);
                 }
                 return renderer;
             }

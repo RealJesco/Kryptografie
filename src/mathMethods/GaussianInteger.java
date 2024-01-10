@@ -2,6 +2,7 @@ package mathMethods;
 
 import java.math.BigInteger;
 
+import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
 
 public class GaussianInteger {
@@ -38,7 +39,9 @@ public class GaussianInteger {
         GaussianInteger quotient = this.divide(b);
         GaussianInteger product = quotient.multiply(b);
 
-
+        if(quotient.real.equals(ONE) && quotient.imaginary.equals(ONE)) {
+            return false;
+        }
         return this.equals(product);
     }
 

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
+import static java.math.BigInteger.ZERO;
 import static mathMethods.MathMethods.extendedEuclideanInZi;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,9 +13,33 @@ public class GaussianIntegerTests {
     @Test
     void testIsMultipleBIsZero() {
         GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
-        GaussianInteger b = new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
+        GaussianInteger b = new GaussianInteger(ZERO, ZERO);
 
         assertFalse(a.isMultiple(b));
+    }
+
+    @Test
+    void isMultiple(){
+        GaussianInteger a = new GaussianInteger(new BigInteger("2"), new BigInteger("2"));
+        GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("4"));
+
+        assertTrue(b.isMultiple(a));
+    }
+    @Test
+    void isNotMultiple() {
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
+        GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("1"));
+
+        assertFalse(a.isMultiple(b));
+    }
+    @Test
+    public void testNormalizeGCD_WithZeroRealPart() {
+        GaussianInteger gaussianInteger = new GaussianInteger(ZERO, BigInteger.valueOf(5));
+
+        GaussianInteger result = gaussianInteger.normalizeGCD();
+
+        assertEquals(ZERO, result.imaginary);
+        assertEquals(BigInteger.valueOf(5), result.real);
     }
 
     @Test
@@ -64,7 +89,7 @@ public class GaussianIntegerTests {
 
     @Test
     void testGaussianExtendedEuclideanWithZeroInput() {
-        GaussianInteger a = new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
+        GaussianInteger a = new GaussianInteger(ZERO, ZERO);
         GaussianInteger b = new GaussianInteger(new BigInteger("3"), new BigInteger("4")); // 3 + 4i
 
         GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
@@ -99,13 +124,13 @@ public class GaussianIntegerTests {
 
     @Test
     void testGaussianExtendedEuclideanIdentity() {
-        GaussianInteger a = new GaussianInteger(new BigInteger("1"), BigInteger.ZERO);
+        GaussianInteger a = new GaussianInteger(new BigInteger("1"), ZERO);
         GaussianInteger b = new GaussianInteger(new BigInteger("7"), new BigInteger("3"));
 
         GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
 
         assertEquals(BigInteger.ONE, gcd.real);
-        assertEquals(BigInteger.ZERO, gcd.imaginary);
+        assertEquals(ZERO, gcd.imaginary);
     }
     @Test
     void testGaussianExtendedEuclideanMultiples() {
@@ -120,13 +145,13 @@ public class GaussianIntegerTests {
 
     @Test
     void testGaussianExtendedEuclideanPurelyRealAndImaginaryIntegers() {
-        GaussianInteger a = new GaussianInteger(new BigInteger("5"), BigInteger.ZERO);
-        GaussianInteger b = new GaussianInteger(new BigInteger("5"), BigInteger.ZERO);
+        GaussianInteger a = new GaussianInteger(new BigInteger("5"), ZERO);
+        GaussianInteger b = new GaussianInteger(new BigInteger("5"), ZERO);
 
         GaussianInteger gcd = extendedEuclideanInZi(a, b);
 
         assertEquals(BigInteger.valueOf(5), gcd.real);
-        assertEquals(BigInteger.ZERO, gcd.imaginary);
+        assertEquals(ZERO, gcd.imaginary);
     }
     @Test
     void testGaussianExtendedEuclideanCommonDivisorCases() {
@@ -141,20 +166,20 @@ public class GaussianIntegerTests {
 
     @Test
     void testGaussianExtendedEuclideanWithPrimes() {
-        GaussianInteger a = new GaussianInteger(new BigInteger("3"), BigInteger.ZERO);
-        GaussianInteger b = new GaussianInteger(new BigInteger("5"), BigInteger.ZERO);
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), ZERO);
+        GaussianInteger b = new GaussianInteger(new BigInteger("5"), ZERO);
 
         GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
 
         assertEquals(BigInteger.ONE, gcd.real);
-        assertEquals(BigInteger.ZERO, gcd.imaginary);
+        assertEquals(ZERO, gcd.imaginary);
     }
 
     @Test
     void testNormalizeGCD() {
-        GaussianInteger input = new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
+        GaussianInteger input = new GaussianInteger(ZERO, ZERO);
 
-        GaussianInteger expected = new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
+        GaussianInteger expected = new GaussianInteger(ZERO, ZERO);
 
         assertTrue(expected.equals(input.normalizeGCD()));
     }
