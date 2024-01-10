@@ -11,7 +11,7 @@ public class RSATest {
     public void encryptionAndDecryptionShouldReturnOriginalMessage() {
         new RSA(1000, 512, 55926, BigInteger.valueOf(844));
         RSA.generateRSAKeys();
-        String originalMessage = "Mathematik ist spannend";
+        String originalMessage = "Hello, World!0 und Mathematik ist spannend";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN());
         String decryptedMessage = RSA.decrypt(encryptedMessage, RSA.getD(), RSA.getN());
         assertEquals(originalMessage, decryptedMessage);
@@ -20,9 +20,10 @@ public class RSATest {
     public void encryptionAndDecryptionShouldReturnFalseIfMessageChanged() {
         new RSA(40, 512, 55926, BigInteger.valueOf(844));
         RSA.generateRSAKeys();
-        String originalMessage = "Hello, World!0";
+        String originalMessage = "Hello, World!0 und Mathematik ist spannend";
         String encryptedMessage = RSA.encrypt(originalMessage, RSA.getE(), RSA.getN()) + "䟭謦燩Ԕ㫫";
         String decryptedMessage = RSA.decrypt(encryptedMessage, RSA.getD(), RSA.getN());
+        System.out.println("decryptedMessage" + decryptedMessage);
         //assert not equals
         assertNotEquals(originalMessage, decryptedMessage);
     }

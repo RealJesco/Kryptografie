@@ -628,10 +628,12 @@ public class MathMethods {
                 blockValue = blockValue.add(BigInteger.valueOf(integer).multiply(BigInteger.valueOf(numberSystem).pow(exponent)));
                 exponent--;
             }
+            while (block.size() < blockSize) {
+                block.add(0, 0);
+            }
 
             encryptedBlocks.add(blockValue);
         }
-        System.out.println("Encrypted blocks: " + encryptedBlocks);
 
         return encryptedBlocks;
     }
@@ -656,14 +658,12 @@ public class MathMethods {
             blocks.add(message.mod(numberSystemToThePowerOfBlockSize));
             message = message.divide(numberSystemToThePowerOfBlockSize);
         }
-
+        int counter = 0;
         for (BigInteger block : blocks) {
+            counter++;
             for (int i = blockSize - 1; i >= 0; i--) {
                 BigInteger numberSystemToThePowerOfI = BigInteger.valueOf(numberSystem).pow(i);
                 BigInteger blockValue = block.divide(numberSystemToThePowerOfI);
-//                if(!blockValue.equals(ZERO)) {
-//                    decryptedMessage.add(blockValue.intValue());
-//                }
                 decryptedMessage.add(blockValue.intValue());
                 block = block.subtract(blockValue.multiply(numberSystemToThePowerOfI));
             }
@@ -681,7 +681,6 @@ public class MathMethods {
     public static List<Integer> convertTextToUniCode(String text) {
         List<Integer> unicode = new ArrayList<>();
         for (int i = 0; i < text.length(); i++) {
-            System.out.println((int) text.charAt(i));
             unicode.add((int) text.charAt(i));
         }
         return unicode;

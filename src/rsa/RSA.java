@@ -274,11 +274,34 @@ public class RSA {
         // Step 2: Prepare message for encryption (Block cipher)
         List<BigInteger> numericMessage = prepareMessageForEncryption(unicodeMessage);
         // Step 3: Encrypt the numeric representation
-        List<BigInteger> encryptedBlocks = encryptNumericBlocks(numericMessage, e, n);
+        List<BigInteger> encryptedBlocks = rsaEncryptNumericMessage(numericMessage, e, n);
         // Step 4: Process the encrypted blocks into a string representation
         return processEncryptedBlocksToString(encryptedBlocks);
     }
 
+    /**
+     * Encrypts a numeric message using RSA encryption.
+     *
+     * @param numericMessage the numeric message to be encrypted as a List of BigIntegers
+     * @param e the public exponent used for encryption as a BigInteger
+     * @param n the modulus used for encryption as a BigInteger
+     * @return the encrypted message as a List of BigIntegers
+     */
+    private static List<BigInteger> rsaEncryptNumericMessage(List<BigInteger> numericMessage, BigInteger e, BigInteger n){
+     return rsaEncryptNumericBlocks(numericMessage, e, n);
+    }
+
+    /**
+     * Encrypts a list of numeric blocks using RSA encryption.
+     *
+     * @param numericMessage the list of numeric blocks to be encrypted
+     * @param e              the public exponent value
+     * @param n              the modulus value
+     * @return the encrypted list of numeric blocks
+     */
+    private static List<BigInteger> rsaEncryptNumericBlocks (List<BigInteger> numericMessage, BigInteger e, BigInteger n){
+        return encryptNumericBlocks(numericMessage, e, n);
+    }
     /**
      * Encrypts a given message using the RSA algorithm.
      *
@@ -321,11 +344,9 @@ public class RSA {
      */
     private static List<BigInteger> encryptNumericBlocks(List<BigInteger> numericMessage, BigInteger e, BigInteger n) {
         List<BigInteger> encryptedBlocks = new ArrayList<>();
-        int count = 0;
         for (BigInteger block : numericMessage) {
             encryptedBlocks.add(MathMethods.alternativeQuickExponentiation(block, e, n));
         }
-        System.out.println("count: " + count);
         return encryptedBlocks;
     }
 
@@ -340,12 +361,6 @@ public class RSA {
         for (BigInteger block : encryptedBlocks) {
             encryptedNumericMessageStr.append(convertBlockToString(block));
         }
-        //Fill up with leading zeros
-        while(encryptedNumericMessageStr.length() % blockSizePlusOne != 0){
-            encryptedNumericMessageStr.insert(0, "0");
-        }
-        System.out.println(encryptedNumericMessageStr.length() % blockSizePlusOne);
-        System.out.println("encryptedNumericMessageStr: " + encryptedNumericMessageStr);
 
         return encryptedNumericMessageStr.toString();
     }
@@ -358,6 +373,9 @@ public class RSA {
      */
     private static String convertBlockToString(BigInteger block) {
         List<Integer> tempList = convertBlockToNumberList(block);
+        while(tempList.size() < blockSizePlusOne){
+            tempList.add(0, 0);
+        }
         return MathMethods.convertUniCodeToText(tempList);
     }
 
@@ -382,6 +400,14 @@ public class RSA {
         return numberList;
     }
 
+    private static List<String> splitStringIntoBlocks(String message){
+        List<String> blocks = new ArrayList<>();
+        for(int i = 0; i < message.length(); i += blockSizePlusOne){
+            blocks.add(message.substring(i, Math.min(message.length(), i + blockSizePlusOne)));
+        }
+        return blocks;
+    }
+
     /**
      * Decrypts a numeric message using block cipher encryption algorithm.
      *
@@ -391,18 +417,26 @@ public class RSA {
      * @return the decrypted message as a string
      */
     public static String blockCipherDecrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n){
+        //Split into blocks
+        List<String> splitBlocks = splitStringIntoBlocks(encryptedNumericMessageStr);
+
         // Step 1: Convert text to Unicode
-        List<Integer> unicodeMessage = convertTextToUnicode(encryptedNumericMessageStr);
+        List<Integer> unicodeMessage = new ArrayList<>();
+
+        for(String block : splitBlocks){
+            unicodeMessage.addAll(convertTextToUnicode(block));
+        }
+
+
+        //fill with leading zeros if necessary for the block size
         // Step 2: Create encrypted blocks from Unicode
         List<List<BigInteger>> encryptedBlocks = createEncryptedBlocksFromUnicode(unicodeMessage);
         // Step 3: Convert the encrypted blocks to BigInteger format
         List<BigInteger> encryptedNumericMessages = convertBlocksToBigIntegers(encryptedBlocks);
         // Step 4: Decrypt the numeric representation
         List<BigInteger> numericMessage = decryptNumericMessages(encryptedNumericMessages, d, n);
-        System.out.println("numericMessage: " + numericMessage);
         // Step 5: Convert the numeric message to a list of integers
         List<Integer> decryptedMessage = convertNumericMessageToIntegers(numericMessage);
-        System.out.println("decryptedMessage: " + decryptedMessage);
 //        List<Integer> depaddedMessage = removePadding(decryptedMessage);
         // Step 6: Convert the list of integers to a string
         // Step 7: Remove padding from the decrypted string
@@ -437,10 +471,8 @@ public class RSA {
                 if (i + j < unicodeMessage.size()) {
                     block.add(BigInteger.valueOf(unicodeMessage.get(i + j)));
                 }
-//                else {
-//                    block.add(ZERO);
-//                }
             }
+
             encryptedBlocks.add(block);
         }
         return encryptedBlocks;
@@ -461,7 +493,6 @@ public class RSA {
                 sum = sum.add(temp);
             }
             encryptedNumericMessages.add(sum);
-            System.out.println("sum: " + sum);
         }
         return encryptedNumericMessages;
     }
