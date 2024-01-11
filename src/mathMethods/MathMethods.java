@@ -276,22 +276,15 @@ public class MathMethods {
         while (randomNonSquareNumber.mod(TWO).equals(ZERO)) {
             randomNonSquareNumber = new BigInteger(new SecureRandom().nextInt(100), new SecureRandom());
         }
-        System.out.println(randomNonSquareNumber);
 
         if (!parallelMillerRabinTest(p, 100, randomNonSquareNumber, RSA.getCountOfN())) {
             throw new IllegalArgumentException("The number " + p + " is not a prime number.");
         }
-        System.out.println("p = " + p);
         // Check if p is of the form 4n + 1
         if (!p.mod(BigInteger.valueOf(4)).equals(ONE) || p.compareTo(BigInteger.valueOf(4)) <= 0) {
             throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 
-        GaussianInteger x = extendedEuclideanInZi(new GaussianInteger(ZERO, ONE), new GaussianInteger(p, ZERO));
-        // Check if x is a multiple of p
-        if (x.isMultiple(new GaussianInteger(p, ZERO))) {
-            throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
-        }
 
         BigInteger randomZ = eulerCriterion(p);
         //Check if randomZ is a squared non-residue mod p
@@ -304,7 +297,6 @@ public class MathMethods {
         BigInteger randomW = alternativeQuickExponentiation(randomZ, p.subtract(ONE).divide(four), p);
         GaussianInteger w_i = new GaussianInteger(randomW, ONE);
         GaussianInteger p_0 = new GaussianInteger(p, ZERO);
-
         GaussianInteger result = extendedEuclideanInZi(w_i, p_0);
         //Make sure that results are positive by multiplying with -1
         if (result.real.compareTo(ZERO) < 0) {
@@ -339,8 +331,7 @@ public class MathMethods {
             ck = gk_minus1.divide(gk);
             gk_plus1 = gk_minus1.subtract(gk.multiply(ck));
 
-
-            if (gk.equals(gk_plus1) || gk.isSymmetricallyEqualTo(gk_plus1)) {
+            if (gk.equals(gk_plus1) || gk.isSymmetricallyEqualTo(gk_plus1) || gk_minus1.isSymmetricallyEqualTo(gk_plus1) || gk_minus1.equals(gk_plus1)) {
                 break;
             }
 
