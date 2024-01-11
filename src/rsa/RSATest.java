@@ -1,5 +1,6 @@
 package rsa;
 
+import mathMethods.MathMethods;
 import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
@@ -74,9 +75,7 @@ public class RSATest {
         RSA.setM(BigInteger.valueOf(844));
         RSA.generateRSAKeys();
         String message = "Hello, World!";
-        String invalidSignature = message + "a";
-        // Convert to hex presentation
-        invalidSignature = new BigInteger(invalidSignature.getBytes()).toString(16);
+        String invalidSignature = RSA.sign(message) + "123";
         assertFalse(RSA.verifySignature(message, invalidSignature));
     }
     //Test if non-hex presentation throws exception
