@@ -271,7 +271,12 @@ public class MathMethods {
         //Check if p is a prime number
 
         //random non square number
-        BigInteger randomNonSquareNumber = new BigInteger(p.bitLength(), new SecureRandom()).mod(p);
+        BigInteger randomNonSquareNumber = new BigInteger(new SecureRandom().nextInt(100), new SecureRandom());
+
+        while (randomNonSquareNumber.mod(TWO).equals(ZERO)) {
+            randomNonSquareNumber = new BigInteger(new SecureRandom().nextInt(100), new SecureRandom());
+        }
+        System.out.println(randomNonSquareNumber);
 
         if (!parallelMillerRabinTest(p, 100, randomNonSquareNumber, RSA.getCountOfN())) {
             throw new IllegalArgumentException("The number " + p + " is not a prime number.");
