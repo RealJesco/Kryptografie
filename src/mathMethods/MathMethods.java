@@ -272,15 +272,13 @@ public class MathMethods {
 
         //random non square number
         BigInteger randomNonSquareNumber = new BigInteger(p.bitLength(), new SecureRandom()).mod(p);
-        while (alternativeQuickExponentiation(randomNonSquareNumber, p.subtract(ONE).divide(TWO), p).equals(ONE)) {
-            randomNonSquareNumber = new BigInteger(p.bitLength(), new SecureRandom()).mod(p);
-        }
 
-        if (!parallelMillerRabinTest(p, 10, randomNonSquareNumber, RSA.getCountOfN())) {
+        if (!parallelMillerRabinTest(p, 100, randomNonSquareNumber, RSA.getCountOfN())) {
             throw new IllegalArgumentException("The number " + p + " is not a prime number.");
         }
+        System.out.println("p = " + p);
         // Check if p is of the form 4n + 1
-        if (!p.mod(BigInteger.valueOf(4)).equals(ONE)) {
+        if (!p.mod(BigInteger.valueOf(4)).equals(ONE) || p.compareTo(BigInteger.valueOf(4)) <= 0) {
             throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 

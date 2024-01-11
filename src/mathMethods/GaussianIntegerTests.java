@@ -183,4 +183,5 @@ public class GaussianIntegerTests {
 
         assertTrue(expected.equals(input.normalizeGCD()));
     }
+
 }
