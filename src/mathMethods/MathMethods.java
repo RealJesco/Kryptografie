@@ -269,12 +269,19 @@ public class MathMethods {
      */
     public static GaussianInteger representPrimeAsSumOfSquares(BigInteger p) throws IllegalArgumentException {
         //Check if p is a prime number
-        if (!p.isProbablePrime(100)) {
+
+        //random non square number
+        BigInteger randomNonSquareNumber = new BigInteger(p.bitLength(), new SecureRandom()).mod(p);
+        while (alternativeQuickExponentiation(randomNonSquareNumber, p.subtract(ONE).divide(TWO), p).equals(ONE)) {
+            randomNonSquareNumber = new BigInteger(p.bitLength(), new SecureRandom()).mod(p);
+        }
+
+        if (!parallelMillerRabinTest(p, 10, randomNonSquareNumber, RSA.getCountOfN())) {
             throw new IllegalArgumentException("The number " + p + " is not a prime number.");
         }
         // Check if p is of the form 4n + 1
         if (!p.mod(BigInteger.valueOf(4)).equals(ONE)) {
-            throw new IllegalArgumentException("The number " + p + " cannot be represented as a sum of two squares.");
+            throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 
         GaussianInteger x = extendedEuclideanInZi(new GaussianInteger(ZERO, ONE), new GaussianInteger(p, ZERO));
