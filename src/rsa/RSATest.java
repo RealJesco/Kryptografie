@@ -63,6 +63,7 @@ public class RSATest {
         String message = "Hello, World!";
         String signature = RSA.sign(message);
         assertTrue(RSA.verifySignature(message, signature));
+        assertFalse(RSA.verifySignature(message, signature.substring(5)));
     }
 
     @Test
