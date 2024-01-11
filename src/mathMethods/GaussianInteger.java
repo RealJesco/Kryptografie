@@ -24,6 +24,11 @@ public class GaussianInteger {
     public boolean isSymmetricallyEqualTo(GaussianInteger b) {
         return this.real.equals(b.imaginary) && this.imaginary.equals(b.real);
     }
+
+    public BigInteger absolute() {
+        return real.multiply(real).add(imaginary.multiply(imaginary)).sqrt();
+    }
+
     /**
      * Checks if this GaussianInteger is a multiple of the given GaussianInteger.
      *

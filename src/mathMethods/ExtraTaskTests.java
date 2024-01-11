@@ -59,7 +59,7 @@ public class ExtraTaskTests {
             MathMethods.representPrimeAsSumOfSquares(notFourNPlusOne);
         });
 
-        String expectedMessage = "The number " + notFourNPlusOne + " cannot be represented as a sum of two squares.";
+        String expectedMessage = "The prime number " + notFourNPlusOne + " cannot be represented as a sum of two squares.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -73,7 +73,7 @@ public class ExtraTaskTests {
             MathMethods.representPrimeAsSumOfSquares(input);
         });
 
-        String expectedMessage = "The number " + input + " cannot be represented as a sum of two squares.";
+        String expectedMessage = "The prime number " + input + " cannot be represented as a sum of two squares.";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));

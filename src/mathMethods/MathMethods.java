@@ -322,7 +322,11 @@ public class MathMethods {
      * @param b the second GaussianInteger
      * @return the greatest common divisor of a and b in Z[i]
      */
-    public static GaussianInteger extendedEuclideanInZi(GaussianInteger a, GaussianInteger b) {
+    public static GaussianInteger extendedEuclideanInZi(GaussianInteger a, GaussianInteger b) throws IllegalArgumentException {
+        if (a.absolute().compareTo(b.absolute()) >= 0) {
+            throw new IllegalArgumentException(a + " is not smaller than " + b);
+        }
+
         GaussianInteger gk_minus1 = b;
         GaussianInteger gk = a;
         GaussianInteger ck, gk_plus1;
@@ -389,7 +393,6 @@ public class MathMethods {
      * The precision was chosen to be 10 decimal places for the sake of performance.
      * This precision only affects the decimal part of the number, not the binary bit length.
      * The binary bit length will still be the proper length and the numbers don't suddenly have trailing zeros.
-     * TODO Add a test that proves it. So far it has only been tested manually.
      * @param m the random seed (must be greater than 0 and non-square)
      * @param n the range of randomness
      * @param a the lower bound inclusive
@@ -527,7 +530,7 @@ public class MathMethods {
             int r;
             for (r = 1; r < s; r++) {
                 x = alternativeQuickExponentiation(x, TWO, possiblePrime);
-                if (x.equals(ONE)) { //TODO: Reach this
+                if (x.equals(ONE)) {
                     return false;
                 }
                 if (x.equals(possiblePrime.subtract(ONE))) {

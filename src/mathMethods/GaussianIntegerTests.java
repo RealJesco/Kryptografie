@@ -11,6 +11,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GaussianIntegerTests {
 
     @Test
+    void testAbsolute() {
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("4"));
+
+        BigInteger expected = new BigInteger("5");
+
+        assertEquals(expected, a.absolute());
+    }
+
+    @Test
     void testIsMultipleBIsZero() {
         GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
         GaussianInteger b = new GaussianInteger(ZERO, ZERO);
@@ -99,30 +108,6 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testGaussianExtendedEuclideanSymmetryOfValues() {
-        GaussianInteger a = new GaussianInteger(new BigInteger("3"), BigInteger.TWO); // 3 + 2i
-        GaussianInteger b = new GaussianInteger(BigInteger.TWO, new BigInteger("3")); // 2 + 3i
-
-        GaussianInteger gcdAB = extendedEuclideanInZi(a, b);
-        GaussianInteger gcdBA = extendedEuclideanInZi(b, a);
-
-        assertEquals(gcdAB.real, gcdBA.imaginary, "Real part of GCD should be symmetric");
-        assertEquals(gcdAB.imaginary, gcdBA.real, "Imaginary part of GCD should be symmetric");
-    }
-
-    @Test
-    void testGaussianExtendedEuclideanSymmetryOfResults() {
-        GaussianInteger a = new GaussianInteger(new BigInteger("5"), new BigInteger("4"));
-        GaussianInteger b = new GaussianInteger(new BigInteger("7"), new BigInteger("3"));
-
-        GaussianInteger gcd_ab = MathMethods.extendedEuclideanInZi(a, b);
-        GaussianInteger gcd_ba = MathMethods.extendedEuclideanInZi(b, a);
-
-        assertEquals(gcd_ab.real, gcd_ba.real);
-        assertEquals(gcd_ab.imaginary, gcd_ba.imaginary);
-    }
-
-    @Test
     void testGaussianExtendedEuclideanIdentity() {
         GaussianInteger a = new GaussianInteger(new BigInteger("1"), ZERO);
         GaussianInteger b = new GaussianInteger(new BigInteger("7"), new BigInteger("3"));
@@ -146,7 +131,7 @@ public class GaussianIntegerTests {
     @Test
     void testGaussianExtendedEuclideanPurelyRealAndImaginaryIntegers() {
         GaussianInteger a = new GaussianInteger(new BigInteger("5"), ZERO);
-        GaussianInteger b = new GaussianInteger(new BigInteger("5"), ZERO);
+        GaussianInteger b = new GaussianInteger(new BigInteger("10"), ZERO);
 
         GaussianInteger gcd = extendedEuclideanInZi(a, b);
 
@@ -173,6 +158,21 @@ public class GaussianIntegerTests {
 
         assertEquals(BigInteger.ONE, gcd.real);
         assertEquals(ZERO, gcd.imaginary);
+    }
+
+    @Test
+    void testGaussianExtendedEuclideanThrows() {
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), ZERO);
+        GaussianInteger b = new GaussianInteger(new BigInteger("1"), ZERO);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            GaussianInteger gcd = MathMethods.extendedEuclideanInZi(a, b);
+        });
+
+        String expectedMessage = a + " is not smaller than " + b;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     @Test
