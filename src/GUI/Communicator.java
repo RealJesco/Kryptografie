@@ -8,12 +8,14 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,10 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.awt.datatransfer.DataFlavor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import java.io.FileInputStream;
 
 public class Communicator extends JFrame {
     public String name;
@@ -164,18 +170,40 @@ public class Communicator extends JFrame {
         secretField.setText(this.d.toString());
 
 
-        //ADDING LISTENERS
+
+
         inputAndOutput.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent evt) {
                 try {
                     evt.acceptDrop(DnDConstants.ACTION_COPY);
-                    String droppedText = (String) evt.getTransferable().getTransferData(DataFlavor.stringFlavor);
-                    inputAndOutput.setText(droppedText);
+                    Transferable t = evt.getTransferable();
+
+                    if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                        // Handle dropped text
+                        String droppedText = (String) t.getTransferData(DataFlavor.stringFlavor);
+                        inputAndOutput.setText(droppedText);
+                    } else if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                        // Handle dropped files
+                        java.util.List<File> fileList = (java.util.List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+                        for (File file : fileList) {
+                            if (file.getName().toLowerCase().endsWith(".txt")) {
+                                // Handle .txt file content with UTF-8 encoding
+                                String content = Files.readString(file.toPath());
+                                inputAndOutput.setText(content);
+                        } else if (file.getName().toLowerCase().endsWith(".docx")) {
+                                // Handle .docx file content using Apache POI
+                                String content = readDocxFile(file);
+                                inputAndOutput.setText(content);
+                            }
+                        }
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
         });
+
+
         messageListJ.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -379,6 +407,16 @@ public class Communicator extends JFrame {
         j.add(field);
         panel.add(j,c);
         return field;
+    }
+    private String readDocxFile(File file) {
+        try (FileInputStream fis = new FileInputStream(file)) {
+            XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
+            XWPFWordExtractor extractor = new XWPFWordExtractor(document);
+            return extractor.getText();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
     private static JTextField getNewTextfield(int row, String headline) {
         return getNewTextfield(row, headline,false);
