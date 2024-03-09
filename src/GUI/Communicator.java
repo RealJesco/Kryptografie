@@ -188,7 +188,7 @@ public class Communicator extends JFrame {
                         for (File file : fileList) {
                             if (file.getName().toLowerCase().endsWith(".txt")) {
                                 // Handle .txt file content with UTF-8 encoding
-                                String content = Files.readString(file.toPath());
+                                String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
                                 inputAndOutput.setText(content);
                         } else if (file.getName().toLowerCase().endsWith(".docx")) {
                                 // Handle .docx file content using Apache POI

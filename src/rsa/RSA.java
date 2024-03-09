@@ -96,114 +96,7 @@ public class RSA {
         }
         RSA.m = m;
     }
-    public static void setCountOfN(BigInteger countOfN){
-        RSA.countOfN = countOfN;
-    }
 
-    public static void calculateN(BigInteger p, BigInteger q){
-        n = p.multiply(q);
-    }
-    public static void calculatePhiN(BigInteger p, BigInteger q){
-        phiN = (p.subtract(ONE)).multiply(q.subtract(ONE));
-    }
-    // Initially try to use 65537 as the public exponent e
-    public static void calculateE(BigInteger phiN){
-        if(phiN.compareTo(BigInteger.valueOf(3)) < 0){
-            throw new IllegalArgumentException("phiN is too small to calculate e");
-        }
-        e = BigInteger.valueOf(65537);
-        if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(ONE)) {
-            e = BigInteger.valueOf(3);
-            if (!e.gcd(phiN).equals(ONE)) {
-                BigInteger upperBoundForE = phiN.subtract(ONE); // e must be less than phiN
-                do {
-                    upperBoundForE = upperBoundForE.subtract(ONE);
-                    e = generateRandomPrime(m, TWO, upperBoundForE, millerRabinSteps);
-                } while (!e.gcd(phiN).equals(ONE));
-            }
-        }
-    }
-
-    public static void calculateD(BigInteger e, BigInteger phiN){
-        d = MathMethods.extendedEuclidean(e, phiN)[1].mod(phiN);
-    }
-
-    /**
-     * This method is used to generate and set the prime number 'P'
-     * of the RSA Key pair
-     *
-     * @param halfBitLength The half bit length of N.
-     */
-    public static void generateP(BigInteger halfBitLength){
-        p = generateUniquePrime(halfBitLength);
-    }
-
-    /**
-     * This method is used to generate and set the prime number 'Q'
-     * of the RSA Key pairs
-     *
-     * @param halfBitLength The half bit length of N.
-     */
-    public static void generateQ(BigInteger halfBitLength){
-        q = generateUniquePrime(halfBitLength);
-    }
-
-    /**
-     * This private helper method helps to generate a unique prime number
-     * for the RSA Key pair.
-     *
-     * It generates a random prime number in the range of the provided bit length.
-     * If the generated prime number is equal to the provided BigInteger to compare with,
-     * the process will be repeated until a different prime number is generated.
-     * It no longer needs to check for equality with the other prime number, since a
-     * global counter is used to ensure that the displacement in the seed of randomElsner can never be the same at runtime.
-     *
-     * @param bitLength The bit length of the prime number to generate.
-     * @return BigInteger A prime number
-     */
-    private static BigInteger generateUniquePrime(BigInteger bitLength) {
-        BigInteger possiblePrime;
-        BigInteger lowerBound = TWO.pow(bitLength.intValue() - 1);
-        BigInteger upperBound = TWO.pow(bitLength.intValue());
-            possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps);
-        return possiblePrime;
-    }
-
-
-    /**
-     * Generates RSA keys.
-     * <p>
-     * This method generates RSA keys by calculating the values of p, q, n, phiN, e, and d
-     * based on the given bit length and number system base.
-     * </p>
-     */
-    private static void keyGenerator(){
-        int bitLengthP = bitLengthN / 2;
-        int bitLengthQ = bitLengthN / 2;
-        if(bitLengthN != bitLengthQ + bitLengthP){
-            bitLengthQ++;
-        }
-        do{
-            generateP(BigInteger.valueOf(bitLengthP));
-            generateQ(BigInteger.valueOf(bitLengthQ));
-            calculateN(p, q);
-        } while(n.bitLength()!=bitLengthN);
-        calculatePhiN(p, q);
-        calculateE(phiN);
-        calculateD(e, phiN);
-    }
-
-
-
-    /**
-     * Generates RSA keys.
-     *
-     * This method generates RSA keys by calculating the values of p, q, n, phiN, e, and d
-     * based on the given bit length and number system base.
-     */
-    public static void generateRSAKeys() {
-      keyGenerator();
-    }
 
     /**
      * Generates RSA keys.
@@ -222,7 +115,6 @@ public class RSA {
         setMillerRabinSteps(millerRabinSteps);
         setNumberSystemBase(numberSystemBase);
         setBitLengthN(bitLengthN);
-        keyGenerator();
     }
 
     /**

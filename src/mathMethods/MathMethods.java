@@ -9,6 +9,7 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import static java.math.BigInteger.*;
@@ -444,7 +445,7 @@ public class MathMethods {
      * @return a random prime number within the range [a, b]
      * @throws IllegalArgumentException if the input values are invalid
      */
-    public static BigInteger generateRandomPrime(BigInteger m, BigInteger a, BigInteger b, int millerRabinSteps) {
+    public static BigInteger generateRandomPrime(BigInteger m, BigInteger a, BigInteger b, int millerRabinSteps, AtomicInteger counter) {
         //Check that input values are valid
         if (a.compareTo(b) > 0) {
             throw new IllegalArgumentException("The lower bound must be smaller than the upper bound");
@@ -459,10 +460,10 @@ public class MathMethods {
         }
 
         BigInteger primeCandidate;
-        BigInteger copyOfCountOfN = RSA.getCountOfN();
         while (true) {
             // Generate a random odd BigInteger within the range
-            primeCandidate = randomElsner(m, copyOfCountOfN, a, b).setBit(0); // Ensure it's odd
+            var wrappedCounter= BigInteger.valueOf(counter.incrementAndGet());
+            primeCandidate = randomElsner(m, wrappedCounter, a, b).setBit(0); // Ensure it's odd
             // Fast check against small primes
             boolean isComposite = false;
             for (BigInteger smallPrime : SMALL_PRIMES) {
@@ -474,16 +475,14 @@ public class MathMethods {
                 }
             }
             if (isComposite) {
-                copyOfCountOfN = copyOfCountOfN.add(ONE);
+                counter.incrementAndGet();
                 continue;
             }
-
-            if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, m, copyOfCountOfN)) {
+            if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, m, wrappedCounter)) {
                 break;
             }
-            copyOfCountOfN = copyOfCountOfN.add(ONE);
+            counter.incrementAndGet();
         }
-        RSA.setCountOfN(copyOfCountOfN.add(ONE));
         return primeCandidate;
     }
 

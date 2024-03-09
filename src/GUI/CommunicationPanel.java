@@ -65,7 +65,7 @@ public class CommunicationPanel extends JFrame {
                 RSA.setMillerRabinSteps(getIntOfField(millerRabinStepsField));
                 RSA.setM(getBigIntegerOfField(nonCubicNumberMField));
                 // Generate unique prime numbers and keys for Alice
-                RSA.generateRSAKeys();
+//                RSA.generateRSAKeys();
             } catch (Exception f){
                 JOptionPane.showMessageDialog(null, "Error in Generation of RSA-Instance: " + e);
                 disposeCommunicators();
@@ -80,7 +80,7 @@ public class CommunicationPanel extends JFrame {
                 return;
             }
 
-            RSA.generateRSAKeys();
+//            RSA.generateRSAKeys();
 
             try{
                 Bob = new Communicator("Bob", RSA.getN(), new Point(900, 400));
