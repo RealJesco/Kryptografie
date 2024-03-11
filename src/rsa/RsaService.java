@@ -39,6 +39,7 @@ public final class RsaService {
         return e;
     }
     public static KeyPairRsa generateKeyPair(int bitLength, int millerRabinSteps, BigInteger m) {
+
         AtomicInteger counter = new AtomicInteger(1);
         int bitLengthP = bitLength / 2;
         int bitLengthQ = bitLength / 2;
@@ -78,7 +79,7 @@ public final class RsaService {
         return MathMethods.alternativeQuickExponentiation(message, key.d(), key.n());
     }
 
-    public static boolean verify(final PublicKeyRsa key, final BigInteger message, final BigInteger signature) {
+    public static boolean verify(final PublicKeyRsa key, final BigInteger signature,  final BigInteger message) {
         return message.equals(MathMethods.alternativeQuickExponentiation(signature, key.e(), key.n()));
     }
 }

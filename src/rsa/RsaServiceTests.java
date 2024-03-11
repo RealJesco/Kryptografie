@@ -47,6 +47,8 @@ class RsaServiceTests {
         KeyPairRsa keyPair = RsaService.generateKeyPair(256, 100, BigInteger.valueOf(13));
         BigInteger message = BigInteger.valueOf(3213812);
         BigInteger signature = RsaService.sign(keyPair.privateKeyRsa(), message);
-        Assertions.assertTrue(RsaService.verify(keyPair.publicKeyRsa(), message, signature));
+        Assertions.assertTrue(RsaService.verify(keyPair.publicKeyRsa(), signature, message));
     }
+
+
 }
