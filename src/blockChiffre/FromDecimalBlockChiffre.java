@@ -66,7 +66,7 @@ public final class FromDecimalBlockChiffre {
             source_clone = divideAndRemainder[0];
             var remainder = divideAndRemainder[1];
             var character = remainder.intValueExact();
-            result.append(character);
+            result.append((char) character);
         }
         return result.reverse().toString();
     }
