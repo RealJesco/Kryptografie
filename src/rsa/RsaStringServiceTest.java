@@ -24,18 +24,18 @@ class RsaStringServiceTest {
     void sign() throws NoSuchAlgorithmException {
         KeyPairRsa keyPair = RsaService.generateKeyPair(512, 100, BigInteger.valueOf(13));
         String message = "Høllå die Walȡféè ㆕";
-        String signedMessage = RsaStringService.sign(keyPair.privateKeyRsa(), message, 55296);
-        assertNotEquals(message, signedMessage);
+        String signature = RsaStringService.sign(keyPair.privateKeyRsa(), message, 55296);
+        assertNotEquals(message, signature);
     }
 
     @Test
     void verify() throws NoSuchAlgorithmException {
         KeyPairRsa keyPair = RsaService.generateKeyPair(512, 100, BigInteger.valueOf(13));
         String message = "Høllå die Walȡféè ㆕";
-        String signedMessage = RsaStringService.sign(keyPair.privateKeyRsa(), message, 55296);
-        assertTrue(RsaStringService.verify(keyPair.publicKeyRsa(), message, signedMessage, 55296));
-        assertFalse(RsaStringService.verify(keyPair.publicKeyRsa(), message.concat(" Ewa"),signedMessage, 55296));
-        assertFalse(RsaStringService.verify(keyPair.publicKeyRsa(), message,signedMessage, 55295));
-        assertFalse(RsaStringService.verify(keyPair.publicKeyRsa(), message.substring(0, message.length() - 2),signedMessage, 55295));
+        String signature = RsaStringService.sign(keyPair.privateKeyRsa(), message, 55296);
+        assertTrue(RsaStringService.verify(keyPair.publicKeyRsa(), message, signature, 55296));
+        assertFalse(RsaStringService.verify(keyPair.publicKeyRsa(), message.concat(" Ewa"),signature, 55296));
+        assertFalse(RsaStringService.verify(keyPair.publicKeyRsa(), message,signature, 55295));
+        assertFalse(RsaStringService.verify(keyPair.publicKeyRsa(), message.substring(0, message.length() - 2),signature, 55295));
     }
 }
