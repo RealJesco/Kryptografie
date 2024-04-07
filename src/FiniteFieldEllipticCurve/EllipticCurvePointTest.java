@@ -33,6 +33,13 @@ class EllipticCurvePointTest {
         System.out.println(doubledPoint.x + " " + doubledPoint.y);
         assertTrue(ellipticCurve.isValidPoint(doubledPoint));
     }
+    @Test
+    void doublePointForZero() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(13));
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.ZERO, BigInteger.ZERO);
+        ArithmeticException thrown = assertThrows(ArithmeticException.class, () -> point.doublePoint(ellipticCurve));
+        assertTrue(thrown.getMessage().contains("No modular inverse exists for these parameters"));
+    }
 
     @Test
     void multiply() {

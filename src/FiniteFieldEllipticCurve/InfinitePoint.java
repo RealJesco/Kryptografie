@@ -13,7 +13,7 @@ public class InfinitePoint extends EllipticCurvePoint {
     public EllipticCurvePoint add (EllipticCurvePoint point2, FiniteFieldEllipticCurve ellipticCurve) {
         return point2;
     }
-    public InfinitePoint doublePoint (FiniteFieldEllipticCurve ellipticCurve) {
+    public EllipticCurvePoint doublePoint (FiniteFieldEllipticCurve ellipticCurve) {
         return this;
     }
     public EllipticCurvePoint multiply (int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {

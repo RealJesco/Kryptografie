@@ -243,6 +243,18 @@ public class MathMethods {
             return new BigInteger[]{gcd, x, y};
         }
     }
+    public static BigInteger modularInverse(BigInteger a, BigInteger b){
+        BigInteger[] extendedEuclideanResult = extendedEuclidean(a,b);
+        BigInteger gcd = extendedEuclideanResult[0];
+        System.out.println(extendedEuclideanResult[0]);
+        System.out.println(extendedEuclideanResult[1]);
+        System.out.println(extendedEuclideanResult[2]);
+        if(!gcd.equals(ONE)){
+            throw new ArithmeticException("No modular inverse exists for these parameters");
+        } else {
+            return extendedEuclideanResult[1];
+        }
+    }
 
     /**
      * Generates a random BigInteger satisfying Euler's criterion for a given prime number.
