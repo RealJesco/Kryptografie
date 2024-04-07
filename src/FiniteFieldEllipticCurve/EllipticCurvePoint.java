@@ -4,6 +4,7 @@ import mathMethods.MathMethods;
 
 import java.math.BigInteger;
 import java.security.spec.EllipticCurve;
+import java.util.List;
 
 abstract class EllipticCurvePoint {
     BigInteger x;
@@ -50,4 +51,5 @@ abstract class EllipticCurvePoint {
             return multiply(ecPoint.doublePoint(ellipticCurve), scalarMultiplicator / 2, ellipticCurve);
         }
     }
+
 }
