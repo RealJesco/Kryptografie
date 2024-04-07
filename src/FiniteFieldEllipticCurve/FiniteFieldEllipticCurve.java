@@ -29,12 +29,12 @@ public class FiniteFieldEllipticCurve {
         return inputYSquared.equals(valueToCheck);
     }
 
-    public boolean noCubicSolutionsPossible(){
+    public boolean noCubicSolutionsPossible() {
         BigInteger a = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(4).multiply(this.coefficientOfX), BigInteger.valueOf(3), BigInteger.ONE);
-        BigInteger b = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(4).multiply(this.b), BigInteger.valueOf(2), BigInteger.ONE);
+        BigInteger b = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(27).multiply(this.b), BigInteger.valueOf(2), BigInteger.ONE);
         return !a.add(b).mod(moduleR).equals(BigInteger.ZERO);
     }
-    public List<EllipticCurvePoint> calculateAllPoints(){
+    public List<EllipticCurvePoint> calculateAllPoints() {
         List<EllipticCurvePoint> calculatedPoints = new ArrayList<EllipticCurvePoint>();
         for (BigInteger i = BigInteger.ZERO; i.compareTo(moduleR) < 0; i = i.add(BigInteger.ONE)) {
             BigInteger z = ((i.pow(3)).add(this.coefficientOfX.multiply(i)).add(this.b)).mod(moduleR);

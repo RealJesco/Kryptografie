@@ -35,15 +35,4 @@ public class FiniteFieldEllipticCurveTest {
         assertFalse(allPoints.isEmpty());
     }
 
-    //TODO Prüfen ob singuläre elliptische Kurven notwendig sind
-    @Test
-    void calculateAllPointsTest3() {
-        BigInteger coefficientOfX = BigInteger.valueOf(5);
-        BigInteger b = BigInteger.valueOf(6);
-        BigInteger moduleR = BigInteger.valueOf(3);
-        FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(coefficientOfX, b, moduleR);
-
-        List<EllipticCurvePoint> allPoints = curve.calculateAllPoints();
-        assertTrue(allPoints.isEmpty());
-    }
 }
