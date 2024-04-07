@@ -43,4 +43,17 @@ class EllipticCurvePointTest {
         assertEquals(BigInteger.valueOf(4), newPoint.x);
         assertEquals(BigInteger.valueOf(4), newPoint.y);
     }
+    @Test
+    void reachInfinitePoint() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.ONE, BigInteger.ZERO, BigInteger.valueOf(13));
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.TWO, BigInteger.valueOf(6));
+        EllipticCurvePoint newPoint = point.multiply(point, 9, ellipticCurve);
+        System.out.println(newPoint.x + " "  + newPoint.y);
+        assertTrue(newPoint instanceof FiniteFieldEcPoint);
+        assertFalse(newPoint instanceof InfinitePoint);
+        newPoint = point.multiply(point, 10, ellipticCurve);
+        System.out.println(newPoint.x + " "  + newPoint.y);
+        assertTrue(newPoint instanceof InfinitePoint);
+        assertFalse(newPoint instanceof FiniteFieldEcPoint);
+    }
 }

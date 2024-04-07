@@ -14,7 +14,12 @@ abstract class EllipticCurvePoint {
         this.y = y;
     }
     public EllipticCurvePoint normalize (BigInteger x, BigInteger y, FiniteFieldEllipticCurve ellipticCurve){
-        return new FiniteFieldEcPoint(x.mod(ellipticCurve.moduleR).abs(), y.mod(ellipticCurve.moduleR).abs());
+        EllipticCurvePoint normalizedEcPoint = new FiniteFieldEcPoint(x.mod(ellipticCurve.moduleR).abs(), y.mod(ellipticCurve.moduleR).abs());
+        if(ellipticCurve.isValidPoint(normalizedEcPoint)){
+            return normalizedEcPoint;
+        } else {
+            return new InfinitePoint(normalizedEcPoint.x, normalizedEcPoint.y);
+        }
     }
     public EllipticCurvePoint add (EllipticCurvePoint point2, FiniteFieldEllipticCurve ellipticCurve) {
         BigInteger lambdaNumerator = point2.y.subtract(this.y);
@@ -32,17 +37,17 @@ abstract class EllipticCurvePoint {
         BigInteger newY =  lambda.multiply(this.x.subtract(newX)).subtract(this.y);
         return normalize(newX, newY, ellipticCurve);
     }
-    public EllipticCurvePoint multiply (EllipticCurvePoint finiteFieldEcPoint, int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
+    public EllipticCurvePoint multiply (EllipticCurvePoint ecPoint, int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
         if(scalarMultiplicator == 0){
-            return normalize(finiteFieldEcPoint.x, finiteFieldEcPoint.y, ellipticCurve);
+            return normalize(ecPoint.x, ecPoint.y, ellipticCurve);
         } else if (scalarMultiplicator == 1) {
-            return finiteFieldEcPoint;
+            return ecPoint;
         }
         else if (scalarMultiplicator % 2 == 1){
-            return finiteFieldEcPoint.add(multiply(finiteFieldEcPoint, scalarMultiplicator - 1, ellipticCurve), ellipticCurve);
+            return ecPoint.add(multiply(ecPoint, scalarMultiplicator - 1, ellipticCurve), ellipticCurve);
         }
         else {
-            return multiply(finiteFieldEcPoint.doublePoint(ellipticCurve), scalarMultiplicator / 2, ellipticCurve);
+            return multiply(ecPoint.doublePoint(ellipticCurve), scalarMultiplicator / 2, ellipticCurve);
         }
     }
 }

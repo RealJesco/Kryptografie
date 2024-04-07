@@ -23,8 +23,7 @@ public class FiniteFieldEllipticCurve {
 
     public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint){
         BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.y, BigInteger.TWO, moduleR));
-//         Math.pow(ellipticCurvePoint.x, 3) + coefficientOfX * ellipticCurvePoint.x + b) % moduleR
-        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.x, BigInteger.valueOf(3), moduleR).add(coefficientOfX.multiply(ellipticCurvePoint.x.add(b).mod(moduleR))));
+        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.x, BigInteger.valueOf(3), moduleR).add(coefficientOfX.multiply(ellipticCurvePoint.x.add(b)))).mod(moduleR);
         return inputYSquared.equals(valueToCheck);
     }
 }
