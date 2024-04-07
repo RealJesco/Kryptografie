@@ -16,7 +16,7 @@ abstract class EllipticCurvePoint {
     }
     public EllipticCurvePoint normalize (BigInteger x, BigInteger y, FiniteFieldEllipticCurve ellipticCurve){
         EllipticCurvePoint normalizedEcPoint = new FiniteFieldEcPoint(x.mod(ellipticCurve.moduleR).abs(), y.mod(ellipticCurve.moduleR).abs());
-        if(ellipticCurve.isValidPoint(normalizedEcPoint)){
+        if(ellipticCurve.isValidPoint(normalizedEcPoint)) {
             return normalizedEcPoint;
         } else {
             return new InfinitePoint(normalizedEcPoint.x, normalizedEcPoint.y);
@@ -38,17 +38,17 @@ abstract class EllipticCurvePoint {
         BigInteger newY =  lambda.multiply(this.x.subtract(newX)).subtract(this.y);
         return normalize(newX, newY, ellipticCurve);
     }
-    public EllipticCurvePoint multiply (EllipticCurvePoint ecPoint, int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
+    public EllipticCurvePoint multiply (int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
         if(scalarMultiplicator == 0){
-            return normalize(ecPoint.x, ecPoint.y, ellipticCurve);
+            return normalize(this.x, this.y, ellipticCurve);
         } else if (scalarMultiplicator == 1) {
-            return ecPoint;
+            return this;
         }
         else if (scalarMultiplicator % 2 == 1){
-            return ecPoint.add(multiply(ecPoint, scalarMultiplicator - 1, ellipticCurve), ellipticCurve);
+            return this.add(multiply( scalarMultiplicator - 1, ellipticCurve), ellipticCurve);
         }
         else {
-            return multiply(ecPoint.doublePoint(ellipticCurve), scalarMultiplicator / 2, ellipticCurve);
+            return this.doublePoint(ellipticCurve).multiply(scalarMultiplicator / 2, ellipticCurve);
         }
     }
 
