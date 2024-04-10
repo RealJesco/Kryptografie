@@ -31,6 +31,8 @@ class EllipticCurvePointTest {
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(7));
         EllipticCurvePoint doubledPoint = point.doublePoint(ellipticCurve);
         assertTrue(ellipticCurve.isValidPoint(doubledPoint));
+        assertEquals(BigInteger.valueOf(15), doubledPoint.x);
+        assertEquals(BigInteger.valueOf(0), doubledPoint.y);
     }
     @Test
     void doublePointForZero() {

@@ -271,6 +271,13 @@ public class MathMethods {
 
         return z;
     }
+    public static BigInteger verifyEulerCriterion(BigInteger c, BigInteger p) {
+        if(alternativeQuickExponentiation(c, (p.subtract(ONE).divide(TWO)), p).equals(p.subtract(ONE))) {
+            return ONE.negate();
+        } else {
+            return ONE;
+        }
+    }
 
     /**
      * Represents the given prime number as a sum of two squares.

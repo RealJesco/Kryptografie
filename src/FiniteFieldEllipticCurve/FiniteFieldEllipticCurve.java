@@ -8,37 +8,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FiniteFieldEllipticCurve {
-//    int ySquared;
-//    int xCubed;
-    BigInteger coefficientOfX;
-//    int x;
+    BigInteger a;
     BigInteger b;
     BigInteger moduleR;
 
-    public FiniteFieldEllipticCurve(BigInteger coefficientOfX, BigInteger moduleR) {
-//        this.ySquared = (int) Math.pow(x, 2);
-//        this.xCubed = (int) Math.pow(x, 3);
-        this.coefficientOfX = coefficientOfX.multiply(coefficientOfX).negate();
-//        this.x = x;
+    public FiniteFieldEllipticCurve(BigInteger n, BigInteger moduleR) {
+        this.a = n.multiply(n).negate();
         this.b = BigInteger.ZERO;
         this.moduleR = moduleR;
     }
 
     public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint){
         BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.y, BigInteger.TWO, moduleR));
-        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.x, BigInteger.valueOf(3), moduleR).add(coefficientOfX.multiply(ellipticCurvePoint.x))).mod(moduleR);
+        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.x, BigInteger.valueOf(3), moduleR).add(a.multiply(ellipticCurvePoint.x))).mod(moduleR);
         return inputYSquared.equals(valueToCheck);
     }
 
     public boolean noCubicSolutionsPossible() {
-        BigInteger a = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(4).multiply(this.coefficientOfX), BigInteger.valueOf(3), BigInteger.ONE);
+        BigInteger a = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(4).multiply(this.a), BigInteger.valueOf(3), BigInteger.ONE);
         BigInteger b = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(27).multiply(this.b), BigInteger.valueOf(2), BigInteger.ONE);
         return !a.add(b).mod(moduleR).equals(BigInteger.ZERO);
     }
     public List<EllipticCurvePoint> calculateAllPoints() {
         List<EllipticCurvePoint> calculatedPoints = new ArrayList<EllipticCurvePoint>();
         for (BigInteger i = BigInteger.ZERO; i.compareTo(moduleR) < 0; i = i.add(BigInteger.ONE)) {
-            BigInteger z = ((i.pow(3)).add(this.coefficientOfX.multiply(i)).add(this.b)).mod(moduleR);
+            BigInteger z = ((i.pow(3)).add(this.a.multiply(i)).add(this.b)).mod(moduleR);
             for (BigInteger j = BigInteger.ZERO; j.compareTo(moduleR) < 0; j = j.add(BigInteger.ONE)) {
                 BigInteger ySquared = j.pow(2);
                 BigInteger ySquaredModuleR = ySquared.mod(moduleR);
@@ -53,7 +47,7 @@ public class FiniteFieldEllipticCurve {
         calculatedPoints.add(new InfinitePoint(BigInteger.ZERO, BigInteger.ZERO));
         return calculatedPoints;
     }
-    public BigInteger calculateCountOfElements(){
+    public BigInteger calculateCountOfElements(BigInteger n){
         GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.moduleR);
         BigInteger y;
         BigInteger x;
@@ -64,6 +58,13 @@ public class FiniteFieldEllipticCurve {
             y = quadraticDivisors.imaginary;
             x = quadraticDivisors.real;
         }
-        return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y));
+        BigInteger lagandreSign = MathMethods.verifyEulerCriterion(n, this.moduleR);
+        BigInteger realPartSign = y.mod(BigInteger.TWO).equals(BigInteger.ZERO) ? BigInteger.ONE : BigInteger.ONE.negate();
+        //TODO Test if this is correct for all cases
+        if(lagandreSign.equals(realPartSign)){
+            return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y).multiply(lagandreSign.negate()));
+        } else {
+            return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y).multiply(lagandreSign));
+        }
     }
 }
