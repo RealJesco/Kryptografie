@@ -1,5 +1,6 @@
 package FiniteFieldEllipticCurve;
 
+import mathMethods.GaussianInteger;
 import mathMethods.MathMethods;
 
 import java.math.BigInteger;
@@ -50,5 +51,32 @@ public class FiniteFieldEllipticCurve {
             }
         }
         return calculatedPoints;
+    }
+    public BigInteger calculateCountOfElements(){
+        GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.moduleR);
+        BigInteger y;
+        BigInteger x;
+        if(!quadraticDivisors.real.mod(BigInteger.TWO).equals(BigInteger.ZERO)){
+           y = quadraticDivisors.real;
+           x = quadraticDivisors.imaginary;
+        } else {
+            y = quadraticDivisors.imaginary;
+            x = quadraticDivisors.real;
+        }
+        BigInteger h = y.multiply(BigInteger.TWO);
+        System.out.println(quadraticDivisors.real + " " + quadraticDivisors.imaginary);
+        if (x.mod(this.moduleR).equals(BigInteger.valueOf(0))){
+            if(y.mod(this.moduleR).equals(BigInteger.valueOf(3))){
+                h = h.negate();
+                System.out.println("happened");
+            }
+        } else if (x.mod(this.moduleR).equals(BigInteger.valueOf(2))){
+            if(y.mod(this.moduleR).equals(BigInteger.valueOf(1))){
+                h = h.negate();
+                System.out.println("happened");
+            }
+        }
+        System.out.println(this.moduleR);
+        return this.moduleR.add(BigInteger.ONE).subtract(h);
     }
 }

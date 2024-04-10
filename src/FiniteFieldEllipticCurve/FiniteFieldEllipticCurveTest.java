@@ -35,4 +35,19 @@ public class FiniteFieldEllipticCurveTest {
         assertFalse(allPoints.isEmpty());
     }
 
+    @Test
+    void calculateCountOfElements() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(9), BigInteger.valueOf(5));
+        BigInteger countOfElements = ellipticCurve.calculateCountOfElements();
+        System.out.println(countOfElements.intValue() == 8);
+
+        FiniteFieldEllipticCurve ellipticCurve2 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(9), BigInteger.valueOf(13));
+        BigInteger countOfElements2 = ellipticCurve2.calculateCountOfElements();
+        System.out.println(countOfElements2.intValue() == 8);
+
+        FiniteFieldEllipticCurve ellipticCurve3 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(9), BigInteger.valueOf(17));
+        BigInteger countOfElements3 = ellipticCurve3.calculateCountOfElements();
+        System.out.println(countOfElements3.intValue() == 16);
+    }
+
 }
