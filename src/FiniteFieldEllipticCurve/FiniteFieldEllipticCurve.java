@@ -15,18 +15,18 @@ public class FiniteFieldEllipticCurve {
     BigInteger b;
     BigInteger moduleR;
 
-    public FiniteFieldEllipticCurve(BigInteger coefficientOfX,  BigInteger b, BigInteger moduleR) {
+    public FiniteFieldEllipticCurve(BigInteger coefficientOfX, BigInteger moduleR) {
 //        this.ySquared = (int) Math.pow(x, 2);
 //        this.xCubed = (int) Math.pow(x, 3);
-        this.coefficientOfX = coefficientOfX;
+        this.coefficientOfX = coefficientOfX.multiply(coefficientOfX).negate();
 //        this.x = x;
-        this.b = b;
+        this.b = BigInteger.ZERO;
         this.moduleR = moduleR;
     }
 
     public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint){
         BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.y, BigInteger.TWO, moduleR));
-        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.x, BigInteger.valueOf(3), moduleR).add(coefficientOfX.multiply(ellipticCurvePoint.x.add(b)))).mod(moduleR);
+        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.x, BigInteger.valueOf(3), moduleR).add(coefficientOfX.multiply(ellipticCurvePoint.x))).mod(moduleR);
         return inputYSquared.equals(valueToCheck);
     }
 
@@ -50,6 +50,7 @@ public class FiniteFieldEllipticCurve {
                 }
             }
         }
+        calculatedPoints.add(new InfinitePoint(BigInteger.ZERO, BigInteger.ZERO));
         return calculatedPoints;
     }
     public BigInteger calculateCountOfElements(){
@@ -63,20 +64,6 @@ public class FiniteFieldEllipticCurve {
             y = quadraticDivisors.imaginary;
             x = quadraticDivisors.real;
         }
-        BigInteger h = y.multiply(BigInteger.TWO);
-        System.out.println(quadraticDivisors.real + " " + quadraticDivisors.imaginary);
-        if (x.mod(this.moduleR).equals(BigInteger.valueOf(0))){
-            if(y.mod(this.moduleR).equals(BigInteger.valueOf(3))){
-                h = h.negate();
-                System.out.println("happened");
-            }
-        } else if (x.mod(this.moduleR).equals(BigInteger.valueOf(2))){
-            if(y.mod(this.moduleR).equals(BigInteger.valueOf(1))){
-                h = h.negate();
-                System.out.println("happened");
-            }
-        }
-        System.out.println(this.moduleR);
-        return this.moduleR.add(BigInteger.ONE).subtract(h);
+        return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y));
     }
 }

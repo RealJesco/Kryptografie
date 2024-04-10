@@ -18,18 +18,17 @@ public class FiniteFieldEllipticCurveTest {
 
     @Test
     void calculateAllPointsTest1() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(9), BigInteger.valueOf(11));
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3),  BigInteger.valueOf(11));
 
         List<EllipticCurvePoint> allPoints = ellipticCurve.calculateAllPoints();
-        assertEquals(10, allPoints.size());
+        assertEquals(12, allPoints.size());
     }
 
     @Test
     void calculateAllPointsTest2() {
         BigInteger coefficientOfX = BigInteger.valueOf(3);
-        BigInteger b = BigInteger.valueOf(4);
         BigInteger moduleR = BigInteger.valueOf(7);
-        FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(coefficientOfX, b, moduleR);
+        FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(coefficientOfX,  moduleR);
 
         List<EllipticCurvePoint> allPoints = curve.calculateAllPoints();
         assertFalse(allPoints.isEmpty());
@@ -37,15 +36,16 @@ public class FiniteFieldEllipticCurveTest {
 
     @Test
     void calculateCountOfElements() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(9), BigInteger.valueOf(5));
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(13));
         BigInteger countOfElements = ellipticCurve.calculateCountOfElements();
-        System.out.println(countOfElements.intValue() == 8);
+        System.out.println(countOfElements.intValue());
+        assertEquals(20, countOfElements.intValue());
 
-        FiniteFieldEllipticCurve ellipticCurve2 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(9), BigInteger.valueOf(13));
+        FiniteFieldEllipticCurve ellipticCurve2 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(13));
         BigInteger countOfElements2 = ellipticCurve2.calculateCountOfElements();
         System.out.println(countOfElements2.intValue() == 8);
 
-        FiniteFieldEllipticCurve ellipticCurve3 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(9), BigInteger.valueOf(17));
+        FiniteFieldEllipticCurve ellipticCurve3 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
         BigInteger countOfElements3 = ellipticCurve3.calculateCountOfElements();
         System.out.println(countOfElements3.intValue() == 16);
     }

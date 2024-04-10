@@ -14,7 +14,7 @@ abstract class EllipticCurvePoint {
         this.x = x;
         this.y = y;
     }
-    public EllipticCurvePoint normalize (BigInteger x, BigInteger y, FiniteFieldEllipticCurve ellipticCurve){
+    public EllipticCurvePoint normalize (FiniteFieldEllipticCurve ellipticCurve){
         EllipticCurvePoint normalizedEcPoint = new FiniteFieldEcPoint(x.mod(ellipticCurve.moduleR).abs(), y.mod(ellipticCurve.moduleR).abs());
         if(ellipticCurve.isValidPoint(normalizedEcPoint)) {
             return normalizedEcPoint;
@@ -28,7 +28,8 @@ abstract class EllipticCurvePoint {
         BigInteger lambda = lambdaNumerator.multiply(lambdaModInverseDenominator);
         BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda, BigInteger.TWO, ellipticCurve.moduleR).subtract(this.x).subtract(point2.x);
         BigInteger newY = lambda.multiply(this.x.subtract(newX)).subtract(this.y);
-        return normalize(newX, newY, ellipticCurve);
+        EllipticCurvePoint newPoint = new FiniteFieldEcPoint(newX, newY);
+        return newPoint.normalize(ellipticCurve);
     }
     public EllipticCurvePoint doublePoint (FiniteFieldEllipticCurve ellipticCurve) {
         BigInteger lambdaNumerator = MathMethods.alternativeQuickExponentiation(this.x, BigInteger.TWO, ellipticCurve.moduleR).multiply(BigInteger.valueOf(3)).add(ellipticCurve.coefficientOfX);
@@ -36,11 +37,16 @@ abstract class EllipticCurvePoint {
         BigInteger lambda = (lambdaNumerator.multiply(lambdaModInverseDenominator)).mod(ellipticCurve.moduleR);
         BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda,BigInteger.TWO, ellipticCurve.moduleR).subtract(this.x.multiply(BigInteger.TWO));
         BigInteger newY =  lambda.multiply(this.x.subtract(newX)).subtract(this.y);
-        return normalize(newX, newY, ellipticCurve);
+        EllipticCurvePoint newPoint = new FiniteFieldEcPoint(newX, newY);
+        return newPoint.normalize(ellipticCurve);
     }
     public EllipticCurvePoint multiply (int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
         if(scalarMultiplicator == 0){
-            return normalize(this.x, this.y, ellipticCurve);
+            EllipticCurvePoint lastPoint = this.doublePoint(ellipticCurve);
+            System.out.println(this.x + " " + this.y);
+            System.out.println(lastPoint.x + " " + lastPoint.y);
+            EllipticCurvePoint newPoint = new FiniteFieldEcPoint(lastPoint.x, lastPoint.y);
+            return newPoint.normalize(ellipticCurve);
         } else if (scalarMultiplicator == 1) {
             return this;
         }
