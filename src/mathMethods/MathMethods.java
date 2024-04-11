@@ -247,7 +247,7 @@ public class MathMethods {
         BigInteger[] extendedEuclideanResult = extendedEuclidean(a,b);
         BigInteger gcd = extendedEuclideanResult[0];
         if(!gcd.equals(ONE)){
-            throw new ArithmeticException("No modular inverse exists for these parameters");
+            throw new ArithmeticException("No modular inverse exists for the parameters + " + a + " and " + b);
         } else {
             return extendedEuclideanResult[1];
         }

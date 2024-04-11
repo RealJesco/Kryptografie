@@ -54,7 +54,7 @@ public class FiniteFieldEllipticCurve {
         calculatedPoints.add(new InfinitePoint(BigInteger.ZERO, BigInteger.ZERO));
         return calculatedPoints;
     }
-    public BigInteger calculateCountOfElements(BigInteger n){
+    public BigInteger calculateOrder(BigInteger n){
         GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.moduleR);
         BigInteger y;
         BigInteger x;

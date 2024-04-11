@@ -6,10 +6,20 @@ import mathMethods.MathMethods;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class ElGamalEncryption {
+import static java.math.BigInteger.TWO;
+import static mathMethods.MathMethods.generateRandomPrime;
 
-    public CipherMessage encrypt(Message message, PublicKey publicKey) {
+public class ElGamalService {
+    public static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter){
+        BigInteger possiblePrime;
+        BigInteger lowerBound = TWO.pow(bitLength.intValue() - 1);
+        BigInteger upperBound = TWO.pow(bitLength.intValue());
+        possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps, counter);
+        return possiblePrime;
+    }
+    public static CipherMessage encrypt(Message message, PublicKey publicKey) {
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
@@ -33,7 +43,7 @@ public class ElGamalEncryption {
 
     }
 
-    public Message decrypt(CipherMessage cipherMessage, PrivateKey privateKey) {
+    public static Message decrypt(CipherMessage cipherMessage, PrivateKey privateKey) {
         EllipticCurvePoint xa = cipherMessage.point().multiply( privateKey.secretMultiplierX(), privateKey.ellipticCurve() );
         BigInteger prime = privateKey.ellipticCurve().getModuleR();
         BigInteger c1 = MathMethods.modularInverse(xa.getX(), prime);

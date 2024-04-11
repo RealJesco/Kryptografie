@@ -45,7 +45,12 @@ public abstract class EllipticCurvePoint {
     }
     public EllipticCurvePoint doublePoint (FiniteFieldEllipticCurve ellipticCurve) {
         BigInteger lambdaNumerator = MathMethods.alternativeQuickExponentiation(this.x, BigInteger.TWO, ellipticCurve.moduleR).multiply(BigInteger.valueOf(3)).add(ellipticCurve.a);
-        BigInteger lambdaModInverseDenominator = MathMethods.modularInverse(this.y.multiply(BigInteger.TWO), ellipticCurve.moduleR);
+        BigInteger lambdaModInverseDenominator;
+        if (this.y.equals(BigInteger.ZERO)){
+            lambdaModInverseDenominator = BigInteger.ONE;
+        } else {
+           lambdaModInverseDenominator = MathMethods.modularInverse(this.y.multiply(BigInteger.TWO), ellipticCurve.moduleR);
+        }
         BigInteger lambda = (lambdaNumerator.multiply(lambdaModInverseDenominator)).mod(ellipticCurve.moduleR);
 
         BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda,BigInteger.TWO, ellipticCurve.moduleR).subtract(this.x.multiply(BigInteger.TWO));

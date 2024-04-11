@@ -38,23 +38,23 @@ public class FiniteFieldEllipticCurveTest {
     void calculateCountOfElements() {
 
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(17));
-        BigInteger countOfElements = ellipticCurve.calculateCountOfElements(BigInteger.TWO);
+        BigInteger countOfElements = ellipticCurve.calculateOrder(BigInteger.TWO);
         assertEquals(16, countOfElements.intValue());
 
         FiniteFieldEllipticCurve ellipticCurve2 = new FiniteFieldEllipticCurve(BigInteger.valueOf(1), BigInteger.valueOf(13));
-        BigInteger countOfElements2 = ellipticCurve2.calculateCountOfElements(BigInteger.ONE);
+        BigInteger countOfElements2 = ellipticCurve2.calculateOrder(BigInteger.ONE);
         assertEquals(8, countOfElements2.intValue());
 
         FiniteFieldEllipticCurve ellipticCurve3 = new FiniteFieldEllipticCurve(BigInteger.valueOf(1), BigInteger.valueOf(17));
-        BigInteger countOfElements3 = ellipticCurve3.calculateCountOfElements(BigInteger.ONE);
+        BigInteger countOfElements3 = ellipticCurve3.calculateOrder(BigInteger.ONE);
         assertEquals(16, countOfElements3.intValue());
 
         FiniteFieldEllipticCurve ellipticCurve4 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(13));
-        BigInteger countOfElements4 = ellipticCurve4.calculateCountOfElements(BigInteger.valueOf(3));
+        BigInteger countOfElements4 = ellipticCurve4.calculateOrder(BigInteger.valueOf(3));
         assertEquals(8, countOfElements4.intValue());
 
         FiniteFieldEllipticCurve ellipticCurve5 = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(509));
-        BigInteger countOfElements5 = ellipticCurve5.calculateCountOfElements(BigInteger.valueOf(2));
+        BigInteger countOfElements5 = ellipticCurve5.calculateOrder(BigInteger.valueOf(2));
         assertEquals(500, countOfElements5.intValue());
     }
 
