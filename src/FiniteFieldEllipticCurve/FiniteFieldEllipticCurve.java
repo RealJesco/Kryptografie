@@ -12,6 +12,18 @@ public class FiniteFieldEllipticCurve {
     BigInteger b;
     BigInteger moduleR;
 
+    public BigInteger getA() {
+        return a;
+    }
+
+    public BigInteger getB() {
+        return b;
+    }
+
+    public BigInteger getModuleR() {
+        return moduleR;
+    }
+
     public FiniteFieldEllipticCurve(BigInteger n, BigInteger moduleR) {
         this.a = n.multiply(n).negate();
         this.b = BigInteger.ZERO;
@@ -24,11 +36,6 @@ public class FiniteFieldEllipticCurve {
         return inputYSquared.equals(valueToCheck);
     }
 
-    public boolean noCubicSolutionsPossible() {
-        BigInteger a = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(4).multiply(this.a), BigInteger.valueOf(3), BigInteger.ONE);
-        BigInteger b = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(27).multiply(this.b), BigInteger.valueOf(2), BigInteger.ONE);
-        return !a.add(b).mod(moduleR).equals(BigInteger.ZERO);
-    }
     public List<EllipticCurvePoint> calculateAllPoints() {
         List<EllipticCurvePoint> calculatedPoints = new ArrayList<EllipticCurvePoint>();
         for (BigInteger i = BigInteger.ZERO; i.compareTo(moduleR) < 0; i = i.add(BigInteger.ONE)) {
@@ -58,13 +65,16 @@ public class FiniteFieldEllipticCurve {
             y = quadraticDivisors.imaginary;
             x = quadraticDivisors.real;
         }
-        BigInteger lagandreSign = MathMethods.verifyEulerCriterion(n, this.moduleR);
+
+        BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.moduleR);
+
         BigInteger realPartSign = y.mod(BigInteger.TWO).equals(BigInteger.ZERO) ? BigInteger.ONE : BigInteger.ONE.negate();
+
         //TODO Test if this is correct for all cases
-        if(lagandreSign.equals(realPartSign)){
-            return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y).multiply(lagandreSign.negate()));
+        if(legendreSign.equals(realPartSign)){
+            return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y).multiply(legendreSign.negate()));
         } else {
-            return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y).multiply(lagandreSign));
+            return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y).multiply(legendreSign));
         }
     }
 }

@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import java.security.spec.EllipticCurve;
 import java.util.List;
 
-abstract class EllipticCurvePoint {
+public abstract class EllipticCurvePoint {
     BigInteger x;
     BigInteger y;
 
@@ -14,6 +14,15 @@ abstract class EllipticCurvePoint {
         this.x = x;
         this.y = y;
     }
+
+    public BigInteger getX() {
+        return x;
+    }
+
+    public BigInteger getY() {
+        return y;
+    }
+
     public EllipticCurvePoint normalize (FiniteFieldEllipticCurve ellipticCurve){
         EllipticCurvePoint normalizedEcPoint = new FiniteFieldEcPoint(x.mod(ellipticCurve.moduleR).abs(), y.mod(ellipticCurve.moduleR).abs());
         if(ellipticCurve.isValidPoint(normalizedEcPoint)) {
@@ -41,32 +50,31 @@ abstract class EllipticCurvePoint {
 
         BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda,BigInteger.TWO, ellipticCurve.moduleR).subtract(this.x.multiply(BigInteger.TWO));
         BigInteger newY =  lambda.multiply(this.x.subtract(newX)).subtract(this.y);
-        System.out.println(newX + " -x and y- " + newY);
         EllipticCurvePoint newPoint = new FiniteFieldEcPoint(newX, newY);
 
         return newPoint.normalize(ellipticCurve);
     }
-    public EllipticCurvePoint multiply (int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
-        if(scalarMultiplicator == 0){
+    public EllipticCurvePoint multiply (BigInteger scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
+        if(scalarMultiplicator.equals(BigInteger.ZERO)){
 
             EllipticCurvePoint lastPoint = this.doublePoint(ellipticCurve);
             EllipticCurvePoint newPoint = new FiniteFieldEcPoint(lastPoint.x, lastPoint.y);
 
             return newPoint.normalize(ellipticCurve);
 
-        } else if (scalarMultiplicator == 1) {
+        } else if (scalarMultiplicator.equals(BigInteger.ONE)) {
 
             return this;
 
         }
-        else if (scalarMultiplicator % 2 == 1){
+        else if (scalarMultiplicator.mod(BigInteger.TWO).equals(BigInteger.ONE)){
 
-            return this.add(multiply( scalarMultiplicator - 1, ellipticCurve), ellipticCurve);
+            return this.add(multiply( scalarMultiplicator.subtract(BigInteger.ONE), ellipticCurve), ellipticCurve);
 
         }
         else {
 
-            return this.doublePoint(ellipticCurve).multiply(scalarMultiplicator / 2, ellipticCurve);
+            return this.doublePoint(ellipticCurve).multiply(scalarMultiplicator.divide(BigInteger.TWO), ellipticCurve);
 
         }
     }
