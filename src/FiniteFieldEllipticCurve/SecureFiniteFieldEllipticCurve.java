@@ -39,9 +39,7 @@ public class SecureFiniteFieldEllipticCurve {
         BigInteger orderN = ellipticCurve.calculateOrder(n);
         return orderN.divide(BigInteger.valueOf(8));
     }
-    public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m) {
-        //TODO assert n > 0
-        this.n = n;
+    private BigInteger calculateP(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
         BigInteger p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
 
         while (MathMethods.parallelMillerRabinTest(calculateQ(p),millerRabinIterations , bitLengthOfP,BigInteger.valueOf(counter.incrementAndGet()))){
@@ -51,10 +49,21 @@ public class SecureFiniteFieldEllipticCurve {
                 p = ElGamalService.generateUniquePrime(bitLengthOfP, millerRabinIterations, BigInteger.ONE, counter);
             }
         }
+        return p;
+    }
+    public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m) {
+        assert n.compareTo(BigInteger.ZERO) > 0;
+        this.n = n;
+
+        BigInteger p = calculateP(bitLengthOfP, millerRabinIterations, m);
+
+        while (p.mod(n).equals(BigInteger.ZERO)){
+            p = calculateP(bitLengthOfP, millerRabinIterations, m);
+        }
 
         this.safeEllipticCurve = new FiniteFieldEllipticCurve(n, p);
 
-        //TODO assert and recalculate if p divides 2*n (2n mod p !=0)
+
 
     }
 }
