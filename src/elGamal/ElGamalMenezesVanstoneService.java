@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.math.BigInteger.TWO;
 import static mathMethods.MathMethods.generateRandomPrime;
 
-public class ElGamalService {
+public class ElGamalMenezesVanstoneService {
     public static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter){
         BigInteger possiblePrime;
         BigInteger lowerBound = TWO.pow(bitLength.intValue() - 1);

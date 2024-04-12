@@ -1,10 +1,9 @@
 package FiniteFieldEllipticCurve;
 
-import elGamal.ElGamalService;
+import elGamal.ElGamalMenezesVanstoneService;
 import mathMethods.MathMethods;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SecureFiniteFieldEllipticCurve {
@@ -22,11 +21,11 @@ public class SecureFiniteFieldEllipticCurve {
     }
 
     private BigInteger calculatePrimeMod8(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
-        BigInteger p = ElGamalService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
+        BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
         BigInteger pMod8 = p.mod(BigInteger.valueOf(8));
 
         while (!pMod8.equals(BigInteger.valueOf(5))){
-            p = ElGamalService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
+            p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
             pMod8 = p.mod(BigInteger.valueOf(8));
         }
         return p;
@@ -46,7 +45,7 @@ public class SecureFiniteFieldEllipticCurve {
             BigInteger pMod8 = p.mod(BigInteger.valueOf(8));
 
             while (!pMod8.equals(BigInteger.valueOf(5))){
-                p = ElGamalService.generateUniquePrime(bitLengthOfP, millerRabinIterations, BigInteger.ONE, counter);
+                p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, BigInteger.ONE, counter);
             }
         }
         return p;
