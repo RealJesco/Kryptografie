@@ -42,9 +42,8 @@ public class KeyPair {
         BigInteger a = ellipticCurve.getA();
         BigInteger q = ellipticCurve.calculateOrder(a.divide(a).negate()).divide(BigInteger.valueOf(8));
         EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
-        System.out.println(qg.getX() + " " + qg.getY());
 
-        while (qg instanceof InfinitePoint) {
+        while (qg instanceof InfinitePoint || (qg.getX().equals(BigInteger.ZERO) && qg.getY().equals(BigInteger.ZERO))) {
             x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, bitLengthOfP);
             r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
             legendreSign = MathMethods.verifyEulerCriterion(r, ellipticCurve.getModuleR());
@@ -58,14 +57,13 @@ public class KeyPair {
             qg = generator.multiply(q, ellipticCurve);
 
         }
-        assert !qg.getX().equals(BigInteger.ZERO) && !qg.getY().equals(BigInteger.ZERO);
+        assert !(qg.getX().equals(BigInteger.ZERO) && qg.getY().equals(BigInteger.ZERO));
 
         assert ellipticCurve.isValidPoint(generator);
 
 
         SecureRandom privateKeyRandomSeed = new SecureRandom();
         this.privateKey = new PrivateKey(ellipticCurve, new BigInteger(bitLengthOfP.bitLength(), privateKeyRandomSeed));
-        System.out.println(generator.getX() + " " + generator.getY());
         this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()));
 
     }
