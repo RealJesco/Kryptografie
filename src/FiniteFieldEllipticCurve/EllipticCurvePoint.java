@@ -44,6 +44,9 @@ public abstract class EllipticCurvePoint {
         return newPoint.normalize(ellipticCurve);
     }
     public EllipticCurvePoint doublePoint (FiniteFieldEllipticCurve ellipticCurve) {
+        if(this.y.equals(BigInteger.ZERO) && this.x.equals(BigInteger.ZERO)){
+            throw new ArithmeticException("No modular inverse exists for these parameters");
+        }
         BigInteger lambdaNumerator = MathMethods.alternativeQuickExponentiation(this.x, BigInteger.TWO, ellipticCurve.moduleR).multiply(BigInteger.valueOf(3)).add(ellipticCurve.a);
         BigInteger lambdaModInverseDenominator;
         if (this.y.equals(BigInteger.ZERO)){

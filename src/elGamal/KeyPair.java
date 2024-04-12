@@ -44,7 +44,7 @@ public class KeyPair {
         EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
 
         while (qg instanceof InfinitePoint || (qg.getX().equals(BigInteger.ZERO) && qg.getY().equals(BigInteger.ZERO))) {
-            x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, bitLengthOfP);
+            x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(BigInteger.ONE));
             r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
             legendreSign = MathMethods.verifyEulerCriterion(r, ellipticCurve.getModuleR());
             while (legendreSign.equals(BigInteger.ONE.negate())){

@@ -70,7 +70,6 @@ class ElGamalMenezesVanstoneServiceTest {
     }
     @Test
     void fullTextCycle() {
-        //TODO This is how you can test the full cycle of encryption and decryption. This needs to be automated as a service.
         BigInteger bitLengthP = BigInteger.valueOf(128);
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();

@@ -1,13 +1,13 @@
 package elGamal;
 
-import FiniteFieldEllipticCurve.EllipticCurvePoint;
-import FiniteFieldEllipticCurve.FiniteFieldEllipticCurve;
+import FiniteFieldEllipticCurve.*;
 import mathMethods.MathMethods;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TWO;
 import static mathMethods.MathMethods.generateRandomPrime;
 
@@ -26,8 +26,10 @@ public class ElGamalMenezesVanstoneService {
         BigInteger prime = ellipticCurve.getModuleR();
         BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE, prime);
 
+        BigInteger q = ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8));
+
         while (k.equals(BigInteger.ZERO)){
-            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE, prime);
+            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(ONE));
         }
 
         EllipticCurvePoint ky = publicKey.groupElement().multiply(k, ellipticCurve);
@@ -37,6 +39,7 @@ public class ElGamalMenezesVanstoneService {
             ky = publicKey.groupElement().multiply(k, ellipticCurve);
         }
 
+        assert !(ky instanceof InfinitePoint);
         EllipticCurvePoint a = publicKey.generator().multiply(k, publicKey.ellipticCurve());
 
         return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
