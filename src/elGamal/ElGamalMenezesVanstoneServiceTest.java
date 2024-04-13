@@ -7,6 +7,7 @@ import blockChiffre.ToDecimalBlockChiffre;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,8 @@ class ElGamalMenezesVanstoneServiceTest {
         PrivateKey privateKey = new PrivateKey(ellipticCurve, BigInteger.valueOf(80));
         EllipticCurvePoint generator = new FiniteFieldEcPoint(BigInteger.valueOf(115), BigInteger.valueOf(253));
         EllipticCurvePoint groupElement = new FiniteFieldEcPoint(BigInteger.valueOf(575), BigInteger.valueOf(481));
-        PublicKey publicKey = new PublicKey(ellipticCurve, generator, groupElement);
+        BigInteger q = ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8));
+        PublicKey publicKey = new PublicKey(ellipticCurve, generator, groupElement, q);
 
         Message message = new Message(BigInteger.valueOf(3), BigInteger.valueOf(8));
 
@@ -90,5 +92,23 @@ class ElGamalMenezesVanstoneServiceTest {
 
         assertEquals(text, decryptedText);
         assertNotEquals(text, encryptedText);
+    }
+
+    @Test
+    void testSignAndVerify() throws NoSuchAlgorithmException {
+        FiniteFieldEllipticCurve ellipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(10), BigInteger.valueOf(5), 100, BigInteger.valueOf(11)).getSafeEllipticCurve();
+//        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(13));
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(ellipticCurve);
+
+        String message = "Hello, World! This is a test of a really long text! do you like it? I hope so!";
+
+        String signature = ElGamalMenezesVanstoneStringService.sign(keyPair, message, 55296);
+
+        System.out.println(signature);
+
+        boolean verified = ElGamalMenezesVanstoneStringService.verify(keyPair.publicKey, message, signature, 55296);
+
+        assertTrue(verified);
     }
 }

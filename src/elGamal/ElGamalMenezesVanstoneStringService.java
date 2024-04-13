@@ -6,10 +6,19 @@ import blockChiffre.FromDecimalBlockChiffre;
 import blockChiffre.ToDecimalBlockChiffre;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ElGamalMenezesVanstoneStringService {
+    private static BigInteger hashAndConvertMessageToBigInteger(String message) throws NoSuchAlgorithmException {
+        final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+        final byte[] hashbytes = digest.digest(message.getBytes(StandardCharsets.UTF_8));
+
+        return new BigInteger(1, hashbytes);
+    }
 
     public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, int numberBase, FiniteFieldEllipticCurve ellipticCurve) {
         int blockSize = (int) (ellipticCurve.getModuleR().bitLength() * (Math.log(2) / Math.log(55296)));
@@ -75,7 +84,26 @@ public class ElGamalMenezesVanstoneStringService {
 
     }
 
-    public static String sign(final PrivateKey key, final String message, int numberBase) {
-        return null;
+    public static String sign(final KeyPair key, final String message, int numberBase) throws NoSuchAlgorithmException {
+        int blockSize = (int) (key.publicKey.ellipticCurve().getModuleR().bitLength() * (Math.log(2) / Math.log(numberBase)));
+        BigInteger hashedMessage = hashAndConvertMessageToBigInteger(message);
+        System.out.println("Hashed message: " + hashedMessage);
+        MenezesVanstoneSignature menezesVanstoneSignature = ElGamalMenezesVanstoneService.sign(key, hashedMessage);
+        System.out.println(menezesVanstoneSignature.r() + " " + menezesVanstoneSignature.s());
+        String signature = FromDecimalBlockChiffre.encrypt(List.of(menezesVanstoneSignature.r(), menezesVanstoneSignature.s()), 55296, blockSize + 1);
+        System.out.println("Signature: " + signature);
+        System.out.println(blockSize);
+        return signature;
+    }
+
+    public static boolean verify(final PublicKey key, final String message, final String signature, int numberBase) throws NoSuchAlgorithmException {
+        int blockSize = (int) (key.ellipticCurve().getModuleR().bitLength() * (Math.log(2) / Math.log(numberBase)));
+        BigInteger hashedMessage = hashAndConvertMessageToBigInteger(message);
+        System.out.println("Hashed message: " + hashedMessage);
+        List<BigInteger> menezesVanstoneSignatureList = FromDecimalBlockChiffre.decrypt(signature, 55296, blockSize + 1);
+        MenezesVanstoneSignature menezesVanstoneSignature = new MenezesVanstoneSignature(menezesVanstoneSignatureList.get(0), menezesVanstoneSignatureList.get(1));
+        System.out.println("Signature: " + signature);
+        System.out.println(menezesVanstoneSignatureList.get(0) + " " + menezesVanstoneSignatureList.get(1));
+        return ElGamalMenezesVanstoneService.verify(key, hashedMessage, menezesVanstoneSignature );
     }
 }

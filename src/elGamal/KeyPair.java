@@ -64,7 +64,7 @@ public class KeyPair {
 
         SecureRandom privateKeyRandomSeed = new SecureRandom();
         this.privateKey = new PrivateKey(ellipticCurve, new BigInteger(bitLengthOfP.bitLength(), privateKeyRandomSeed));
-        this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()));
+        this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()), q);
 
     }
 }

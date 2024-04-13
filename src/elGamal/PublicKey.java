@@ -2,5 +2,7 @@ package elGamal;
 
 import FiniteFieldEllipticCurve.*;
 
-public record PublicKey (FiniteFieldEllipticCurve ellipticCurve, EllipticCurvePoint generator, EllipticCurvePoint groupElement){
+import java.math.BigInteger;
+
+public record PublicKey (FiniteFieldEllipticCurve ellipticCurve, EllipticCurvePoint generator, EllipticCurvePoint groupElement, BigInteger order){
 }

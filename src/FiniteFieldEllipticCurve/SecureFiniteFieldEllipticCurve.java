@@ -38,10 +38,14 @@ public class SecureFiniteFieldEllipticCurve {
         BigInteger orderN = ellipticCurve.calculateOrder(n);
         return orderN.divide(BigInteger.valueOf(8));
     }
-    private BigInteger calculateP(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
+    private BigInteger calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
         BigInteger p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
-
-        while (MathMethods.parallelMillerRabinTest(calculateQ(p),millerRabinIterations , bitLengthOfP,BigInteger.valueOf(counter.incrementAndGet()))){
+        BigInteger q = calculateQ(p);
+        boolean isPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, bitLengthOfP, BigInteger.valueOf(counter.incrementAndGet()));
+        while (!isPrime){
+            p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
+            q = calculateQ(p);
+            isPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, bitLengthOfP, BigInteger.valueOf(counter.incrementAndGet()));
             BigInteger pMod8 = p.mod(BigInteger.valueOf(8));
 
             while (!pMod8.equals(BigInteger.valueOf(5))){
@@ -54,10 +58,10 @@ public class SecureFiniteFieldEllipticCurve {
         assert n.compareTo(BigInteger.ZERO) > 0;
         this.n = n;
 
-        BigInteger p = calculateP(bitLengthOfP, millerRabinIterations, m);
+        BigInteger p = calculatePAndQ(bitLengthOfP, millerRabinIterations, m);
 
         while (p.mod(n).equals(BigInteger.ZERO)){
-            p = calculateP(bitLengthOfP, millerRabinIterations, m);
+            p = calculatePAndQ(bitLengthOfP, millerRabinIterations, m);
         }
 
         this.safeEllipticCurve = new FiniteFieldEllipticCurve(n, p);
