@@ -11,7 +11,6 @@ public class FiniteFieldEllipticCurve {
     BigInteger a;
     BigInteger b;
     BigInteger moduleR;
-    BigInteger orderOfSubGroup;
 
     public BigInteger getA() {
         return a;
@@ -31,16 +30,10 @@ public class FiniteFieldEllipticCurve {
         this.moduleR = moduleR;
     }
 
-    public  FiniteFieldEllipticCurve(BigInteger n, BigInteger moduleR, BigInteger orderOfSubGroup) {
-        this.a = n.multiply(n).negate();
-        this.b = BigInteger.ZERO;
-        this.moduleR = moduleR;
-        this.orderOfSubGroup = orderOfSubGroup;
-    }
 
     public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint){
-        BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.y, BigInteger.TWO, moduleR));
-        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.x, BigInteger.valueOf(3), moduleR).add(a.multiply(ellipticCurvePoint.x))).mod(moduleR);
+        BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getY(), BigInteger.TWO, moduleR));
+        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getX(), BigInteger.valueOf(3), moduleR).add(a.multiply(ellipticCurvePoint.getX()))).mod(moduleR);
         return inputYSquared.equals(valueToCheck);
     }
 
@@ -59,7 +52,7 @@ public class FiniteFieldEllipticCurve {
                 }
             }
         }
-        calculatedPoints.add(new InfinitePoint(BigInteger.ZERO, BigInteger.ZERO));
+        calculatedPoints.add(new InfinitePoint());
         return calculatedPoints;
     }
     public BigInteger calculateOrder(BigInteger n){

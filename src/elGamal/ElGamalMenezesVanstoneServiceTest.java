@@ -36,9 +36,10 @@ class ElGamalMenezesVanstoneServiceTest {
 
     @Test
     void testKeyGeneration() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(821));
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
+//        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(821));
         KeyPair keyPair = new KeyPair();
-        keyPair.generateKeyPair(ellipticCurve);
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
 
         Message message = new Message(BigInteger.valueOf(3), BigInteger.valueOf(8));
 
@@ -56,8 +57,9 @@ class ElGamalMenezesVanstoneServiceTest {
     void testKeyGenerationWithSecureEllipticCurve() {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
+        BigInteger q = secureFiniteFieldEllipticCurve.getQ();
         KeyPair keyPair = new KeyPair();
-        keyPair.generateKeyPair(ellipticCurve);
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
 
         Message message = new Message(BigInteger.valueOf(3), BigInteger.valueOf(8));
 
@@ -76,7 +78,7 @@ class ElGamalMenezesVanstoneServiceTest {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         KeyPair keyPair = new KeyPair();
-        keyPair.generateKeyPair(ellipticCurve);
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
 
 //        String text = "Hello, World! This is a test of a really long text! do you like it? I hope so!";
         String text = "Ao0WDF!M57XkWm%ysCw1dUw0FoJ31tChJ1ajJ&NN2N2HuektYRJ703q20PYBjkGf4Shw0@GH42$Qpf!C6&UMU6uh94wyVuaQpEdJ\n" +
@@ -95,11 +97,12 @@ class ElGamalMenezesVanstoneServiceTest {
     }
 
     @Test
-    void testSignAndVerify() throws NoSuchAlgorithmException {
-        FiniteFieldEllipticCurve ellipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(11)).getSafeEllipticCurve();
+    void testSignAndVerifyWithText() throws NoSuchAlgorithmException {
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
+        FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
 //        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(36901), BigInteger.valueOf(4649));
         KeyPair keyPair = new KeyPair();
-        keyPair.generateKeyPair(ellipticCurve);
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
 
         System.out.println(keyPair.publicKey.generator().multiply(keyPair.privateKey.secretMultiplierX(), keyPair.publicKey.ellipticCurve()));
         System.out.println(keyPair.publicKey.groupElement());
@@ -112,6 +115,25 @@ class ElGamalMenezesVanstoneServiceTest {
         System.out.println(signature);
 
         boolean verified = ElGamalMenezesVanstoneStringService.verify(keyPair.publicKey, message, signature, 55296);
+
+        assertTrue(verified);
+    }
+
+    @Test
+    void testSignAndVerify() {
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
+        FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
+        System.out.println(keyPair);
+        System.out.println(ellipticCurve);
+        BigInteger message = BigInteger.valueOf(123456789);
+
+        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
+
+        assertTrue(signature.r().compareTo(BigInteger.ZERO) > 0);
+        assertTrue(signature.s().compareTo(BigInteger.ZERO) > 0);
+        boolean verified = ElGamalMenezesVanstoneService.verify(keyPair.publicKey, message, signature);
 
         assertTrue(verified);
     }

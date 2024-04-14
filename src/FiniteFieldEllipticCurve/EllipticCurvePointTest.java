@@ -18,12 +18,15 @@ class EllipticCurvePointTest {
 
     @Test
     void add() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.ONE, BigInteger.valueOf(13));
-        FiniteFieldEcPoint point1 = new FiniteFieldEcPoint(BigInteger.TWO, BigInteger.valueOf(6));
-        FiniteFieldEcPoint point2 = new FiniteFieldEcPoint(BigInteger.valueOf(7), BigInteger.valueOf(8));
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(13));
+        FiniteFieldEcPoint point1 = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(2));
+        FiniteFieldEcPoint point2 = new FiniteFieldEcPoint(BigInteger.valueOf(7), BigInteger.valueOf(5));
         EllipticCurvePoint newPoint = point1.add(point2, ellipticCurve);
+        assertEquals(BigInteger.valueOf(6), newPoint.getX());
+        assertEquals(BigInteger.valueOf(12), newPoint.getY());
         assertTrue(ellipticCurve.isValidPoint(newPoint));
     }
+
 
     @Test
     void doublePoint() {
@@ -31,9 +34,10 @@ class EllipticCurvePointTest {
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(7));
         EllipticCurvePoint doubledPoint = point.doublePoint(ellipticCurve);
         assertTrue(ellipticCurve.isValidPoint(doubledPoint));
-        assertEquals(BigInteger.valueOf(15), doubledPoint.x);
-        assertEquals(BigInteger.valueOf(0), doubledPoint.y);
+        assertEquals(BigInteger.valueOf(15), doubledPoint.getX());
+        assertEquals(BigInteger.valueOf(0), doubledPoint.getY());
     }
+
     @Test
     void doublePointForZero() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.ONE, BigInteger.valueOf(13));
@@ -47,8 +51,16 @@ class EllipticCurvePointTest {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(7), BigInteger.valueOf(5));
         EllipticCurvePoint newPoint = point.multiply(BigInteger.valueOf(4), ellipticCurve);
-        assertEquals(BigInteger.valueOf(16), newPoint.x);
-        assertEquals(BigInteger.valueOf(12), newPoint.y);
+        assertEquals(BigInteger.valueOf(16), newPoint.getX());
+        assertEquals(BigInteger.valueOf(12), newPoint.getY());
+    }
+
+    @Test
+    void multiplyWithZero () {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(7), BigInteger.valueOf(5));
+        EllipticCurvePoint newPoint = point.multiply(BigInteger.valueOf(0), ellipticCurve);
+        assertTrue(newPoint instanceof InfinitePoint);
     }
     @Test
     void reachInfinitePoint() {
@@ -61,4 +73,6 @@ class EllipticCurvePointTest {
         assertTrue(newPoint instanceof InfinitePoint);
         assertFalse(newPoint instanceof FiniteFieldEcPoint);
     }
+
+
 }

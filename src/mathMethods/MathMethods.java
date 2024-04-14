@@ -499,6 +499,7 @@ public class MathMethods {
                 continue;
             }
             if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, m, wrappedCounter)) {
+                System.out.println("prime number: " +primeCandidate);
                 break;
             }
             counter.incrementAndGet();
