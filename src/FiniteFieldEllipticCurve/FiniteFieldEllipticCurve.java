@@ -11,6 +11,7 @@ public class FiniteFieldEllipticCurve {
     BigInteger a;
     BigInteger b;
     BigInteger moduleR;
+    BigInteger orderOfSubGroup;
 
     public BigInteger getA() {
         return a;
@@ -28,6 +29,13 @@ public class FiniteFieldEllipticCurve {
         this.a = n.multiply(n).negate();
         this.b = BigInteger.ZERO;
         this.moduleR = moduleR;
+    }
+
+    public  FiniteFieldEllipticCurve(BigInteger n, BigInteger moduleR, BigInteger orderOfSubGroup) {
+        this.a = n.multiply(n).negate();
+        this.b = BigInteger.ZERO;
+        this.moduleR = moduleR;
+        this.orderOfSubGroup = orderOfSubGroup;
     }
 
     public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint){
@@ -69,12 +77,22 @@ public class FiniteFieldEllipticCurve {
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.moduleR);
 
         BigInteger realPartSign = y.mod(BigInteger.TWO).equals(BigInteger.ZERO) ? BigInteger.ONE : BigInteger.ONE.negate();
-
+//        System.out.println("legendreSign + " + legendreSign);
+//        System.out.println("realPartSign " + realPartSign);
         //TODO Test if this is correct for all cases
         if(legendreSign.equals(realPartSign)){
             return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y).multiply(legendreSign.negate()));
         } else {
             return this.moduleR.add(BigInteger.ONE).subtract(BigInteger.TWO.multiply(y).multiply(legendreSign));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "FiniteFieldEllipticCurve{" +
+                "a=" + a +
+                ", b=" + b +
+                ", moduleR=" + moduleR +
+                '}';
     }
 }

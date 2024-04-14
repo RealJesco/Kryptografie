@@ -76,20 +76,20 @@ public class ElGamalMenezesVanstoneService {
  *
  **/
 
+        System.out.println("KeyPair " + keyPair.toString());
+
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = keyPair.publicKey.ellipticCurve();
         BigInteger prime = ellipticCurve.getModuleR();
+        System.out.println("prime " + prime);
         BigInteger q = keyPair.publicKey.order();
 
         BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE,  q.subtract(ONE));
 
 
 
-        while (k.equals(BigInteger.ZERO)){
-            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(ONE));
-        }
-
+        FiniteFieldEcPoint testPoint = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(1));
         EllipticCurvePoint kg = keyPair.publicKey.generator().multiply(k, ellipticCurve);
 
         while (kg.getX().equals(BigInteger.ZERO) || kg.getY().equals(BigInteger.ZERO)) {
@@ -97,9 +97,17 @@ public class ElGamalMenezesVanstoneService {
             kg = keyPair.publicKey.generator().multiply(k, ellipticCurve);
         }
 
+        System.out.println("kg + " + kg);
+//        kg = testPoint.multiply(BigInteger.valueOf(0), ellipticCurve);
+        System.out.println(keyPair.publicKey.ellipticCurve().isValidPoint(kg));
         assert !(kg instanceof InfinitePoint);
-        EllipticCurvePoint uv = keyPair.publicKey.generator().multiply(k, keyPair.publicKey.ellipticCurve());
+        assert keyPair.publicKey.ellipticCurve().isValidPoint(kg);
+        assert keyPair.publicKey.ellipticCurve().isValidPoint(keyPair.publicKey.generator());
+        assert keyPair.publicKey.ellipticCurve().isValidPoint(keyPair.publicKey.groupElement());
 
+        EllipticCurvePoint uv = kg;
+
+        System.out.println("uv: " + uv);
         BigInteger r = uv.getX().mod(q);
         BigInteger h = message;
         BigInteger x = keyPair.privateKey.secretMultiplierX();
@@ -107,11 +115,17 @@ public class ElGamalMenezesVanstoneService {
         System.out.println("k: " + k);
         System.out.println("q: " + q);
         BigInteger kInverse = MathMethods.modularInverse(k, q);
+        System.out.println("kInverse: " + kInverse);
         BigInteger s = h.add(xr).multiply(kInverse).mod(q);
+        //check if s is the correct value for calculating the signature
+        BigInteger sInverse = MathMethods.modularInverse(s, q);
+//        assert sInverse.equals(k);
+
         System.out.println("s mod q: " + s.mod(q));
         System.out.println("r: " + r);
         System.out.println("s: " + s);
 
+        assert uv.getX().mod(q).equals(r);
         return new MenezesVanstoneSignature(r, s);
 
     }
@@ -125,23 +139,31 @@ public class ElGamalMenezesVanstoneService {
          *  Bob berechnet den Kurvenpunkt (uv) = uG + vP E(ZZp).
          *  Bob akzeptiert die Signatur, wenn r = u mod q gilt, andernfalls wird die Signatur abgelehnt.
          **/
+        System.out.println("received hashed message: " + message);
         BigInteger q = publicKey.order();
         BigInteger h = message;
         BigInteger w = MathMethods.modularInverse(signature.s(), q);
+        System.out.println("w mod q: " + w);
         BigInteger u1 = h.multiply(w).mod(q);
         BigInteger u2 = signature.r().multiply(w).mod(q);
+        System.out.println("generator: " + publicKey.generator());
+        System.out.println("groupElement: " + publicKey.groupElement());
         EllipticCurvePoint uv = publicKey.generator().multiply(u1, publicKey.ellipticCurve()).add(publicKey.groupElement().multiply(u2, publicKey.ellipticCurve()), publicKey.ellipticCurve());
         System.out.println(publicKey.ellipticCurve().isValidPoint(uv));
         System.out.println("u1: " + u1);
         System.out.println("u2: " + u2);
         System.out.println("r: " + signature.r());
+        System.out.println("s: " + signature.s() );
         System.out.println("uvX: " + uv.getX());
         System.out.println("uvY: " + uv.getY());
         System.out.println("q: " + q);
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(uv.getY(), q);
         BigInteger uvXModQ = uv.getX().mod(q);
-        //Check if uvXModQ is congruent to r mod q
-        return uvXModQ.equals(signature.r());
+        BigInteger rModQ = signature.r().mod(q);
+        System.out.println(rModQ);
+
+        return uvXModQ.equals(rModQ);
+
     }
 
 

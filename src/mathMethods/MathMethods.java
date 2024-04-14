@@ -249,7 +249,11 @@ public class MathMethods {
         if(!gcd.equals(ONE)){
             throw new ArithmeticException("No modular inverse exists for the parameters + " + a + " and " + b);
         } else {
-            return extendedEuclideanResult[1];
+            if(extendedEuclideanResult[1].signum() < 0) {
+                return extendedEuclideanResult[1].add(b);
+            } else {
+                return extendedEuclideanResult[1];
+            }
         }
     }
 
@@ -428,18 +432,18 @@ public class MathMethods {
         }
         BigDecimal decimalN = new BigDecimal(n);
 
-//        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(DECIMAL_ONE);
-//        BigDecimal mathContextRange = range.add(decimalN);
-//
-//         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
-//         MathContext context = new MathContext(decadicLogarithm);
+        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(DECIMAL_ONE);
+        BigDecimal mathContextRange = range.add(decimalN);
+
+         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
+         MathContext context = new MathContext(decadicLogarithm);
 
         // In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
         // So this condition will never be true. We can comment/remove this condition
-//         if (randomElsnerDecimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
+         if (randomElsnerDecimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
 //             System.out.println("It happens");
-//             randomElsnerDecimalM = randomElsnerDecimalM.add(DECIMAL_ONE);
-//         }
+             randomElsnerDecimalM = randomElsnerDecimalM.add(DECIMAL_ONE);
+         }
 
         BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);

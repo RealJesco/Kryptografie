@@ -87,4 +87,11 @@ public abstract class EllipticCurvePoint {
         }
     }
 
+    @Override
+    public String toString() {
+        return "EllipticCurvePoint{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

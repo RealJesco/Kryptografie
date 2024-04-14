@@ -96,11 +96,15 @@ class ElGamalMenezesVanstoneServiceTest {
 
     @Test
     void testSignAndVerify() throws NoSuchAlgorithmException {
-        FiniteFieldEllipticCurve ellipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(10), BigInteger.valueOf(5), 100, BigInteger.valueOf(11)).getSafeEllipticCurve();
-//        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(13));
+        FiniteFieldEllipticCurve ellipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(11)).getSafeEllipticCurve();
+//        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(36901), BigInteger.valueOf(4649));
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(ellipticCurve);
 
+        System.out.println(keyPair.publicKey.generator().multiply(keyPair.privateKey.secretMultiplierX(), keyPair.publicKey.ellipticCurve()));
+        System.out.println(keyPair.publicKey.groupElement());
+
+        System.out.println(keyPair);
         String message = "Hello, World! This is a test of a really long text! do you like it? I hope so!";
 
         String signature = ElGamalMenezesVanstoneStringService.sign(keyPair, message, 55296);
@@ -111,4 +115,5 @@ class ElGamalMenezesVanstoneServiceTest {
 
         assertTrue(verified);
     }
+
 }

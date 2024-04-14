@@ -15,6 +15,7 @@ public class KeyPair {
 
     }
 
+
     public void generateKeyPair(FiniteFieldEllipticCurve ellipticCurve){
 
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getModuleR().bitLength());
@@ -22,16 +23,11 @@ public class KeyPair {
 
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
-        BigInteger x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, bitLengthOfP);
+        BigInteger x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, ellipticCurve.getModuleR());
         BigInteger r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
 
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(r, ellipticCurve.getModuleR());
 
-        while (legendreSign.equals(BigInteger.ONE.negate())){
-            x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, bitLengthOfP);
-            r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
-            legendreSign = MathMethods.verifyEulerCriterion(r, ellipticCurve.getModuleR());
-        }
 
         BigInteger y = MathMethods.alternativeQuickExponentiation(r, (ellipticCurve.getModuleR().add(BigInteger.valueOf(3))).divide(BigInteger.valueOf(8)), ellipticCurve.getModuleR());
 
@@ -42,13 +38,13 @@ public class KeyPair {
         BigInteger a = ellipticCurve.getA();
         BigInteger q = ellipticCurve.calculateOrder(a.divide(a).negate()).divide(BigInteger.valueOf(8));
         EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
-
-        while (qg instanceof InfinitePoint || (qg.getX().equals(BigInteger.ZERO) && qg.getY().equals(BigInteger.ZERO))) {
-            x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(BigInteger.ONE));
+        EllipticCurvePoint groupElement;
+        while (qg instanceof InfinitePoint || (qg.getX().equals(BigInteger.ZERO) && qg.getY().equals(BigInteger.ZERO)) ) {
+            x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, ellipticCurve.getModuleR());
             r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
             legendreSign = MathMethods.verifyEulerCriterion(r, ellipticCurve.getModuleR());
             while (legendreSign.equals(BigInteger.ONE.negate())){
-                x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, bitLengthOfP);
+                x = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, ellipticCurve.getModuleR());
                 r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
                 legendreSign = MathMethods.verifyEulerCriterion(r, ellipticCurve.getModuleR());
             }
@@ -61,10 +57,18 @@ public class KeyPair {
 
         assert ellipticCurve.isValidPoint(generator);
 
-
-        SecureRandom privateKeyRandomSeed = new SecureRandom();
-        this.privateKey = new PrivateKey(ellipticCurve, new BigInteger(bitLengthOfP.bitLength(), privateKeyRandomSeed));
+        //TODO groupElement needs to be not an instance of InfinitePoint. Refactoring needed
+        BigInteger secretMultiplierX  = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(BigInteger.ONE));
+        this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);
         this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()), q);
 
+    }
+
+    @Override
+    public String toString() {
+        return "KeyPair{" +
+                "privateKey=" + privateKey +
+                ", publicKey=" + publicKey +
+                '}';
     }
 }
