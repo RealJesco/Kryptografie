@@ -87,23 +87,15 @@ public class ElGamalMenezesVanstoneStringService {
     public static String sign(final KeyPair key, final String message, int numberBase) throws NoSuchAlgorithmException {
         int blockSize = (int) (key.publicKey.ellipticCurve().getModuleR().bitLength() * (Math.log(2) / Math.log(numberBase)));
         BigInteger hashedMessage = hashAndConvertMessageToBigInteger(message);
-        System.out.println("Hashed message: " + hashedMessage);
         MenezesVanstoneSignature menezesVanstoneSignature = ElGamalMenezesVanstoneService.sign(key, hashedMessage);
-        System.out.println(menezesVanstoneSignature.r() + " " + menezesVanstoneSignature.s());
-        String signature = FromDecimalBlockChiffre.encrypt(List.of(menezesVanstoneSignature.r(), menezesVanstoneSignature.s()), 55296, blockSize + 1);
-        System.out.println("Signature: " + signature);
-        System.out.println(blockSize);
-        return signature;
+        return FromDecimalBlockChiffre.encrypt(List.of(menezesVanstoneSignature.r(), menezesVanstoneSignature.s()), 55296, blockSize + 1);
     }
 
     public static boolean verify(final PublicKey key, final String message, final String signature, int numberBase) throws NoSuchAlgorithmException {
         int blockSize = (int) (key.ellipticCurve().getModuleR().bitLength() * (Math.log(2) / Math.log(numberBase)));
         BigInteger hashedMessage = hashAndConvertMessageToBigInteger(message);
-        System.out.println("Hashed message: " + hashedMessage);
         List<BigInteger> menezesVanstoneSignatureList = FromDecimalBlockChiffre.decrypt(signature, 55296, blockSize + 1);
         MenezesVanstoneSignature menezesVanstoneSignature = new MenezesVanstoneSignature(menezesVanstoneSignatureList.get(0), menezesVanstoneSignatureList.get(1));
-        System.out.println("Signature: " + signature);
-        System.out.println(menezesVanstoneSignatureList.get(0) + " " + menezesVanstoneSignatureList.get(1));
         return ElGamalMenezesVanstoneService.verify(key, hashedMessage, menezesVanstoneSignature );
     }
 }

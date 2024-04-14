@@ -125,8 +125,6 @@ class ElGamalMenezesVanstoneServiceTest {
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
-        System.out.println(keyPair);
-        System.out.println(ellipticCurve);
         BigInteger message = BigInteger.valueOf(123456789);
 
         MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);

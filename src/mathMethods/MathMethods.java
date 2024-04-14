@@ -441,7 +441,6 @@ public class MathMethods {
         // In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
         // So this condition will never be true. We can comment/remove this condition
          if (randomElsnerDecimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
-//             System.out.println("It happens");
              randomElsnerDecimalM = randomElsnerDecimalM.add(DECIMAL_ONE);
          }
 
@@ -499,7 +498,6 @@ public class MathMethods {
                 continue;
             }
             if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, m, wrappedCounter)) {
-                System.out.println("prime number: " +primeCandidate);
                 break;
             }
             counter.incrementAndGet();

@@ -26,6 +26,8 @@ public class SecureFiniteFieldEllipticCurve {
 
     private BigInteger calculatePrimeMod8(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
         BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
+        // random prime p. Use built in Java function
+//        BigInteger p = BigInteger.probablePrime(bitLengthOfP.intValue(), new java.util.Random());
         BigInteger pMod8 = p.mod(BigInteger.valueOf(8));
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, p);
 
@@ -35,7 +37,6 @@ public class SecureFiniteFieldEllipticCurve {
             legendreSign = MathMethods.verifyEulerCriterion(n, p);
         }
 
-        System.out.println(legendreSign.equals(BigInteger.ONE));
         assert legendreSign.equals(BigInteger.ONE);
         assert !(p.equals(n.multiply(BigInteger.TWO)));
         return p;
@@ -45,24 +46,30 @@ public class SecureFiniteFieldEllipticCurve {
     }
     private BigInteger calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
 
-        BigInteger p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(n, p);
-        BigInteger orderN = ellipticCurve.calculateOrder(n);
-        BigInteger q = calculateQ(orderN);
+        BigInteger p;
+        FiniteFieldEllipticCurve ellipticCurve;
+        BigInteger orderN;
+        BigInteger q;
 
 
-        boolean isPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, bitLengthOfP, BigInteger.valueOf(counter.incrementAndGet()));
-
-        while (!isPrime || !orderN.divide(BigInteger.valueOf(8)).equals(q) || !(p.equals(n.multiply(BigInteger.TWO)))){
+        while (true){
             p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve = new FiniteFieldEllipticCurve(n, p);
+            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, BigInteger.valueOf(100), BigInteger.valueOf(counter.incrementAndGet()));
+            if(!pIsPrime){
+                continue;
+            }
+
             orderN = ellipticCurve.calculateOrder(n);
             q = calculateQ(orderN);
-            isPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, bitLengthOfP, BigInteger.valueOf(counter.incrementAndGet()));
+
+            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, BigInteger.valueOf(100), BigInteger.valueOf(counter.incrementAndGet()));
+
+            if(qIsPrime && orderN.equals(q.multiply(BigInteger.valueOf(8)))){
+                break;
+            }
         }
 
-        System.out.println(orderN);
-        System.out.println(q);
         assert q.multiply(BigInteger.valueOf(8)).equals(orderN);
         //Assert p is congruent to 5 mod 8
         assert p.mod(BigInteger.valueOf(8)).equals(BigInteger.valueOf(5));
@@ -70,21 +77,13 @@ public class SecureFiniteFieldEllipticCurve {
         this.safeEllipticCurve = ellipticCurve;
         assert this.safeEllipticCurve.getModuleR().equals(p);
         assert this.safeEllipticCurve.calculateOrder(n).equals(orderN);
-        System.out.println("q + " + q);
         this.q = q;
         return p;
     }
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m) {
         assert n.compareTo(BigInteger.ZERO) > 0;
         this.n = n;
-
         calculatePAndQ(bitLengthOfP, millerRabinIterations, m);
-
-
-//        this.safeEllipticCurve = new FiniteFieldEllipticCurve(n, p);
-
-
-
     }
 
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m, FiniteFieldEllipticCurve ellipticCurve) {

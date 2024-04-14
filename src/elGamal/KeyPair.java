@@ -52,7 +52,6 @@ public class KeyPair {
 
             generator = new FiniteFieldEcPoint(x,y);
             EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
-            System.out.println(qg);
             if (qg instanceof InfinitePoint) {
                 return generator;
             }
@@ -66,8 +65,6 @@ public class KeyPair {
         BigInteger q = secureFiniteFieldEllipticCurve.getQ();
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getModuleR().bitLength());
         assert MathMethods.verifyEulerCriterion(ellipticCurve.getModuleR(), BigInteger.valueOf(8)).equals(BigInteger.ONE);
-        //Generate g
-        System.out.println(ellipticCurve);
 
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
@@ -94,12 +91,7 @@ public class KeyPair {
         assert ellipticCurve.isValidPoint(publicKey.groupElement());
         assert ellipticCurve.isValidPoint(publicKey.generator());
         assert publicKey.order().equals(q);
-        assert ! (publicKey.groupElement().multiply(q, ellipticCurve) instanceof InfinitePoint);
-        System.out.println("groupElement: " + publicKey.groupElement());
-        System.out.println("generator: " + publicKey.generator());
-        System.out.println("generator multiplied by secretMultiplierX: " + publicKey.generator().multiply(secretMultiplierX, ellipticCurve));
-//        assert publicKey.generator().multiply(secretMultiplierX, ellipticCurve).equals(publicKey.groupElement());
-
+        assert (publicKey.groupElement().multiply(q, ellipticCurve) instanceof InfinitePoint);
         assert ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8)).equals(q);
     }
 
