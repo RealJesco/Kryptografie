@@ -46,21 +46,27 @@ public class SecureFiniteFieldEllipticCurve {
     }
     private BigInteger calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
 
-        BigInteger p;
-        FiniteFieldEllipticCurve ellipticCurve;
+        BigInteger p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(n, p);
         BigInteger orderN;
         BigInteger q;
 
 
         while (true){
             p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
-            ellipticCurve = new FiniteFieldEllipticCurve(n, p);
+            ellipticCurve.setP(p);
             boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, BigInteger.valueOf(100), BigInteger.valueOf(counter.incrementAndGet()));
+
             if(!pIsPrime){
                 continue;
             }
 
             orderN = ellipticCurve.calculateOrder(n);
+
+            if(orderN.equals(n.multiply(BigInteger.TWO)) || !orderN.mod(BigInteger.valueOf(8)).equals(BigInteger.ZERO)){
+                continue;
+            }
+
             q = calculateQ(orderN);
 
             boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, BigInteger.valueOf(100), BigInteger.valueOf(counter.incrementAndGet()));
@@ -71,11 +77,10 @@ public class SecureFiniteFieldEllipticCurve {
         }
 
         assert q.multiply(BigInteger.valueOf(8)).equals(orderN);
-        //Assert p is congruent to 5 mod 8
         assert p.mod(BigInteger.valueOf(8)).equals(BigInteger.valueOf(5));
 
         this.safeEllipticCurve = ellipticCurve;
-        assert this.safeEllipticCurve.getModuleR().equals(p);
+        assert this.safeEllipticCurve.getP().equals(p);
         assert this.safeEllipticCurve.calculateOrder(n).equals(orderN);
         this.q = q;
         return p;

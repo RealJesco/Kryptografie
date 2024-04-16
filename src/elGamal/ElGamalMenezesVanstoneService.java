@@ -14,7 +14,7 @@ import static mathMethods.MathMethods.generateRandomPrime;
 public class ElGamalMenezesVanstoneService {
     public static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter){
         BigInteger possiblePrime;
-        BigInteger lowerBound = TWO.pow(bitLength.intValue() - 1);
+        BigInteger lowerBound = BigInteger.valueOf(5);
         BigInteger upperBound = TWO.pow(bitLength.intValue());
         possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps, counter);
         return possiblePrime;
@@ -23,7 +23,7 @@ public class ElGamalMenezesVanstoneService {
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
-        BigInteger prime = ellipticCurve.getModuleR();
+        BigInteger prime = ellipticCurve.getP();
         BigInteger q = ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8));
 
 
@@ -50,7 +50,7 @@ public class ElGamalMenezesVanstoneService {
 
     public static Message decrypt(CipherMessage cipherMessage, PrivateKey privateKey) {
         EllipticCurvePoint xa = cipherMessage.point().multiply( privateKey.secretMultiplierX(), privateKey.ellipticCurve() );
-        BigInteger prime = privateKey.ellipticCurve().getModuleR();
+        BigInteger prime = privateKey.ellipticCurve().getP();
         BigInteger c1 = MathMethods.modularInverse(xa.getX(), prime);
         BigInteger c2 =  MathMethods.modularInverse(xa.getY(), prime);
         BigInteger newM1 = cipherMessage.b1().multiply( c1 ).mod(prime);
@@ -63,24 +63,11 @@ public class ElGamalMenezesVanstoneService {
 
     //sign and verify methods
     public static MenezesVanstoneSignature sign(final KeyPair keyPair, final BigInteger message) {
-/**
- * Zur Signierung fuhrt Alice die folgenden Schritte aus:
- *  Alice wahlt eine zufallige Zahl k ZZq mit k= 0.
- *  Alice berechnet den Kurvenpunkt (uv) = kg E(ZZp). Hiermit wiederum bestimmt
- *  sie die Zahl r u mod q.
- *  Alice berechnet k 1 mod q.
- *  Alice berechnet s = (h(M) + xr)k 1 mod q mit der Hashfunktion h = SHA-1 14, wobei M ein Tupel aus zwei Zahlen ist.
- *  Im Falle r = 0 oder s = 0 bricht Alice das Verfahren ab und wiederholt den Proze
- *  mit der Wahl einer neuen Zufallszahl k. Anderenfalls ubermittelt sie Bob den Klartext
- *  M sowie die zugehorige Signatur (rs).
- *
- **/
-
 
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = keyPair.publicKey.ellipticCurve();
-        BigInteger prime = ellipticCurve.getModuleR();
+        BigInteger prime = ellipticCurve.getP();
         BigInteger q = keyPair.publicKey.order();
         assert q.equals(ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8)));
         BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE,  q.subtract(ONE));

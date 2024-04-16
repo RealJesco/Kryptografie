@@ -20,9 +20,9 @@ public class KeyPair {
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
 
-        BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getModuleR().bitLength());
+        BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
 
-        BigInteger prime = ellipticCurve.getModuleR();
+        BigInteger prime = ellipticCurve.getP();
         EllipticCurvePoint generator;
 
         while ( true ) {
@@ -63,8 +63,8 @@ public class KeyPair {
     public void generateKeyPair(SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve){
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         BigInteger q = secureFiniteFieldEllipticCurve.getQ();
-        BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getModuleR().bitLength());
-        assert MathMethods.verifyEulerCriterion(ellipticCurve.getModuleR(), BigInteger.valueOf(8)).equals(BigInteger.ONE);
+        BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
+        assert MathMethods.verifyEulerCriterion(ellipticCurve.getP(), BigInteger.valueOf(8)).equals(BigInteger.ONE);
 
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();

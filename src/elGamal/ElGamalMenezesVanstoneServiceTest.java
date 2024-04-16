@@ -117,6 +117,10 @@ class ElGamalMenezesVanstoneServiceTest {
         boolean verified = ElGamalMenezesVanstoneStringService.verify(keyPair.publicKey, message, signature, 55296);
 
         assertTrue(verified);
+
+        message = message.substring(0, message.length() - 1);
+        verified = ElGamalMenezesVanstoneStringService.verify(keyPair.publicKey, message, signature, 55296);
+        assertFalse(verified);
     }
 
     @Test
