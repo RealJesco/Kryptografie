@@ -80,20 +80,15 @@ public class ElGamalMenezesVanstoneService {
         assert keyPair.publicKey.ellipticCurve().isValidPoint(keyPair.publicKey.groupElement());
 
 
-
-        EllipticCurvePoint uv = kg;
-
-        BigInteger r = uv.getX().mod(q);
-        BigInteger h = message;
+        BigInteger r = kg.getX().mod(q);
         BigInteger x = keyPair.privateKey.secretMultiplierX();
         BigInteger xr = x.multiply(r).mod(q);
         BigInteger kInverse = MathMethods.modularInverse(k, q);
         assert kInverse.equals(kInverse.mod(q));
-        BigInteger hPlusXr = h.add(xr);
+        BigInteger hPlusXr = message.add(xr);
         BigInteger s = hPlusXr.multiply(kInverse).mod(q);
-        BigInteger sInverse = MathMethods.modularInverse(s, q);
 
-        assert uv.getX().mod(q).equals(r);
+        assert kg.getX().mod(q).equals(r);
         assert r.mod(q).equals(r);
         assert s.mod(q).equals(s);
         return new MenezesVanstoneSignature(r, s);
@@ -101,18 +96,9 @@ public class ElGamalMenezesVanstoneService {
     }
 
     public static boolean verify(final PublicKey publicKey, final BigInteger message, final MenezesVanstoneSignature signature) {
-        /**
-         * Zur Verifikation pruft Bob die Signatur (rs) zu dem Klartext M wie folgt:
-         *  Bob berechnet w = s 1 mod q.
-         *  Bob berechnet u = h(M)w mod q.
-         *  Bob berechnet v = rw mod q.
-         *  Bob berechnet den Kurvenpunkt (uv) = uG + vP E(ZZp).
-         *  Bob akzeptiert die Signatur, wenn r = u mod q gilt, andernfalls wird die Signatur abgelehnt.
-         **/
         BigInteger q = publicKey.order();
-        BigInteger h = message;
         BigInteger w = MathMethods.modularInverse(signature.s(), q);
-        BigInteger u1 = w.multiply(h).mod(q);
+        BigInteger u1 = w.multiply(message).mod(q);
         BigInteger u2 = signature.r().multiply(w).mod(q);
         EllipticCurvePoint u1New = publicKey.generator().multiply(u1, publicKey.ellipticCurve());
         EllipticCurvePoint u2New = publicKey.groupElement().multiply(u2, publicKey.ellipticCurve());

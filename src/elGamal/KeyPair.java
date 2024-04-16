@@ -17,7 +17,6 @@ public class KeyPair {
 
     public EllipticCurvePoint calculateSignatureSuitableGeneratorPoint (FiniteFieldEllipticCurve ellipticCurve, BigInteger q) {
 
-        SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
 
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());

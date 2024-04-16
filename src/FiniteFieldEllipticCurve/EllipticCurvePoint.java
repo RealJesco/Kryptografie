@@ -5,8 +5,8 @@ import mathMethods.MathMethods;
 import java.math.BigInteger;
 
 public abstract class EllipticCurvePoint {
-    private BigInteger x;
-    private BigInteger y;
+    private final BigInteger x;
+    private final BigInteger y;
 
     public EllipticCurvePoint (BigInteger x, BigInteger y) {
         this.x = x;

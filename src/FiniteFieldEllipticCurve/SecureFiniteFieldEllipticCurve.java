@@ -7,7 +7,7 @@ import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SecureFiniteFieldEllipticCurve {
-    private BigInteger n;
+    private final BigInteger n;
     private BigInteger q;
 
     private FiniteFieldEllipticCurve safeEllipticCurve;
@@ -44,7 +44,7 @@ public class SecureFiniteFieldEllipticCurve {
     private BigInteger calculateQ( BigInteger orderN){
         return orderN.divide(BigInteger.valueOf(8));
     }
-    private BigInteger calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
+    private void calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
 
         BigInteger p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(n, p);
@@ -83,18 +83,11 @@ public class SecureFiniteFieldEllipticCurve {
         assert this.safeEllipticCurve.getP().equals(p);
         assert this.safeEllipticCurve.calculateOrder(n).equals(orderN);
         this.q = q;
-        return p;
     }
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m) {
         assert n.compareTo(BigInteger.ZERO) > 0;
         this.n = n;
         calculatePAndQ(bitLengthOfP, millerRabinIterations, m);
-    }
-
-    public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m, FiniteFieldEllipticCurve ellipticCurve) {
-        assert n.compareTo(BigInteger.ZERO) > 0;
-        this.n = n;
-        this.safeEllipticCurve = ellipticCurve;
     }
 
 }

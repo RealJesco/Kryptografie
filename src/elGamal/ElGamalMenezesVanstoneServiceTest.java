@@ -2,14 +2,10 @@ package elGamal;
 
 import FiniteFieldEllipticCurve.*;
 import GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
-import blockChiffre.FromDecimalBlockChiffre;
-import blockChiffre.ToDecimalBlockChiffre;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,8 +52,6 @@ class ElGamalMenezesVanstoneServiceTest {
     @Test
     void testKeyGenerationWithSecureEllipticCurve() {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
-        FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
-        BigInteger q = secureFiniteFieldEllipticCurve.getQ();
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
 
@@ -99,8 +93,6 @@ class ElGamalMenezesVanstoneServiceTest {
     @Test
     void testSignAndVerifyWithText() throws NoSuchAlgorithmException {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
-        FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
-//        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(36901), BigInteger.valueOf(4649));
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
 
@@ -126,7 +118,6 @@ class ElGamalMenezesVanstoneServiceTest {
     @Test
     void testSignAndVerify() {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
-        FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
         BigInteger message = BigInteger.valueOf(123456789);
