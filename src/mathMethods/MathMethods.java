@@ -1,5 +1,6 @@
 package mathMethods;
 
+import resource.Resource;
 import rsa.RSA;
 
 import java.math.BigDecimal;
@@ -190,8 +191,6 @@ public class MathMethods {
             BigInteger.valueOf(997)
     };
     private static final BigInteger MINUSONE = BigInteger.valueOf(-1);
-    private static final BigDecimal DECIMAL_ONE = BigDecimal.ONE;
-    private static final BigDecimal DECIMAL_ZERO = BigDecimal.ZERO;
 
     /**
      * Calculates the alternative quick exponentiation of a base raised to the power of an exponent modulo a given modulus.
@@ -204,11 +203,11 @@ public class MathMethods {
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
         if (exp.signum() < 0) throw new IllegalArgumentException("Exponent must be positive");
-        if (exp.equals(ZERO) && mod.equals(ONE)) {
-            return ZERO;
+        if (exp.equals(Resource.ZERO) && mod.equals(Resource.ONE)) {
+            return Resource.ZERO;
         }
 
-        BigInteger result = ONE;
+        BigInteger result = Resource.ONE;
         base = base.mod(mod);
 
         while (exp.signum() != 0) {
@@ -233,8 +232,8 @@ public class MathMethods {
      * @return an array containing three BigIntegers: [gcd, x, y], where gcd is the greatest common divisor of a and b, and x and y are Bezout's coefficients
      */
     public static BigInteger[] extendedEuclidean(BigInteger a, BigInteger b) {
-        if (b.equals(ZERO)) {
-            return new BigInteger[]{a, ONE, ZERO};
+        if (b.equals(Resource.ZERO)) {
+            return new BigInteger[]{a, Resource.ONE, Resource.ZERO};
         } else {
             BigInteger[] ee = extendedEuclidean(b, a.mod(b)); // b ist der Teiler (im Skript der erste Faktor); a.mod(b) ist der Rest
             BigInteger gcd = ee[0]; // im Skript der erste Faktor
@@ -246,7 +245,7 @@ public class MathMethods {
     public static BigInteger modularInverse(BigInteger a, BigInteger b){
         BigInteger[] extendedEuclideanResult = extendedEuclidean(a,b);
         BigInteger gcd = extendedEuclideanResult[0];
-        if(!gcd.equals(ONE)){
+        if(!gcd.equals(Resource.ONE)){
             throw new ArithmeticException("No modular inverse exists for the parameters + " + a + " and " + b);
         } else {
             if(extendedEuclideanResult[1].signum() < 0) {
@@ -268,15 +267,15 @@ public class MathMethods {
         BigInteger z;
         do {
             z = new BigInteger(p.bitLength(), rand).mod(p);
-        } while (alternativeQuickExponentiation(z, p.subtract(ONE).divide(TWO), p).equals(ONE));
+        } while (alternativeQuickExponentiation(z, p.subtract(Resource.ONE).divide(Resource.TWO), p).equals(Resource.ONE));
 
         return z;
     }
     public static BigInteger verifyEulerCriterion(BigInteger c, BigInteger p) {
-        if(alternativeQuickExponentiation(c, (p.subtract(ONE).divide(TWO)), p).equals(p.subtract(ONE))) {
-            return ONE.negate();
+        if(alternativeQuickExponentiation(c, (p.subtract(Resource.ONE).divide(Resource.TWO)), p).equals(p.subtract(Resource.ONE))) {
+            return Resource.ONE.negate();
         } else {
-            return ONE;
+            return Resource.ONE;
         }
     }
 
@@ -294,7 +293,7 @@ public class MathMethods {
         //random non square number
         BigInteger randomNonSquareNumber = new BigInteger(new SecureRandom().nextInt(100), new SecureRandom());
 
-        while (randomNonSquareNumber.mod(TWO).equals(ZERO)) {
+        while (randomNonSquareNumber.mod(Resource.TWO).equals(Resource.ZERO)) {
             randomNonSquareNumber = new BigInteger(new SecureRandom().nextInt(100), new SecureRandom());
         }
 
@@ -302,28 +301,28 @@ public class MathMethods {
             throw new IllegalArgumentException("The number " + p + " is not a prime number.");
         }
         // Check if p is of the form 4n + 1
-        if (!p.mod(BigInteger.valueOf(4)).equals(ONE) || p.compareTo(BigInteger.valueOf(4)) <= 0) {
+        if (!p.mod(Resource.FOUR).equals(Resource.ONE) || p.compareTo(Resource.FOUR) <= 0) {
             throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 
 
         BigInteger randomZ = eulerCriterion(p);
         //Check if randomZ is a squared non-residue mod p
-        while (alternativeQuickExponentiation(randomZ, p.subtract(ONE).divide(TWO), p).equals(ONE) || randomZ.compareTo(ONE) <= 0) {
+        while (alternativeQuickExponentiation(randomZ, p.subtract(Resource.ONE).divide(Resource.TWO), p).equals(Resource.ONE) || randomZ.compareTo(Resource.ONE) <= 0) {
             //If equal to or smaller than 1, it is not a squared non-residue mod p
             randomZ = eulerCriterion(p);
         }
 
-        BigInteger four = BigInteger.valueOf(4);
-        BigInteger randomW = alternativeQuickExponentiation(randomZ, p.subtract(ONE).divide(four), p);
-        GaussianInteger w_i = new GaussianInteger(randomW, ONE);
-        GaussianInteger p_0 = new GaussianInteger(p, ZERO);
+        BigInteger four = Resource.FOUR;
+        BigInteger randomW = alternativeQuickExponentiation(randomZ, p.subtract(Resource.ONE).divide(four), p);
+        GaussianInteger w_i = new GaussianInteger(randomW, Resource.ONE);
+        GaussianInteger p_0 = new GaussianInteger(p, Resource.ZERO);
         GaussianInteger result = extendedEuclideanInZi(w_i, p_0);
         //Make sure that results are positive by multiplying with -1
-        if (result.real.compareTo(ZERO) < 0) {
+        if (result.real.compareTo(Resource.ZERO) < 0) {
             result.real = result.real.multiply(MINUSONE);
         }
-        if (result.imaginary.compareTo(ZERO) < 0) {
+        if (result.imaginary.compareTo(Resource.ZERO) < 0) {
             result.imaginary = result.imaginary.multiply(MINUSONE);
         }
         //Check if the found values are correct
@@ -388,10 +387,10 @@ public class MathMethods {
      */
     // Rounds a BigInteger to the nearest integer
     public static BigInteger roundHalfUp(BigInteger number) {
-        BigInteger halfDivisor = new BigInteger("5");
+        BigInteger halfDivisor = Resource.FIVE;
         BigInteger scaledNumber = number.multiply(TEN);
 
-        if (number.compareTo(ZERO) < 0) {
+        if (number.compareTo(Resource.ZERO) < 0) {
             // For negative numbers, subtract 5 before dividing by 10
             return scaledNumber.subtract(halfDivisor).divide(TEN);
         } else {
@@ -401,13 +400,13 @@ public class MathMethods {
     }
 
     private static final MathContext context = new MathContext(10);
-    private static BigInteger randomElsnerA = BigInteger.ZERO;
-    private static BigInteger randomElsnerB = BigInteger.ZERO;
-    private static BigInteger randomElsnerM = BigInteger.ZERO;
-    private static BigDecimal randomElsnerDecimalA = BigDecimal.ZERO;
-    private static BigDecimal randomElsnerDecimalB = BigDecimal.ZERO;
-    private static BigDecimal randomElsnerDecimalM = BigDecimal.ZERO;
-    private static BigDecimal range = BigDecimal.ZERO;
+    private static BigInteger randomElsnerA = Resource.ZERO;
+    private static BigInteger randomElsnerB = Resource.ZERO;
+    private static BigInteger randomElsnerM = Resource.ZERO;
+    private static BigDecimal randomElsnerDecimalA = Resource.DECIMAL_ZERO;
+    private static BigDecimal randomElsnerDecimalB = Resource.DECIMAL_ZERO;
+    private static BigDecimal randomElsnerDecimalM = Resource.DECIMAL_ZERO;
+    private static BigDecimal range = Resource.DECIMAL_ZERO;
 
     /**
      * Generates a random BigInteger within the range [a, b] using Elsner's algorithm.
@@ -428,11 +427,11 @@ public class MathMethods {
             randomElsnerM = m;
             randomElsnerA = a;
             randomElsnerB = b;
-            range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(DECIMAL_ONE);
+            range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(Resource.DECIMAL_ONE);
         }
         BigDecimal decimalN = new BigDecimal(n);
 
-        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(DECIMAL_ONE);
+        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(Resource.DECIMAL_ONE);
         BigDecimal mathContextRange = range.add(decimalN);
 
          int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
@@ -440,18 +439,18 @@ public class MathMethods {
 
         // In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
         // So this condition will never be true. We can comment/remove this condition
-         if (randomElsnerDecimalM.sqrt(context).remainder(DECIMAL_ONE).equals(DECIMAL_ZERO)) {
-             randomElsnerDecimalM = randomElsnerDecimalM.add(DECIMAL_ONE);
+         if (randomElsnerDecimalM.sqrt(context).remainder(Resource.DECIMAL_ONE).equals(Resource.DECIMAL_ZERO)) {
+             randomElsnerDecimalM = randomElsnerDecimalM.add(Resource.DECIMAL_ONE);
          }
 
-        BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(DECIMAL_ONE);
+        BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         return a.add(randomSeedNumberOffset.toBigInteger());
     }
 
     public static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
         return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
-                primeCandidate.mod(smallPrime).equals(ZERO) || primeCandidate.equals(smallPrime));
+                primeCandidate.mod(smallPrime).equals(Resource.ZERO) || primeCandidate.equals(smallPrime));
     }
 
     /**
@@ -469,12 +468,12 @@ public class MathMethods {
         if (a.compareTo(b) > 0) {
             throw new IllegalArgumentException("The lower bound must be smaller than the upper bound");
         }
-        if (a.compareTo(ZERO) < 0) {
+        if (a.compareTo(Resource.ZERO) < 0) {
             throw new IllegalArgumentException("The lower bound must be greater than or equal to 0");
         }
         //The additional condition, b >= 0, does not need to be verified here. It can never be false at this point because one of the cases above would have to be true if this additional condition was not fulfilled. Thus, an exception would be thrown before reaching this point.
 
-        if (m.compareTo(ZERO) <= 0) {
+        if (m.compareTo(Resource.ZERO) <= 0) {
             throw new IllegalArgumentException("The random seed must be greater than 0");
         }
 
@@ -488,7 +487,7 @@ public class MathMethods {
             for (BigInteger smallPrime : SMALL_PRIMES) {
                 if (primeCandidate.equals(smallPrime)) {
                     return primeCandidate; // Prime is found
-                } else if (primeCandidate.mod(smallPrime).equals(ZERO)) {
+                } else if (primeCandidate.mod(smallPrime).equals(Resource.ZERO)) {
                     isComposite = true;
                     break;
                 }
@@ -517,18 +516,18 @@ public class MathMethods {
      */
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
 
-        if (possiblePrime.equals(ONE)) {
+        if (possiblePrime.equals(Resource.ONE)) {
             return false;
         }
-        if (possiblePrime.equals(TWO)) {
+        if (possiblePrime.equals(Resource.TWO)) {
             return true;
         }
         if (!possiblePrime.testBit(0)) {
             return false;
         }
 
-        BigInteger d = possiblePrime.subtract(ONE);
-        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
+        BigInteger d = possiblePrime.subtract(Resource.ONE);
+        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(Resource.TWO);
 
         int s = 0;
         while (!d.testBit(0)) {
@@ -537,21 +536,21 @@ public class MathMethods {
         }
         for (int i = 0; i < numberOfTests; i++) {
             BigInteger modifiedCountOfN = countOfN.add(BigInteger.valueOf(i));
-            BigInteger a = randomElsner(m, modifiedCountOfN, TWO, possiblePrimeMinusTwo);
+            BigInteger a = randomElsner(m, modifiedCountOfN, Resource.TWO, possiblePrimeMinusTwo);
 
             BigInteger x = alternativeQuickExponentiation(a, d, possiblePrime);
 
-            if (x.equals(ONE) || x.equals(possiblePrime.subtract(ONE))) {
+            if (x.equals(Resource.ONE) || x.equals(possiblePrime.subtract(Resource.ONE))) {
                 continue;
             }
 
             int r;
             for (r = 1; r < s; r++) {
-                x = alternativeQuickExponentiation(x, TWO, possiblePrime);
-                if (x.equals(ONE)) {
+                x = alternativeQuickExponentiation(x, Resource.TWO, possiblePrime);
+                if (x.equals(Resource.ONE)) {
                     return false;
                 }
-                if (x.equals(possiblePrime.subtract(ONE))) {
+                if (x.equals(possiblePrime.subtract(Resource.ONE))) {
                     break;
                 }
             }
@@ -575,28 +574,28 @@ public class MathMethods {
      *
      */
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
-        if (possiblePrime.equals(TWO)) return true;
+        if (possiblePrime.equals(Resource.TWO)) return true;
         if (!possiblePrime.testBit(0)) return false;
-        if (possiblePrime.equals(ONE)) return false;
+        if (possiblePrime.equals(Resource.ONE)) return false;
 
-        int s = possiblePrime.subtract(ONE).getLowestSetBit();
-        BigInteger finalD = possiblePrime.subtract(ONE).shiftRight(s);
+        int s = possiblePrime.subtract(Resource.ONE).getLowestSetBit();
+        BigInteger finalD = possiblePrime.subtract(Resource.ONE).shiftRight(s);
 
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(ONE);
-        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(TWO);
+        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(Resource.ONE);
+        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(Resource.TWO);
         List<Callable<Boolean>> tasks = IntStream.range(0, numberOfTests)
                 .mapToObj(i -> (Callable<Boolean>) () -> {
                     BigInteger modifiedCountOfN = countOfN.add(BigInteger.valueOf(i));
-                    BigInteger a = randomElsner(m, modifiedCountOfN, TWO, possiblePrimeMinusTwo);
+                    BigInteger a = randomElsner(m, modifiedCountOfN, Resource.TWO, possiblePrimeMinusTwo);
                     BigInteger x = alternativeQuickExponentiation(a, finalD, possiblePrime);
 
-                    if (x.equals(ONE) || x.equals(possiblePrimeMinusOne)) {
+                    if (x.equals(Resource.ONE) || x.equals(possiblePrimeMinusOne)) {
                         return true;
                     }
 
                     for (int r = 1; r < s; r++) {
-                        x = alternativeQuickExponentiation(x, TWO, possiblePrime);
+                        x = alternativeQuickExponentiation(x, Resource.TWO, possiblePrime);
                         if (x.equals(possiblePrimeMinusOne)) return true;
                     }
                     return false;
@@ -638,7 +637,7 @@ public class MathMethods {
         List<BigInteger> encryptedBlocks = new ArrayList<>();
 
         for (List<Integer> block : blocks) {
-            BigInteger blockValue = ZERO;
+            BigInteger blockValue = Resource.ZERO;
 
 
             int exponent = blockSize - 1;
@@ -672,7 +671,7 @@ public class MathMethods {
 
         BigInteger numberSystemToThePowerOfBlockSize = BigInteger.valueOf(numberSystem).pow(blockSize);
 
-        while (!message.equals(ZERO)) {
+        while (!message.equals(Resource.ZERO)) {
             blocks.add(message.mod(numberSystemToThePowerOfBlockSize));
             message = message.divide(numberSystemToThePowerOfBlockSize);
         }

@@ -1,5 +1,7 @@
 package blockChiffre;
 
+import resource.Resource;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +43,7 @@ public final class FromDecimalBlockChiffre {
 
         List<BigInteger> result = new ArrayList<>();
         for (List<Integer> chunk : encodedCharsChunks) {
-            BigInteger acc = BigInteger.ZERO;
+            BigInteger acc = Resource.ZERO;
             BigInteger accBase = BigInteger.ONE;
             for (int i = chunk.size() - 1; i >= 0; i--) {
                 BigInteger product = accBase.multiply(BigInteger.valueOf(chunk.get(i)));

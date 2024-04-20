@@ -2,13 +2,12 @@ package elGamal;
 
 import FiniteFieldEllipticCurve.*;
 import mathMethods.MathMethods;
+import resource.Resource;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.math.BigInteger.ONE;
-import static java.math.BigInteger.TWO;
 import static mathMethods.MathMethods.generateRandomPrime;
 
 public class ElGamalMenezesVanstoneService {
@@ -19,6 +18,12 @@ public class ElGamalMenezesVanstoneService {
         possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps, counter);
         return possiblePrime;
     }
+
+    /**
+     * @param message message to be encrypted
+     * @param publicKey public key
+     * @return cipher message
+     */
     public static CipherMessage encrypt(Message message, PublicKey publicKey) {
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
@@ -29,14 +34,13 @@ public class ElGamalMenezesVanstoneService {
 
         BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE,  q.subtract(ONE));
 
-
-        while (k.equals(BigInteger.ZERO)){
-            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(ONE));
+        while (k.equals(Resource.ZERO)) {
+            k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
         }
 
         EllipticCurvePoint ky = publicKey.groupElement().multiply(k, ellipticCurve);
 
-        while (ky.getX().equals(BigInteger.ZERO) || ky.getY().equals(BigInteger.ZERO)) {
+        while (ky.getX().equals(Resource.ZERO) || ky.getY().equals(Resource.ZERO)) {
             k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE, prime);
             ky = publicKey.groupElement().multiply(k, ellipticCurve);
         }
@@ -48,19 +52,27 @@ public class ElGamalMenezesVanstoneService {
 
     }
 
+    /**
+     * @param cipherMessage
+     * @param privateKey
+     * @return
+     */
     public static Message decrypt(CipherMessage cipherMessage, PrivateKey privateKey) {
         EllipticCurvePoint xa = cipherMessage.point().multiply( privateKey.secretMultiplierX(), privateKey.ellipticCurve() );
         BigInteger prime = privateKey.ellipticCurve().getP();
         BigInteger c1 = MathMethods.modularInverse(xa.getX(), prime);
-        BigInteger c2 =  MathMethods.modularInverse(xa.getY(), prime);
-        BigInteger newM1 = cipherMessage.b1().multiply( c1 ).mod(prime);
-        BigInteger newM2 = cipherMessage.b2().multiply( c2 ).mod(prime);
+        BigInteger c2 = MathMethods.modularInverse(xa.getY(), prime);
+        BigInteger newM1 = cipherMessage.b1().multiply(c1).mod(prime);
+        BigInteger newM2 = cipherMessage.b2().multiply(c2).mod(prime);
 
         return new Message(newM1, newM2);
     }
 
-
-
+    /**
+     * @param keyPair
+     * @param message
+     * @return
+     */
     //sign and verify methods
     public static MenezesVanstoneSignature sign(final KeyPair keyPair, final BigInteger message) {
 
@@ -69,8 +81,11 @@ public class ElGamalMenezesVanstoneService {
         FiniteFieldEllipticCurve ellipticCurve = keyPair.publicKey.ellipticCurve();
         BigInteger prime = ellipticCurve.getP();
         BigInteger q = keyPair.publicKey.order();
-        assert q.equals(ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8)));
-        BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE,  q.subtract(ONE));
+        BigInteger a = ellipticCurve.getA();
+        assert q.equals(ellipticCurve.calculateOrder(a.divide(a).negate()).divide(Resource.EIGHT));
+        int primeBitLength = prime.bitLength();
+        BigInteger qSubtractONE = q.subtract(Resource.ONE);
+        BigInteger k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
 
         EllipticCurvePoint kg = keyPair.publicKey.generator().multiply(k, ellipticCurve);
 
@@ -95,6 +110,12 @@ public class ElGamalMenezesVanstoneService {
 
     }
 
+    /**
+     * @param publicKey
+     * @param message
+     * @param signature
+     * @return
+     */
     public static boolean verify(final PublicKey publicKey, final BigInteger message, final MenezesVanstoneSignature signature) {
         BigInteger q = publicKey.order();
         BigInteger w = MathMethods.modularInverse(signature.s(), q);
@@ -108,9 +129,6 @@ public class ElGamalMenezesVanstoneService {
         BigInteger rModQ = signature.r().mod(q);
 
         return uvXModQ.equals(rModQ);
-
     }
-
-
 }
 

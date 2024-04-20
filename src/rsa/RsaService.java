@@ -1,6 +1,7 @@
 package rsa;
 
 import mathMethods.MathMethods;
+import resource.Resource;
 
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,33 +12,34 @@ import static mathMethods.MathMethods.generateRandomPrime;
  * Ein RSA Service für die Arbeit auf BigInteger.
  */
 public final class RsaService {
-    private static final BigInteger ONE = BigInteger.ONE;
-    private static final BigInteger TWO = BigInteger.TWO;
 
     private static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter){
         BigInteger possiblePrime;
-        BigInteger lowerBound = TWO.pow(bitLength.intValue() - 1);
-        BigInteger upperBound = TWO.pow(bitLength.intValue());
+        int intBitLength = bitLength.intValue();
+        BigInteger lowerBound = Resource.TWO.pow(intBitLength - 1);
+        BigInteger upperBound = Resource.TWO.pow(intBitLength);
         possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps, counter);
         return possiblePrime;
     }
+
     private static BigInteger calculateE (BigInteger phiN, int millerRabinSteps, BigInteger m, AtomicInteger counter){
-        if(phiN.compareTo(BigInteger.valueOf(3)) < 0){
+        if(phiN.compareTo(Resource.THREE) < 0){
             throw new IllegalArgumentException("phiN is too small to calculate e");
         }
         BigInteger e = BigInteger.valueOf(65537);
-        if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(ONE)) {
-            e = BigInteger.valueOf(3);
-            if (!e.gcd(phiN).equals(ONE)) {
-                BigInteger upperBoundForE = phiN.subtract(ONE); // e must be less than phiN
+        if (e.compareTo(phiN) >= 0 || !e.gcd(phiN).equals(Resource.ONE)) {
+            e = Resource.THREE;
+            if (!e.gcd(phiN).equals(Resource.ONE)) {
+                BigInteger upperBoundForE = phiN.subtract(Resource.ONE); // e must be less than phiN
                 do {
 //                    upperBoundForE = upperBoundForE.subtract(ONE);
-                    e = generateRandomPrime(m, TWO, upperBoundForE, millerRabinSteps, counter);
-                } while (!e.gcd(phiN).equals(ONE));
+                    e = generateRandomPrime(m, Resource.TWO, upperBoundForE, millerRabinSteps, counter);
+                } while (!e.gcd(phiN).equals(Resource.ONE));
             }
         }
         return e;
     }
+
     public static KeyPairRsa generateKeyPair(int bitLength, int millerRabinSteps, BigInteger m) {
 
         AtomicInteger counter = new AtomicInteger(1);
@@ -55,7 +57,8 @@ public final class RsaService {
             n = p.multiply(q);
         } while(n.bitLength()!=bitLength);
 
-        BigInteger phiN = (p.subtract(ONE)).multiply(q.subtract(ONE));
+        BigInteger qSubtractONE = q.subtract(Resource.ONE);
+        BigInteger phiN = (p.subtract(Resource.ONE)).multiply(qSubtractONE);
 
         BigInteger e = calculateE(phiN, millerRabinSteps, m, counter);
 

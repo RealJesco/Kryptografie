@@ -2,6 +2,7 @@ package FiniteFieldEllipticCurve;
 
 import mathMethods.GaussianInteger;
 import mathMethods.MathMethods;
+import resource.Resource;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class FiniteFieldEllipticCurve {
 
     public FiniteFieldEllipticCurve(BigInteger n, BigInteger p) {
         this.a = n.multiply(n).negate();
-        this.b = BigInteger.ZERO;
+        this.b = Resource.ZERO;
         this.p = p;
     }
 
@@ -52,7 +53,7 @@ public class FiniteFieldEllipticCurve {
                 BigInteger possibleQuadraticRest = p.subtract(ySquaredModuleR);
                 BigInteger squaredY = possibleQuadraticRest.pow(2);
                 BigInteger sqrtOfY = squaredY.sqrt();
-                if(ySquaredModuleR.equals(z) && (sqrtOfY.equals(possibleQuadraticRest) && !squaredY.equals(BigInteger.ONE))){
+                if(ySquaredModuleR.equals(z) && (sqrtOfY.equals(possibleQuadraticRest) && !squaredY.equals(Resource.ONE))){
                     calculatedPoints.add(new FiniteFieldEcPoint(i,j));
                 }
             }
@@ -64,7 +65,7 @@ public class FiniteFieldEllipticCurve {
         GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.p);
         BigInteger y;
         BigInteger x;
-        if(!quadraticDivisors.real.mod(BigInteger.TWO).equals(BigInteger.ZERO)){
+        if(!quadraticDivisors.real.mod(Resource.TWO).equals(Resource.ZERO)){
            y = quadraticDivisors.real;
            x = quadraticDivisors.imaginary;
         } else {
@@ -74,7 +75,7 @@ public class FiniteFieldEllipticCurve {
 
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.p);
 
-        BigInteger realPartSign = y.mod(BigInteger.TWO).equals(BigInteger.ZERO) ? BigInteger.ONE : BigInteger.ONE.negate();
+        BigInteger realPartSign = y.mod(Resource.TWO).equals(Resource.ZERO) ? Resource.ONE : Resource.ONE.negate();
 //        System.out.println("legendreSign + " + legendreSign);
 //        System.out.println("realPartSign " + realPartSign);
         //TODO Test if this is correct for all cases
@@ -88,9 +89,9 @@ public class FiniteFieldEllipticCurve {
     @Override
     public String toString() {
         return "FiniteFieldEllipticCurve{" +
-                "a=" + a +
-                ", b=" + b +
-                ", moduleR=" + p +
+                "a =" + a +
+                ", b =" + b +
+                ", module prime =" + p +
                 '}';
     }
 }

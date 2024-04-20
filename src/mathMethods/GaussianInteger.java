@@ -1,10 +1,9 @@
 package mathMethods;
 
+import resource.Resource;
+
 import java.math.BigInteger;
 import java.math.RoundingMode;
-
-import static java.math.BigInteger.ONE;
-import static java.math.BigInteger.ZERO;
 
 public class GaussianInteger {
     public BigInteger real;
@@ -16,7 +15,7 @@ public class GaussianInteger {
     }
 
     public boolean isZero() {
-        return real.equals(BigInteger.ZERO) && imaginary.equals(BigInteger.ZERO);
+        return real.equals(Resource.ZERO) && imaginary.equals(Resource.ZERO);
     }
     public boolean equals(GaussianInteger b) {
         return this.real.equals(b.real) && this.imaginary.equals(b.imaginary);
@@ -38,14 +37,14 @@ public class GaussianInteger {
      */
     public boolean isMultiple(GaussianInteger b) {
 
-        if (b.real.equals(BigInteger.ZERO) && b.imaginary.equals(BigInteger.ZERO)) {
+        if (b.real.equals(Resource.ZERO) && b.imaginary.equals(Resource.ZERO)) {
             return false;
         }
 
         GaussianInteger quotient = this.divide(b);
         GaussianInteger product = quotient.multiply(b);
 
-        if(quotient.real.equals(ONE) && quotient.imaginary.equals(ONE)) {
+        if(quotient.real.equals(Resource.ONE) && quotient.imaginary.equals(Resource.ONE)) {
             return false;
         }
         return this.equals(product);
@@ -91,12 +90,12 @@ public class GaussianInteger {
      * @return the normalized GaussianInteger object
      */
     public GaussianInteger normalizeGCD() {
-        if (this.real.equals(BigInteger.ZERO) && this.imaginary.equals(BigInteger.ZERO)) {
-            return new GaussianInteger(BigInteger.ZERO, BigInteger.ZERO);
-        } else if (this.real.equals(BigInteger.ZERO)) {
-            return new GaussianInteger(this.imaginary, ZERO);
-        } else if (this.imaginary.equals(BigInteger.ZERO)) {
-            return new GaussianInteger(this.real, ZERO);
+        if (this.real.equals(Resource.ZERO) && this.imaginary.equals(Resource.ZERO)) {
+            return new GaussianInteger(Resource.ZERO, Resource.ZERO);
+        } else if (this.real.equals(Resource.ZERO)) {
+            return new GaussianInteger(this.imaginary, Resource.ZERO);
+        } else if (this.imaginary.equals(Resource.ZERO)) {
+            return new GaussianInteger(this.real, Resource.ZERO);
         }
         return this;
     }

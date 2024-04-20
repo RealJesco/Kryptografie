@@ -14,7 +14,7 @@ import java.util.List;
 public final class RsaStringService {
 
     public static String encrypt(final PublicKeyRsa key, final String message, int numberBase){
-        int blockSize = (int) (key.n().bitLength() * (Math.log(2) / Math.log(numberBase)));
+        int blockSize = calculateBlockSize(numberBase, key.n());
         // BlockChiffre toDecimal Encrypt
         List<BigInteger> encryptedBlockCipher = ToDecimalBlockChiffre.encrypt(message, numberBase, blockSize);
         // Für jeden Block einzeln RSA.encrypt aufrufen
@@ -27,7 +27,7 @@ public final class RsaStringService {
     }
 
     public static String decrypt(final PrivateKeyRsa key, final String ciphertext, int numberBase) {
-        int blockSize = (int) (key.n().bitLength() * (Math.log(2) / Math.log(numberBase)));
+        int blockSize = calculateBlockSize(numberBase, key.n());
         // BlockChiffre fromDecimal Decrypt
         List<BigInteger> fromDecimalDecryptedBlocks = FromDecimalBlockChiffre.decrypt(ciphertext, numberBase, blockSize + 1);
         // Für jeden Block einzeln RSA.decrypt aufrufen
@@ -52,8 +52,9 @@ public final class RsaStringService {
 
         return new BigInteger(1, hashbytes);
     }
+
     public static String sign(final PrivateKeyRsa key, final String message, int numberBase) throws NoSuchAlgorithmException {
-        int blockSize = (int) (key.n().bitLength() * (Math.log(2) / Math.log(numberBase)));
+        int blockSize = calculateBlockSize(numberBase, key.n());
         String hashedMessage = hashAndConvertMessageToBigInteger(message).toString(16);
         List<BigInteger> encryptedBlockCipherBlocks = ToDecimalBlockChiffre.encrypt(hashedMessage, numberBase, blockSize);
         List<BigInteger> rsaEncryptedBlockCipherBlocks = new ArrayList<>();
@@ -68,7 +69,7 @@ public final class RsaStringService {
     }
 
     public static boolean verify(final PublicKeyRsa key, final String message, final String signature, int numberBase) throws NoSuchAlgorithmException {
-        int blockSize = (int) (key.n().bitLength() * (Math.log(2) / Math.log(numberBase)));
+        int blockSize = calculateBlockSize(numberBase, key.n());
         String hashedMessage = hashAndConvertMessageToBigInteger(message).toString(16);
         List<BigInteger> encryptedMessageBlockCipherBlocks = ToDecimalBlockChiffre.encrypt(hashedMessage, numberBase, blockSize);
         List<BigInteger> decryptedBlockCipherSignature = FromDecimalBlockChiffre.decrypt(signature, numberBase, blockSize + 1);
@@ -83,6 +84,9 @@ public final class RsaStringService {
         }
 
         return signatureValid;
+    }
 
+    private static int calculateBlockSize(int numberBase, BigInteger n) {
+        return (int) (n.bitLength() * (Math.log(2) / Math.log(numberBase)));
     }
 }

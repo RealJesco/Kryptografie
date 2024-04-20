@@ -1,6 +1,7 @@
 package FiniteFieldEllipticCurve;
 
 import mathMethods.MathMethods;
+import resource.Resource;
 
 import java.math.BigInteger;
 
@@ -8,7 +9,7 @@ public abstract class EllipticCurvePoint {
     private final BigInteger x;
     private final BigInteger y;
 
-    public EllipticCurvePoint (BigInteger x, BigInteger y) {
+    public EllipticCurvePoint(BigInteger x, BigInteger y) {
         this.x = x;
         this.y = y;
     }
@@ -45,13 +46,13 @@ public abstract class EllipticCurvePoint {
         return newPoint.normalize(ellipticCurve);
     }
     public EllipticCurvePoint doublePoint (FiniteFieldEllipticCurve ellipticCurve) {
-        if(this.getY().equals(BigInteger.ZERO) && this.getX().equals(BigInteger.ZERO)){
+        if(this.getY().equals(Resource.ZERO) && this.getX().equals(BigInteger.ZERO)){
             throw new ArithmeticException("No modular inverse exists for these parameters");
         }
         BigInteger lambdaNumerator = MathMethods.alternativeQuickExponentiation(this.getX(), BigInteger.TWO, ellipticCurve.p).multiply(BigInteger.valueOf(3)).add(ellipticCurve.a);
         BigInteger lambdaModInverseDenominator;
-        if (this.getY().equals(BigInteger.ZERO)){
-            lambdaModInverseDenominator = BigInteger.ONE;
+        if (this.getY().equals(Resource.ZERO)){
+            lambdaModInverseDenominator = Resource.ONE;
         } else {
            lambdaModInverseDenominator = MathMethods.modularInverse(this.getY().multiply(BigInteger.TWO), ellipticCurve.p);
         }
