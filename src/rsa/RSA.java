@@ -9,15 +9,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import mathMethods.MathMethods;
+import resource.Resource;
 
 import static mathMethods.MathMethods.generateRandomPrime;
 
 
 public class RSA {
 
-    private static final BigInteger ONE = BigInteger.ONE;
-    private static final BigInteger TWO = BigInteger.TWO;
-    private static final BigInteger ZERO = BigInteger.ZERO;
     private static int millerRabinSteps = 0;
     private static int blockSize = 0;
     private static int blockSizePlusOne = 0;
@@ -87,11 +85,11 @@ public class RSA {
     }
 
     public static void setM(BigInteger m){
-        if (m.compareTo(BigInteger.ZERO) < 0) {
+        if (m.compareTo(Resource.ZERO) < 0) {
             throw new IllegalArgumentException("Negative Numbers aren't allowed here");
         }
         BigDecimal sqrt = new BigDecimal(m).sqrt(new MathContext(1000));
-        if(sqrt.compareTo(sqrt.divideAndRemainder(BigDecimal.ONE)[0]) == 0){
+        if(sqrt.compareTo(sqrt.divideAndRemainder(Resource.DECIMAL_ONE)[0]) == 0){
             throw new IllegalArgumentException("Cubic-numbers aren't allowed here");
         }
         RSA.m = m;
@@ -248,9 +246,10 @@ public class RSA {
      */
     private static List<Integer> convertBlockToNumberList(BigInteger block) {
         List<Integer> numberList = new ArrayList<>();
-        while (!block.equals(ZERO)) {
-            numberList.add(0, block.mod(BigInteger.valueOf(numberSystemBase)).intValue());
-            block = block.divide(BigInteger.valueOf(numberSystemBase));
+        while (!block.equals(Resource.ZERO)) {
+            BigInteger bigIntNumberSystemBase = BigInteger.valueOf(numberSystemBase);
+            numberList.add(0, block.mod(bigIntNumberSystemBase).intValue());
+            block = block.divide(bigIntNumberSystemBase);
         }
         return numberList;
     }
@@ -342,7 +341,7 @@ public class RSA {
     private static List<BigInteger> convertBlocksToBigIntegers(List<List<BigInteger>> encryptedBlocks) {
         List<BigInteger> encryptedNumericMessages = new ArrayList<>();
         for (List<BigInteger> encryptedBlock : encryptedBlocks) {
-            BigInteger sum = ZERO;
+            BigInteger sum = Resource.ZERO;
             for (int j = 0; j < encryptedBlock.size(); j++) {
                 BigInteger temp = encryptedBlock.get(encryptedBlock.size() - j - 1).multiply(BigInteger.valueOf(numberSystemBase).pow(j));
                 sum = sum.add(temp);
