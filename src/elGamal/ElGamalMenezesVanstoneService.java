@@ -13,12 +13,18 @@ import static mathMethods.MathMethods.generateRandomPrime;
 public class ElGamalMenezesVanstoneService {
     public static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter) {
         BigInteger possiblePrime;
-        BigInteger lowerBound = Resource.TWO.pow(bitLength.intValue() - 1);
-        BigInteger upperBound = Resource.TWO.pow(bitLength.intValue());
+        int exponent = bitLength.intValue();
+        BigInteger lowerBound = Resource.TWO.pow(exponent - 1);
+        BigInteger upperBound = Resource.TWO.pow(exponent);
         possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps, counter);
         return possiblePrime;
     }
 
+    /**
+     * @param message message to be encrypted
+     * @param publicKey public key
+     * @return cipher message
+     */
     public static CipherMessage encrypt(Message message, PublicKey publicKey) {
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
@@ -50,6 +56,11 @@ public class ElGamalMenezesVanstoneService {
         return new CipherMessage(a, xOfKY.multiply(message.m1()).mod(prime), yOfKY.multiply(message.m2()).mod(prime));
     }
 
+    /**
+     * @param cipherMessage
+     * @param privateKey
+     * @return
+     */
     public static Message decrypt(CipherMessage cipherMessage, PrivateKey privateKey) {
         EllipticCurvePoint xa = cipherMessage.point().multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve());
         BigInteger prime = privateKey.ellipticCurve().getModuleR();
@@ -61,6 +72,11 @@ public class ElGamalMenezesVanstoneService {
         return new Message(newM1, newM2);
     }
 
+    /**
+     * @param keyPair
+     * @param message
+     * @return
+     */
     //sign and verify methods
     public static MenezesVanstoneSignature sign(final KeyPair keyPair, final BigInteger message) {
 /**
@@ -84,7 +100,8 @@ public class ElGamalMenezesVanstoneService {
         BigInteger a = ellipticCurve.getA();
         assert q.equals(ellipticCurve.calculateOrder(a.divide(a).negate()).divide(Resource.EIGHT));
         int primeBitLength = prime.bitLength();
-        BigInteger k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, q.subtract(Resource.ONE));
+        BigInteger qSubtractONE = q.subtract(Resource.ONE);
+        BigInteger k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
 
         EllipticCurvePoint kg = keyPair.publicKey.generator().multiply(k, ellipticCurve);
 
@@ -111,6 +128,12 @@ public class ElGamalMenezesVanstoneService {
         return new MenezesVanstoneSignature(r, s);
     }
 
+    /**
+     * @param publicKey
+     * @param message
+     * @param signature
+     * @return
+     */
     public static boolean verify(final PublicKey publicKey, final BigInteger message, final MenezesVanstoneSignature signature) {
         /**
          * Zur Verifikation pruft Bob die Signatur (rs) zu dem Klartext M wie folgt:
