@@ -14,7 +14,7 @@ public class ElGamalMenezesVanstoneService {
     public static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter){
         BigInteger possiblePrime;
         BigInteger lowerBound = BigInteger.valueOf(5);
-        BigInteger upperBound = TWO.pow(bitLength.intValue());
+        BigInteger upperBound = Resource.TWO.pow(bitLength.intValue());
         possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps, counter);
         return possiblePrime;
     }
@@ -30,9 +30,10 @@ public class ElGamalMenezesVanstoneService {
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
         BigInteger prime = ellipticCurve.getP();
         BigInteger q = ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8));
+        int primeBitLength = prime.bitLength();
+        BigInteger qSubtractONE = q.subtract(Resource.ONE);
 
-
-        BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE,  q.subtract(ONE));
+        BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE,  qSubtractONE);
 
         while (k.equals(Resource.ZERO)) {
             k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
@@ -41,7 +42,7 @@ public class ElGamalMenezesVanstoneService {
         EllipticCurvePoint ky = publicKey.groupElement().multiply(k, ellipticCurve);
 
         while (ky.getX().equals(Resource.ZERO) || ky.getY().equals(Resource.ZERO)) {
-            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(prime.bitLength(), randomRangePicker), BigInteger.ONE, prime);
+            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
             ky = publicKey.groupElement().multiply(k, ellipticCurve);
         }
 
