@@ -2,6 +2,7 @@ package FiniteFieldEllipticCurve;
 
 import elGamal.ElGamalMenezesVanstoneService;
 import mathMethods.MathMethods;
+import resource.Resource;
 
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,21 +29,21 @@ public class SecureFiniteFieldEllipticCurve {
         BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
         // random prime p. Use built in Java function
 //        BigInteger p = BigInteger.probablePrime(bitLengthOfP.intValue(), new java.util.Random());
-        BigInteger pMod8 = p.mod(BigInteger.valueOf(8));
+        BigInteger pMod8 = p.mod(Resource.EIGHT);
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, p);
 
-        while (!pMod8.equals(BigInteger.valueOf(5)) || !legendreSign.equals(BigInteger.ONE)){
+        while (!pMod8.equals(Resource.FIVE) || !legendreSign.equals(Resource.ONE)){
             p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
-            pMod8 = p.mod(BigInteger.valueOf(8));
+            pMod8 = p.mod(Resource.EIGHT);
             legendreSign = MathMethods.verifyEulerCriterion(n, p);
         }
 
-        assert legendreSign.equals(BigInteger.ONE);
-        assert !(p.equals(n.multiply(BigInteger.TWO)));
+        assert legendreSign.equals(Resource.ONE);
+        assert !(p.equals(n.multiply(Resource.TWO)));
         return p;
     }
     private BigInteger calculateQ( BigInteger orderN){
-        return orderN.divide(BigInteger.valueOf(8));
+        return orderN.divide(Resource.EIGHT);
     }
     private BigInteger calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
 
@@ -55,7 +56,7 @@ public class SecureFiniteFieldEllipticCurve {
         while (true){
             p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve = new FiniteFieldEllipticCurve(n, p);
-            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, BigInteger.valueOf(100), BigInteger.valueOf(counter.incrementAndGet()));
+            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, Resource.ONE_HUNDRED, BigInteger.valueOf(counter.incrementAndGet()));
             if(!pIsPrime){
                 continue;
             }
@@ -63,16 +64,16 @@ public class SecureFiniteFieldEllipticCurve {
             orderN = ellipticCurve.calculateOrder(n);
             q = calculateQ(orderN);
 
-            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, BigInteger.valueOf(100), BigInteger.valueOf(counter.incrementAndGet()));
+            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, Resource.ONE_HUNDRED, BigInteger.valueOf(counter.incrementAndGet()));
 
-            if(qIsPrime && orderN.equals(q.multiply(BigInteger.valueOf(8)))){
+            if(qIsPrime && orderN.equals(q.multiply(Resource.EIGHT))){
                 break;
             }
         }
 
-        assert q.multiply(BigInteger.valueOf(8)).equals(orderN);
+        assert q.multiply(Resource.EIGHT).equals(orderN);
         //Assert p is congruent to 5 mod 8
-        assert p.mod(BigInteger.valueOf(8)).equals(BigInteger.valueOf(5));
+        assert p.mod(Resource.EIGHT).equals(Resource.FIVE);
 
         this.safeEllipticCurve = ellipticCurve;
         assert this.safeEllipticCurve.getModuleR().equals(p);
@@ -81,13 +82,13 @@ public class SecureFiniteFieldEllipticCurve {
         return p;
     }
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m) {
-        assert n.compareTo(BigInteger.ZERO) > 0;
+        assert n.compareTo(Resource.ZERO) > 0;
         this.n = n;
         calculatePAndQ(bitLengthOfP, millerRabinIterations, m);
     }
 
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m, FiniteFieldEllipticCurve ellipticCurve) {
-        assert n.compareTo(BigInteger.ZERO) > 0;
+        assert n.compareTo(Resource.ZERO) > 0;
         this.n = n;
         this.safeEllipticCurve = ellipticCurve;
     }

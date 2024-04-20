@@ -26,7 +26,7 @@ public class ElGamalMenezesVanstoneStringService {
         List<BigInteger> blocks = ToDecimalBlockChiffre.encrypt(message, 55296, blockSize);
 
         if(blocks.size() % 2 != 0) {
-            blocks.add(BigInteger.valueOf(0));
+            blocks.add(BigInteger.ZERO);
         }
 
         List<CipherMessage> encryptedBlocks = new ArrayList<CipherMessage>();
@@ -47,9 +47,7 @@ public class ElGamalMenezesVanstoneStringService {
 
         String cipherMessage =  FromDecimalBlockChiffre.encrypt(sentCipherMessageBs, numberBase, blockSize + 1);
 
-
         return new ElGamalMenezesVanstoneMessage(sentCipherMessagePoints, cipherMessage);
-
     }
 
     public static String decrypt(final PrivateKey key, final ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage, int numberBase, FiniteFieldEllipticCurve ellipticCurve) {
@@ -58,13 +56,10 @@ public class ElGamalMenezesVanstoneStringService {
         List<CipherMessage> receivedCipherMessagePoints = new ArrayList<CipherMessage>();
         List<BigInteger> receivedCipherMessageBs = FromDecimalBlockChiffre.decrypt(elGamalMenezesVanstoneCipherMessage.getCipherMessageString(), 55296, blockSize + 1);
 
-
         for (int i = 0; i < receivedCipherMessageBs.size(); i+=2) {
             CipherMessage cipherMessage = new CipherMessage(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().get(i/2), receivedCipherMessageBs.get(i), receivedCipherMessageBs.get(i+1));
             receivedCipherMessagePoints.add(cipherMessage);
         }
-
-
 
         List<Message> decryptedBlocks = new ArrayList<Message>();
         for (int i = 0; i < receivedCipherMessagePoints.size(); i++) {
@@ -79,9 +74,7 @@ public class ElGamalMenezesVanstoneStringService {
             decryptedText.add(decryptedBlocks.get(i).m2());
         }
 
-
         return ToDecimalBlockChiffre.decrypt(decryptedText, numberBase);
-
     }
 
     public static String sign(final KeyPair key, final String message, int numberBase) throws NoSuchAlgorithmException {

@@ -1,6 +1,7 @@
 package FiniteFieldEllipticCurve;
 
 import mathMethods.MathMethods;
+import resource.Resource;
 
 import java.math.BigInteger;
 import java.security.spec.EllipticCurve;
@@ -39,7 +40,7 @@ public abstract class EllipticCurvePoint {
         BigInteger lambdaModInverseDenominator = MathMethods.extendedEuclidean((point2.getX().subtract(this.getX())), ellipticCurve.moduleR)[1];
         BigInteger lambda = lambdaNumerator.multiply(lambdaModInverseDenominator);
 
-        BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda, BigInteger.TWO, ellipticCurve.moduleR).subtract(this.getX()).subtract(point2.getX());
+        BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda, Resource.TWO, ellipticCurve.moduleR).subtract(this.getX()).subtract(point2.getX());
         BigInteger newY = lambda.multiply(this.getX().subtract(newX)).subtract(this.getY());
 
         EllipticCurvePoint newPoint = new FiniteFieldEcPoint(newX, newY);
@@ -47,19 +48,19 @@ public abstract class EllipticCurvePoint {
         return newPoint.normalize(ellipticCurve);
     }
     public EllipticCurvePoint doublePoint (FiniteFieldEllipticCurve ellipticCurve) {
-        if(this.getY().equals(BigInteger.ZERO) && this.getX().equals(BigInteger.ZERO)){
+        if(this.getY().equals(Resource.ZERO) && this.getX().equals(Resource.ZERO)){
             throw new ArithmeticException("No modular inverse exists for these parameters");
         }
-        BigInteger lambdaNumerator = MathMethods.alternativeQuickExponentiation(this.getX(), BigInteger.TWO, ellipticCurve.moduleR).multiply(BigInteger.valueOf(3)).add(ellipticCurve.a);
+        BigInteger lambdaNumerator = MathMethods.alternativeQuickExponentiation(this.getX(), Resource.TWO, ellipticCurve.moduleR).multiply(Resource.THREE).add(ellipticCurve.a);
         BigInteger lambdaModInverseDenominator;
-        if (this.getY().equals(BigInteger.ZERO)){
-            lambdaModInverseDenominator = BigInteger.ONE;
+        if (this.getY().equals(Resource.ZERO)){
+            lambdaModInverseDenominator = Resource.ONE;
         } else {
-           lambdaModInverseDenominator = MathMethods.modularInverse(this.getY().multiply(BigInteger.TWO), ellipticCurve.moduleR);
+           lambdaModInverseDenominator = MathMethods.modularInverse(this.getY().multiply(Resource.TWO), ellipticCurve.moduleR);
         }
         BigInteger lambda = (lambdaNumerator.multiply(lambdaModInverseDenominator)).mod(ellipticCurve.moduleR);
 
-        BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda,BigInteger.TWO, ellipticCurve.moduleR).subtract(this.getX().multiply(BigInteger.TWO));
+        BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda, Resource.TWO, ellipticCurve.moduleR).subtract(this.getX().multiply(Resource.TWO));
         BigInteger newY =  lambda.multiply(this.getX().subtract(newX)).subtract(this.getY());
         EllipticCurvePoint newPoint = new FiniteFieldEcPoint(newX, newY);
 

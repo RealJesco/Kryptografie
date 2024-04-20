@@ -21,6 +21,7 @@ public final class RsaService {
         possiblePrime = generateRandomPrime(m, lowerBound, upperBound, millerRabinSteps, counter);
         return possiblePrime;
     }
+
     private static BigInteger calculateE (BigInteger phiN, int millerRabinSteps, BigInteger m, AtomicInteger counter){
         if(phiN.compareTo(BigInteger.valueOf(3)) < 0){
             throw new IllegalArgumentException("phiN is too small to calculate e");
@@ -38,6 +39,7 @@ public final class RsaService {
         }
         return e;
     }
+
     public static KeyPairRsa generateKeyPair(int bitLength, int millerRabinSteps, BigInteger m) {
 
         AtomicInteger counter = new AtomicInteger(1);

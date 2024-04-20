@@ -2,6 +2,7 @@ package elGamal;
 
 import FiniteFieldEllipticCurve.*;
 import mathMethods.MathMethods;
+import resource.Resource;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -27,7 +28,7 @@ public class KeyPair {
 
         while ( true ) {
             BigInteger y;
-            BigInteger x = MathMethods.randomElsner(BigInteger.valueOf(7), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(BigInteger.ONE));
+            BigInteger x = MathMethods.randomElsner(Resource.SEVEN, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(Resource.ONE));
             BigInteger r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
             BigInteger legendreSign = MathMethods.verifyEulerCriterion(r, prime);
 
@@ -35,42 +36,35 @@ public class KeyPair {
                 continue;
             }
 
-            BigInteger rExponent = prime.subtract(BigInteger.ONE).divide(BigInteger.valueOf(4));
+            BigInteger rExponent = prime.subtract(Resource.ONE).divide(Resource.FOUR);
             BigInteger rConditionMod = MathMethods.alternativeQuickExponentiation(r, rExponent, prime);
 
+            BigInteger yExponent = (prime).add(Resource.THREE).divide(Resource.EIGHT);
 
-            BigInteger yExponent = (prime).add(BigInteger.valueOf(3)).divide(BigInteger.valueOf(8));
-
-            if (rConditionMod.equals(BigInteger.ONE)) {
+            if (rConditionMod.equals(Resource.ONE)) {
                 y = MathMethods.alternativeQuickExponentiation(r, yExponent, prime);
             } else {
-                BigInteger inverseTwo = MathMethods.modularInverse(BigInteger.TWO, prime);
-                y = MathMethods.alternativeQuickExponentiation(BigInteger.valueOf(4).multiply(r), yExponent, prime);
+                BigInteger inverseTwo = MathMethods.modularInverse(Resource.TWO, prime);
+                y = MathMethods.alternativeQuickExponentiation(Resource.FOUR.multiply(r), yExponent, prime);
                 y = y.multiply(inverseTwo).mod(prime);
             }
-
 
             generator = new FiniteFieldEcPoint(x,y);
             EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
             if (qg instanceof InfinitePoint) {
                 return generator;
             }
-
         }
-
     }
 
     public void generateKeyPair(SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve){
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         BigInteger q = secureFiniteFieldEllipticCurve.getQ();
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getModuleR().bitLength());
-        assert MathMethods.verifyEulerCriterion(ellipticCurve.getModuleR(), BigInteger.valueOf(8)).equals(BigInteger.ONE);
+        assert MathMethods.verifyEulerCriterion(ellipticCurve.getModuleR(), Resource.EIGHT).equals(Resource.ONE);
 
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
-
-
-
 
         EllipticCurvePoint generator = calculateSignatureSuitableGeneratorPoint(ellipticCurve, q);
         assert ellipticCurve.isValidPoint(generator);
@@ -80,19 +74,19 @@ public class KeyPair {
 
 
         //TODO groupElement needs to be not an instance of InfinitePoint. Refactoring needed
-        BigInteger secretMultiplierX  = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(BigInteger.ONE));
+        BigInteger secretMultiplierX  = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(Resource.ONE));
         this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);
         this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()), q);
         assert ellipticCurve.isValidPoint(publicKey.groupElement());
         assert ellipticCurve.isValidPoint(publicKey.generator());
-        assert privateKey.secretMultiplierX().compareTo(BigInteger.ZERO) > 0;
+        assert privateKey.secretMultiplierX().compareTo(Resource.ZERO) > 0;
         assert privateKey.secretMultiplierX().compareTo(q) < 0;
         assert ellipticCurve.isValidPoint(generator);
         assert ellipticCurve.isValidPoint(publicKey.groupElement());
         assert ellipticCurve.isValidPoint(publicKey.generator());
         assert publicKey.order().equals(q);
         assert (publicKey.groupElement().multiply(q, ellipticCurve) instanceof InfinitePoint);
-        assert ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8)).equals(q);
+        assert ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(Resource.EIGHT).equals(q);
     }
 
     @Override
