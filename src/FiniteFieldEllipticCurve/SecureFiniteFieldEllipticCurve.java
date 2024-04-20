@@ -52,7 +52,6 @@ public class SecureFiniteFieldEllipticCurve {
         BigInteger orderN;
         BigInteger q;
 
-
         while (true){
             p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve = new FiniteFieldEllipticCurve(n, p);
