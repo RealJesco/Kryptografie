@@ -6,12 +6,13 @@ import java.math.BigInteger;
 import java.security.spec.EllipticCurve;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static resource.Resource.*;
 
 class EllipticCurvePointTest {
 
     @Test
     void normalize() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.ONE, BigInteger.valueOf(13));
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(ONE, BigInteger.valueOf(13));
         EllipticCurvePoint point = new FiniteFieldEcPoint(BigInteger.valueOf(5), BigInteger.valueOf(4));
         assertTrue(ellipticCurve.isValidPoint(point));
     }
@@ -30,7 +31,7 @@ class EllipticCurvePointTest {
 
     @Test
     void doublePoint() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.TWO, BigInteger.valueOf(17));
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(TWO, BigInteger.valueOf(17));
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(7));
         EllipticCurvePoint doubledPoint = point.doublePoint(ellipticCurve);
         assertTrue(ellipticCurve.isValidPoint(doubledPoint));
@@ -40,8 +41,8 @@ class EllipticCurvePointTest {
 
     @Test
     void doublePointForZero() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.ONE, BigInteger.valueOf(13));
-        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.ZERO, BigInteger.ZERO);
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(ONE, BigInteger.valueOf(13));
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(ZERO, ZERO);
         ArithmeticException thrown = assertThrows(ArithmeticException.class, () -> point.doublePoint(ellipticCurve));
         assertTrue(thrown.getMessage().contains("No modular inverse exists for these parameters"));
     }

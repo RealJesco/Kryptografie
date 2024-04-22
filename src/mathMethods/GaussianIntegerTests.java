@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
-import static java.math.BigInteger.ZERO;
 import static mathMethods.MathMethods.extendedEuclideanInZi;
 import static org.junit.jupiter.api.Assertions.*;
+import static resource.Resource.ZERO;
 
 public class GaussianIntegerTests {
     @Test

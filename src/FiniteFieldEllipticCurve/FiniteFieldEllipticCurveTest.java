@@ -1,6 +1,7 @@
 package FiniteFieldEllipticCurve;
 
 import org.junit.jupiter.api.Test;
+import resource.Resource;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static resource.Resource.*;
 
 /**
  * Test class for the FiniteFieldEllipticCurve class.
@@ -38,19 +40,19 @@ public class FiniteFieldEllipticCurveTest {
     void calculateCountOfElements() {
 
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(17));
-        BigInteger countOfElements = ellipticCurve.calculateOrder(BigInteger.TWO);
+        BigInteger countOfElements = ellipticCurve.calculateOrder(TWO);
         assertEquals(16, countOfElements.intValue());
 
         FiniteFieldEllipticCurve ellipticCurve2 = new FiniteFieldEllipticCurve(BigInteger.valueOf(1), BigInteger.valueOf(13));
-        BigInteger countOfElements2 = ellipticCurve2.calculateOrder(BigInteger.ONE);
+        BigInteger countOfElements2 = ellipticCurve2.calculateOrder(ONE);
         assertEquals(8, countOfElements2.intValue());
 
         FiniteFieldEllipticCurve ellipticCurve3 = new FiniteFieldEllipticCurve(BigInteger.valueOf(1), BigInteger.valueOf(17));
-        BigInteger countOfElements3 = ellipticCurve3.calculateOrder(BigInteger.ONE);
+        BigInteger countOfElements3 = ellipticCurve3.calculateOrder(ONE);
         assertEquals(16, countOfElements3.intValue());
 
         FiniteFieldEllipticCurve ellipticCurve4 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(13));
-        BigInteger countOfElements4 = ellipticCurve4.calculateOrder(BigInteger.valueOf(3));
+        BigInteger countOfElements4 = ellipticCurve4.calculateOrder(THREE);
         assertEquals(8, countOfElements4.intValue());
 
         FiniteFieldEllipticCurve ellipticCurve5 = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(509));

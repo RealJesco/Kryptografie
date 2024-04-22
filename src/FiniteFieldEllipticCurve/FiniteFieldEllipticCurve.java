@@ -38,16 +38,16 @@ public class FiniteFieldEllipticCurve {
 
 
     public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint){
-        BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getY(), BigInteger.TWO, p));
-        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getX(), BigInteger.valueOf(3), p).add(a.multiply(ellipticCurvePoint.getX()))).mod(p);
+        BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getY(), Resource.TWO, p));
+        BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getX(), Resource.THREE, p).add(a.multiply(ellipticCurvePoint.getX()))).mod(p);
         return inputYSquared.equals(valueToCheck);
     }
 
     public List<EllipticCurvePoint> calculateAllPoints() {
         List<EllipticCurvePoint> calculatedPoints = new ArrayList<EllipticCurvePoint>();
-        for (BigInteger i = BigInteger.ZERO; i.compareTo(p) < 0; i = i.add(BigInteger.ONE)) {
+        for (BigInteger i = Resource.ZERO; i.compareTo(p) < 0; i = i.add(Resource.ONE)) {
             BigInteger z = ((i.pow(3)).add(this.a.multiply(i)).add(this.b)).mod(p);
-            for (BigInteger j = BigInteger.ZERO; j.compareTo(p) < 0; j = j.add(BigInteger.ONE)) {
+            for (BigInteger j = Resource.ZERO; j.compareTo(p) < 0; j = j.add(Resource.ONE)) {
                 BigInteger ySquared = j.pow(2);
                 BigInteger ySquaredModuleR = ySquared.mod(p);
                 BigInteger possibleQuadraticRest = p.subtract(ySquaredModuleR);
@@ -79,11 +79,11 @@ public class FiniteFieldEllipticCurve {
 //        System.out.println("legendreSign + " + legendreSign);
 //        System.out.println("realPartSign " + realPartSign);
         //TODO Test if this is correct for all cases
-        BigInteger commonCalculation = BigInteger.TWO.multiply(y).multiply(legendreSign);
+        BigInteger commonCalculation = Resource.TWO.multiply(y).multiply(legendreSign);
         if(legendreSign.equals(realPartSign)){
             commonCalculation = commonCalculation.negate();
         }
-        return this.p.add(BigInteger.ONE).subtract(commonCalculation);
+        return this.p.add(Resource.ONE).subtract(commonCalculation);
     }
 
     @Override
