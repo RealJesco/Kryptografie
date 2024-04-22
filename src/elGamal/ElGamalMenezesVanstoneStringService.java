@@ -4,16 +4,19 @@ import FiniteFieldEllipticCurve.*;
 import GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import blockChiffre.FromDecimalBlockChiffre;
 import blockChiffre.ToDecimalBlockChiffre;
+import encryption.StringEncryptionStrategy;
 import resource.Resource;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class ElGamalMenezesVanstoneStringService {
+public class ElGamalMenezesVanstoneStringService implements StringEncryptionStrategy {
     private static BigInteger hashAndConvertMessageToBigInteger(String message) throws NoSuchAlgorithmException {
         final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
         final byte[] hashbytes = digest.digest(message.getBytes(StandardCharsets.UTF_8));
@@ -25,13 +28,14 @@ public class ElGamalMenezesVanstoneStringService {
      * @param key The public key to encrypt the message with
      * @param message The message to be encrypted
      * @param numberBase The number base to be used for the encryption (e.g. 55296)
-     * @param ellipticCurve The elliptic curve to be used for the encryption
      * @return The encrypted message as a ElGamalMenezesVanstoneMessage containing the cipher string and the specific point of the curve
      */
-    public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, int numberBase, FiniteFieldEllipticCurve ellipticCurve) {
-        int blockSize = (int) (ellipticCurve.getP().bitLength() * (Math.log(2) / Math.log(55296)));
+    public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, int numberBase) {
+        FiniteFieldEllipticCurve ellipticCurve = key.ellipticCurve();
 
-        List<BigInteger> blocks = ToDecimalBlockChiffre.encrypt(message, 55296, blockSize);
+        int blockSize = (int) (ellipticCurve.getP().bitLength() * (Math.log(2) / Math.log(numberBase)));
+
+        List<BigInteger> blocks = ToDecimalBlockChiffre.encrypt(message, numberBase, blockSize);
 
         if(blocks.size() % 2 != 0) {
             blocks.add(Resource.ZERO);
@@ -62,10 +66,10 @@ public class ElGamalMenezesVanstoneStringService {
      * @param key The private key to decrypt the message with
      * @param elGamalMenezesVanstoneCipherMessage The message to be decrypted
      * @param numberBase The number base to be used for the decryption (e.g. 55296)
-     * @param ellipticCurve The elliptic curve to be used for the decryption
      * @return The decrypted message
      */
-    public static String decrypt(final PrivateKey key, final ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage, int numberBase, FiniteFieldEllipticCurve ellipticCurve) {
+    public static String decrypt(final PrivateKey key, final ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage, int numberBase) {
+        FiniteFieldEllipticCurve ellipticCurve = key.ellipticCurve();
         int blockSize = (int) (ellipticCurve.getP().bitLength() * (Math.log(2) / Math.log(numberBase)));
 
         List<CipherMessage> receivedCipherMessagePoints = new ArrayList<CipherMessage>();
@@ -120,5 +124,45 @@ public class ElGamalMenezesVanstoneStringService {
         List<BigInteger> menezesVanstoneSignatureList = FromDecimalBlockChiffre.decrypt(signature, 55296, blockSize + 1);
         MenezesVanstoneSignature menezesVanstoneSignature = new MenezesVanstoneSignature(menezesVanstoneSignatureList.get(0), menezesVanstoneSignatureList.get(1));
         return ElGamalMenezesVanstoneService.verify(key, hashedMessage, menezesVanstoneSignature );
+    }
+
+    /**
+     *
+     * @param data
+     * @param params
+     * @return - The encrypted message as a ElGamalMenezesVanstoneMessage containing the cipher string and the specific point of the curve
+     */
+    @Override
+    public Object encrypt(String data, Map<String, Object> params) {
+        KeyPair key = (KeyPair) params.get("KeyPair");
+
+        return encrypt( key.getPublicKey(), data, (int) params.get("numberBase"));
+    }
+
+    @Override
+    public String decrypt(String data, Map<String, Object> params) {
+        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = (ElGamalMenezesVanstoneMessage) params.get("elGamalMenezesVanstoneCipherMessage");
+        assert elGamalMenezesVanstoneCipherMessage != null;
+        PrivateKey privateKey = (PrivateKey) params.get("PrivateKey");
+        assert privateKey != null;
+        return decrypt((PrivateKey) params.get("PrivateKey"), elGamalMenezesVanstoneCipherMessage, (int) params.get("numberBase"));
+    }
+
+    @Override
+    public String sign(String data, Map<String, Object> params) {
+        try {
+            return sign((KeyPair) params.get("KeyPair"), data, (int) params.get("numberBase"));
+        } catch (NoSuchAlgorithmException e) {
+           throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean verify(String data, String signature, Map<String, Object> params) {
+        try {
+            return verify((PublicKey) params.get("PublicKey"), data, signature, (int) params.get("numberBase"));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

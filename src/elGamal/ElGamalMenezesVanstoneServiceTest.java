@@ -81,10 +81,10 @@ class ElGamalMenezesVanstoneServiceTest {
                 "bH$KzS$%%=TYHbDuyHaU3EKj2emwN3QrBpPNtBvCGYp&nd*gza%vXcgyKSpCb4%E$xGtBrWetsudsMKU$@Sttg5&s4zZ@@DSYp%t\n" +
                 "bo%1TCYHdh2rCh!J#qAAU2hBO7d6CaEotm7Ju!y1RQAPWzQG9K$FT#GJJCcQKBNUJzQw3w4Upo+Eov%P@V@v@E23OAm3m%kUuRvJ";
 
-        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.publicKey, text, 55296, ellipticCurve);
+        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.publicKey, text, 55296);
         String encryptedText = elGamalMenezesVanstoneCipherMessage.getCipherMessageString();
 
-        String decryptedText = ElGamalMenezesVanstoneStringService.decrypt(keyPair.privateKey, elGamalMenezesVanstoneCipherMessage, 55296, ellipticCurve);
+        String decryptedText = ElGamalMenezesVanstoneStringService.decrypt(keyPair.privateKey, elGamalMenezesVanstoneCipherMessage, 55296);
 
         assertEquals(text, decryptedText);
         assertNotEquals(text, encryptedText);

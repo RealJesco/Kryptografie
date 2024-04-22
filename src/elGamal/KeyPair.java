@@ -16,6 +16,13 @@ public class KeyPair {
 
     }
 
+    public PrivateKey getPrivateKey() {
+        return privateKey;
+    }
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
     public EllipticCurvePoint calculateSignatureSuitableGeneratorPoint (FiniteFieldEllipticCurve ellipticCurve, BigInteger q) {
 
         SecureRandom randomRangePicker = new SecureRandom();

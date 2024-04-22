@@ -2,6 +2,7 @@ package rsa;
 
 import blockChiffre.FromDecimalBlockChiffre;
 import blockChiffre.ToDecimalBlockChiffre;
+import encryption.StringEncryptionStrategy;
 import mathMethods.MathMethods;
 
 import java.math.BigInteger;
@@ -10,8 +11,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public final class RsaStringService {
+public final class RsaStringService implements StringEncryptionStrategy {
 
     public static String encrypt(final PublicKeyRsa key, final String message, int numberBase){
         int blockSize = calculateBlockSize(numberBase, key.n());
@@ -88,5 +90,25 @@ public final class RsaStringService {
 
     private static int calculateBlockSize(int numberBase, BigInteger n) {
         return (int) (n.bitLength() * (Math.log(2) / Math.log(numberBase)));
+    }
+
+    @Override
+    public String encrypt(String data, Map<String, Object> params) {
+        return encrypt((PublicKeyRsa) params.get("PublicKey"), data, (int) params.get("numberBase"));
+    }
+
+    @Override
+    public String decrypt(String data, Map<String, Object> params) {
+        return decrypt((PrivateKeyRsa) params.get("PrivateKey"), data, (int) params.get("numberBase"));
+    }
+
+    @Override
+    public String sign(String data, Map<String, Object> params) throws NoSuchAlgorithmException {
+        return sign((PrivateKeyRsa) params.get("PrivateKey"), data, (int) params.get("numberBase"));
+    }
+
+    @Override
+    public boolean verify(String data, String signature, Map<String, Object> params) throws NoSuchAlgorithmException {
+        return verify((PublicKeyRsa) params.get("PublicKey"), data, signature, (int) params.get("numberBase"));
     }
 }
