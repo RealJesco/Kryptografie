@@ -73,7 +73,7 @@ public class KeyPair {
 
 
         //TODO groupElement needs to be not an instance of InfinitePoint. Refactoring needed
-        BigInteger secretMultiplierX  = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(Resource.ONE));
+        BigInteger secretMultiplierX  = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, q.subtract(Resource.ONE));
         this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);
         this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()), q);
         assert ellipticCurve.isValidPoint(publicKey.groupElement());

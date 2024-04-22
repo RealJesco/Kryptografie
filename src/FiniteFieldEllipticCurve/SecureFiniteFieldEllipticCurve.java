@@ -55,7 +55,7 @@ public class SecureFiniteFieldEllipticCurve {
         while (true){
             p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve.setP(p);
-            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, BigInteger.valueOf(100), BigInteger.valueOf(counter.incrementAndGet()));
+            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, Resource.ONE_HUNDRED, BigInteger.valueOf(counter.incrementAndGet()));
 
             if(!pIsPrime){
                 continue;
@@ -63,15 +63,15 @@ public class SecureFiniteFieldEllipticCurve {
 
             orderN = ellipticCurve.calculateOrder(n);
 
-            if(orderN.equals(n.multiply(BigInteger.TWO)) || !orderN.mod(BigInteger.valueOf(8)).equals(BigInteger.ZERO)){
+            if(orderN.equals(n.multiply(Resource.TWO)) || !orderN.mod(Resource.EIGHT).equals(Resource.ZERO)){
                 continue;
             }
 
             q = calculateQ(orderN);
 
-            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, BigInteger.valueOf(100), BigInteger.valueOf(counter.incrementAndGet()));
+            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, Resource.ONE_HUNDRED, BigInteger.valueOf(counter.incrementAndGet()));
 
-            if(qIsPrime && orderN.equals(q.multiply(BigInteger.valueOf(8)))){
+            if(qIsPrime && orderN.equals(q.multiply(Resource.EIGHT))){
                 break;
             }
         }

@@ -4,6 +4,7 @@ import FiniteFieldEllipticCurve.*;
 import GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import blockChiffre.FromDecimalBlockChiffre;
 import blockChiffre.ToDecimalBlockChiffre;
+import resource.Resource;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +34,7 @@ public class ElGamalMenezesVanstoneStringService {
         List<BigInteger> blocks = ToDecimalBlockChiffre.encrypt(message, 55296, blockSize);
 
         if(blocks.size() % 2 != 0) {
-            blocks.add(BigInteger.ZERO);
+            blocks.add(Resource.ZERO);
         }
 
         List<CipherMessage> encryptedBlocks = new ArrayList<CipherMessage>();
