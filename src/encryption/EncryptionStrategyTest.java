@@ -2,15 +2,13 @@ package encryption;
 
 import FiniteFieldEllipticCurve.SecureFiniteFieldEllipticCurve;
 import GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
-import elGamal.ElGamalMenezesVanstoneStringService;
-import elGamal.KeyPair;
-import elGamal.PublicKey;
+import elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
+import elGamalMenezesVanstone.KeyPair;
 import org.junit.jupiter.api.Test;
 import rsa.*;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class EncryptionStrategyTest {

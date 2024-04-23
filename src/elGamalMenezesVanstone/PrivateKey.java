@@ -1,4 +1,4 @@
-package elGamal;
+package elGamalMenezesVanstone;
 
 import FiniteFieldEllipticCurve.FiniteFieldEllipticCurve;
 

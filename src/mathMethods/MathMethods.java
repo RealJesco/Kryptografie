@@ -431,17 +431,17 @@ public class MathMethods {
         }
         BigDecimal decimalN = new BigDecimal(n);
 
-        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(Resource.DECIMAL_ONE);
-        BigDecimal mathContextRange = range.add(decimalN);
+//        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(Resource.DECIMAL_ONE);
+//        BigDecimal mathContextRange = range.add(decimalN);
+//
+//         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
+//         MathContext context = new MathContext(decadicLogarithm);
 
-         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
-         MathContext context = new MathContext(decadicLogarithm);
-
-        // In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
-        // So this condition will never be true. We can comment/remove this condition
-         if (randomElsnerDecimalM.sqrt(context).remainder(Resource.DECIMAL_ONE).equals(Resource.DECIMAL_ZERO)) {
-             randomElsnerDecimalM = randomElsnerDecimalM.add(Resource.DECIMAL_ONE);
-         }
+//         In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
+//         So this condition will never be true. We can comment/remove this condition
+//         if (randomElsnerDecimalM.sqrt(context).remainder(Resource.DECIMAL_ONE).equals(Resource.DECIMAL_ZERO)) {
+//             randomElsnerDecimalM = randomElsnerDecimalM.add(Resource.DECIMAL_ONE);
+//         }
 
         BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);

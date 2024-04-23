@@ -1,4 +1,4 @@
-package elGamal;
+package elGamalMenezesVanstone;
 
 import FiniteFieldEllipticCurve.*;
 import mathMethods.MathMethods;
@@ -34,7 +34,7 @@ public class KeyPair {
 
         while ( true ) {
             BigInteger y;
-            BigInteger x = MathMethods.randomElsner(Resource.SEVEN, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(Resource.ONE));
+            BigInteger x = MathMethods.randomElsner(BigInteger.valueOf(13), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(Resource.ONE));
             BigInteger r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
             BigInteger legendreSign = MathMethods.verifyEulerCriterion(r, prime);
 
@@ -56,8 +56,10 @@ public class KeyPair {
             }
 
             generator = new FiniteFieldEcPoint(x,y);
+            System.out.println("generator: " + generator);
             EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
             if (qg instanceof InfinitePoint) {
+                System.out.println("I am exiting");
                 return generator;
             }
         }
@@ -81,6 +83,7 @@ public class KeyPair {
 
         //TODO groupElement needs to be not an instance of InfinitePoint. Refactoring needed
         BigInteger secretMultiplierX  = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, q.subtract(Resource.ONE));
+
         this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);
         this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()), q);
         assert ellipticCurve.isValidPoint(publicKey.groupElement());

@@ -1,8 +1,8 @@
 package encryption;
 
-import elGamal.KeyPair;
-import elGamal.PrivateKey;
-import elGamal.PublicKey;
+import elGamalMenezesVanstone.KeyPair;
+import elGamalMenezesVanstone.PrivateKey;
+import elGamalMenezesVanstone.PublicKey;
 import rsa.KeyPairRsa;
 import rsa.PrivateKeyRsa;
 import rsa.PublicKeyRsa;

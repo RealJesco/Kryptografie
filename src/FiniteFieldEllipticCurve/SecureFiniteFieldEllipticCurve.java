@@ -1,10 +1,11 @@
 package FiniteFieldEllipticCurve;
 
-import elGamal.ElGamalMenezesVanstoneService;
+import elGamalMenezesVanstone.ElGamalMenezesVanstoneService;
 import mathMethods.MathMethods;
 import resource.Resource;
 
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SecureFiniteFieldEllipticCurve {
@@ -25,15 +26,38 @@ public class SecureFiniteFieldEllipticCurve {
         return safeEllipticCurve;
     }
 
+    private BigInteger generatePrimeCongruentToFiveModEight(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
+        BigInteger p = new BigInteger(bitLengthOfP.intValue(), new SecureRandom());
+        // Adjust p to be congruent to 5 modulo 8
+        BigInteger modEight = p.mod(BigInteger.valueOf(8));
+        if (!modEight.equals(BigInteger.valueOf(5))) {
+            p = p.add(BigInteger.valueOf(5).subtract(modEight));
+            if (p.bitLength() > bitLengthOfP.intValue()) {
+                p = p.subtract(BigInteger.valueOf(8));
+            }
+        }
+
+        while (!MathMethods.millerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()))) {
+            p = p.add(BigInteger.valueOf(8));
+            if (p.bitLength() > bitLengthOfP.intValue()) {
+                p = new BigInteger(bitLengthOfP.intValue(), new SecureRandom()); // Reset if size exceeds
+                p = p.add(BigInteger.valueOf(5).subtract(p.mod(BigInteger.valueOf(8))));
+            }
+        }
+        return p;
+
+    }
+
     private BigInteger calculatePrimeMod8(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
         BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
-        // random prime p. Use built in Java function
-//        BigInteger p = BigInteger.probablePrime(bitLengthOfP.intValue(), new java.util.Random());
         BigInteger pMod8 = p.mod(Resource.EIGHT);
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, p);
 
+
         while (!pMod8.equals(Resource.FIVE) || !legendreSign.equals(Resource.ONE)){
-            p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
+//            p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
+            p = generatePrimeCongruentToFiveModEight(bitLengthOfP, millerRabinIterations, m);
+            assert p.isProbablePrime(100);
             pMod8 = p.mod(Resource.EIGHT);
             legendreSign = MathMethods.verifyEulerCriterion(n, p);
         }
@@ -47,19 +71,21 @@ public class SecureFiniteFieldEllipticCurve {
     }
     private void calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
 
-        BigInteger p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(n, p);
+        BigInteger p;
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(n, null);
         BigInteger orderN;
         BigInteger q;
 
         while (true){
+            double time = System.currentTimeMillis();
             p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve.setP(p);
-            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, Resource.ONE_HUNDRED, BigInteger.valueOf(counter.incrementAndGet()));
+            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()));
 
             if(!pIsPrime){
                 continue;
             }
+
 
             orderN = ellipticCurve.calculateOrder(n);
 
@@ -69,7 +95,8 @@ public class SecureFiniteFieldEllipticCurve {
 
             q = calculateQ(orderN);
 
-            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, Resource.ONE_HUNDRED, BigInteger.valueOf(counter.incrementAndGet()));
+            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()));
+
 
             if(qIsPrime && orderN.equals(q.multiply(Resource.EIGHT))){
                 break;

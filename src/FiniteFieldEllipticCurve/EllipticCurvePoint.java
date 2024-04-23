@@ -48,20 +48,22 @@ public abstract class EllipticCurvePoint {
     }
 
     public EllipticCurvePoint doublePoint(FiniteFieldEllipticCurve ellipticCurve) {
-        if (this.getY().equals(Resource.ZERO) && this.getX().equals(Resource.ZERO)) {
+        BigInteger y = this.getY();
+        BigInteger x = this.getX();
+        if (y.equals(Resource.ZERO) && x.equals(Resource.ZERO)) {
             throw new ArithmeticException("No modular inverse exists for these parameters");
         }
-        BigInteger lambdaNumerator = MathMethods.alternativeQuickExponentiation(this.getX(), Resource.TWO, ellipticCurve.p).multiply(Resource.THREE).add(ellipticCurve.a);
+        BigInteger lambdaNumerator = MathMethods.alternativeQuickExponentiation(x, Resource.TWO, ellipticCurve.p).multiply(Resource.THREE).add(ellipticCurve.a);
         BigInteger lambdaModInverseDenominator;
-        if (this.getY().equals(Resource.ZERO)) {
+        if (y.equals(Resource.ZERO)) {
             lambdaModInverseDenominator = Resource.ONE;
         } else {
-            lambdaModInverseDenominator = MathMethods.modularInverse(this.getY().multiply(Resource.TWO), ellipticCurve.p);
+            lambdaModInverseDenominator = MathMethods.modularInverse(y.multiply(Resource.TWO), ellipticCurve.p);
         }
         BigInteger lambda = (lambdaNumerator.multiply(lambdaModInverseDenominator)).mod(ellipticCurve.p);
 
-        BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda, Resource.TWO, ellipticCurve.p).subtract(this.getX().multiply(Resource.TWO));
-        BigInteger newY = lambda.multiply(this.getX().subtract(newX)).subtract(this.getY());
+        BigInteger newX = MathMethods.alternativeQuickExponentiation(lambda, Resource.TWO, ellipticCurve.p).subtract(x.multiply(Resource.TWO));
+        BigInteger newY = lambda.multiply(x.subtract(newX)).subtract(y);
         EllipticCurvePoint newPoint = new FiniteFieldEcPoint(newX, newY);
 
         return newPoint.normalize(ellipticCurve);

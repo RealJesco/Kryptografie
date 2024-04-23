@@ -1,4 +1,4 @@
-package elGamal;
+package elGamalMenezesVanstone;
 
 import java.math.BigInteger;
 
