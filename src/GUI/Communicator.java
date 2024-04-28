@@ -385,11 +385,12 @@ public class Communicator extends JFrame {
 
 
     private Communicator getReceiver(Communicator sender) {
-        if(sender.name.equals("Bob")){
-            return CommunicationPanel.getInstance().getAlice();
-        } else {
-            return CommunicationPanel.getInstance().getBob();
-        }
+    /*if(sender.name.equals("Bob")){
+        return CommunicationPanel.getInstance().getAlice();
+    } else {
+        return CommunicationPanel.getInstance().getBob();
+    }*/
+        return null;
     }
 
     private static JTextField getNewTextfield(int row, String headline, boolean editable) {

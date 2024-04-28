@@ -15,36 +15,41 @@ public class CommunicationPanel extends JFrame {
     private static JTextField nonCubicNumberMField;
     private static JTextField numberSystemBaseField;
     private static JTextField millerRabinStepsField;
-    private static JTextField primeBitLengthField;
+    private static JTextField lengthField_P;
+    private static JTextField parameterField_n;
 
-    private static JTextArea alicePublicKeyField;
-    private static JTextArea bobPublicKeyField;
-    private static JTextArea alicePublicNField;
-    private static JTextArea bobPublicNField;
-    private Communicator Alice = null;
-    private Communicator Bob = null;
+    private static JTextArea publicKeyField_E;
+    private static JTextArea publicKeyField_p;
+    private static JTextArea publicKeyField_q;
+    private static JTextArea publicKeyField_g;
+    private static JTextArea publicKeyField_y;
+    private static JTextArea privateKeyField_x;
+
     private static GridBagConstraints c = null;
 
     private CommunicationPanel() {
         super("GUI.CommunicationPanel");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(650, 500));
-        setSize(new Dimension(650, 500));
+        setPreferredSize(new Dimension(650, 700));
+        setSize(new Dimension(650, 700));
         setVisible(true);
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         c = new GridBagConstraints();
 
-        JButton generateCommunicators = new JButton("Generiere Alice und Bob");
+        JButton finalizeButton = new JButton("Schlüssel erzeugen");
         int i = 0;
         nonCubicNumberMField = getNewTextfield(i++, "Nicht-Quadratzahl m");
         millerRabinStepsField = getNewTextfield(i++, "Miller-Rabin Schritte");
-        numberSystemBaseField = getNewTextfield(i++, "Adisches System: Das g");
-        primeBitLengthField = getNewTextfield(i++, "Bit-Länge von n");
-        alicePublicKeyField = getNewTextArea(i++, "Öffentlicher Schlüssel e von Alice");
-        alicePublicNField = getNewTextArea(i++, "Öffentlicher Schlüssel n von Alice");
-        bobPublicKeyField = getNewTextArea(i++, "Öffentlicher Schlüssel e von Bob");
-        bobPublicNField = getNewTextArea(i++, "Öffentlicher Schlüssel n von Bob");
+        numberSystemBaseField = getNewTextfield(i++, "g (g-Adisches System)");
+        lengthField_P = getNewTextfield(i++, "Bit-Länge von p");
+        parameterField_n = getNewTextfield(i++, "Parameter n für ell. Kurve");
+        publicKeyField_E = getNewTextArea(i++, "Public Key E");
+        publicKeyField_p = getNewTextArea(i++, "Public Key p");
+        publicKeyField_q = getNewTextArea(i++, "Public Key q");
+        publicKeyField_g = getNewTextArea(i++, "Public Key g");
+        publicKeyField_y = getNewTextArea(i++, "Public Key y");
+        publicKeyField_y = getNewTextArea(i++, "Zufallszahl x");
 
         nonCubicNumberMField.setText("845");
         onlyAllowNumbers(nonCubicNumberMField);
@@ -52,49 +57,17 @@ public class CommunicationPanel extends JFrame {
         onlyAllowNumbers(numberSystemBaseField);
         millerRabinStepsField.setText("100");
         onlyAllowNumbers(millerRabinStepsField);
-        primeBitLengthField.setText("1024");
-        onlyAllowNumbers(primeBitLengthField);
+        lengthField_P.setText("1024");
+        onlyAllowNumbers(lengthField_P);
+        onlyAllowNumbers(parameterField_n);
 
 
-        generateCommunicators.addActionListener(e -> {
-            disposeCommunicators();
-            try{
-
-                RSA.setNumberSystemBase(getIntOfField(numberSystemBaseField));
-                RSA.setBitLengthN(getIntOfField(primeBitLengthField));
-                RSA.setMillerRabinSteps(getIntOfField(millerRabinStepsField));
-                RSA.setM(getBigIntegerOfField(nonCubicNumberMField));
-                // Generate unique prime numbers and keys for Alice
-//                RSA.generateRSAKeys();
-            } catch (Exception f){
-                JOptionPane.showMessageDialog(null, "Error in Generation of RSA-Instance: " + e);
-                disposeCommunicators();
-                return;
-            }
-
-            try{
-                Alice = new Communicator("Alice", RSA.getN(),  new Point(900, 0));
-            } catch (Exception f){
-                JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e);
-                disposeCommunicators();
-                return;
-            }
-
-//            RSA.generateRSAKeys();
-
-            try{
-                Bob = new Communicator("Bob", RSA.getN(), new Point(900, 400));
-            } catch (Exception f){
-                JOptionPane.showMessageDialog(null, "Error in Generation of Alice: " + e);
-                disposeCommunicators();
-                return;
-            }
-
-            // Update fields with public keys
-            alicePublicKeyField.setText(Alice.e.toString());
-            alicePublicNField.setText(Alice.n.toString());
-            bobPublicKeyField.setText(Bob.e.toString());
-            bobPublicNField.setText(Bob.n.toString());
+        finalizeButton.addActionListener(e -> {
+            //Schlüssel erzeugen
+            //Schlüssel setzen
+            //Schlüssel übergeben
+            KlartextPanel.openPanel();
+            ChiffratSignaturPanel.openPanel();
         });
 
         nonCubicNumberMField.addFocusListener(new FocusAdapter() {
@@ -114,20 +87,9 @@ public class CommunicationPanel extends JFrame {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = i++;
-        panel.add(generateCommunicators, c);
+        panel.add(finalizeButton, c);
         add(panel);
         panel.updateUI();
-    }
-
-    private void disposeCommunicators( ) {
-        try {
-            Bob.dispose();
-        } catch (Exception ignored) {
-        }
-        try {
-            Alice.dispose();
-        } catch (Exception ignored) {
-        }
     }
 
     private void onlyAllowNumbers(JTextField field) {
@@ -185,14 +147,6 @@ public class CommunicationPanel extends JFrame {
         return singleton;
     }
 
-    public Communicator getAlice() {
-        return this.Alice;
-    }
-
-    public Communicator getBob() {
-        return this.Bob;
-    }
-
     private BigInteger getBigIntegerOfField(JTextField field) throws NumberFormatException{
         return BigInteger.valueOf(Long.parseLong(field.getText()));
     }
@@ -209,7 +163,7 @@ public class CommunicationPanel extends JFrame {
     }
 
     public BigInteger getPrimeBitLength() throws NumberFormatException {
-        return getBigIntegerOfField(primeBitLengthField);
+        return getBigIntegerOfField(lengthField_P);
     }
 
 
