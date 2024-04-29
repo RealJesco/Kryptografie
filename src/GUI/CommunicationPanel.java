@@ -1,5 +1,8 @@
 package GUI;
 
+import FiniteFieldEllipticCurve.SecureFiniteFieldEllipticCurve;
+import elGamalMenezesVanstone.KeyPair;
+import encryption.EncryptionContextParamBuilder;
 import rsa.RSA;
 
 import javax.swing.*;
@@ -64,8 +67,19 @@ public class CommunicationPanel extends JFrame {
 
         finalizeButton.addActionListener(e -> {
             //Schlüssel erzeugen
+            EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
+            SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(getBigIntegerOfField(lengthField_P), getBigIntegerOfField(parameterField_n), getIntOfField(millerRabinStepsField), getBigIntegerOfField(nonCubicNumberMField));
+            KeyPair keyPair = new KeyPair();
             //Schlüssel setzen
+            keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
+            builder.withElGamalMenezesVanstoneKeyPair(keyPair);
+            builder.withNumberBase(getIntOfField(numberSystemBaseField));
             //Schlüssel übergeben
+            // builder erstmal übergeben, Werte überschreiben wo nötig TODO bessere Lösung finden
+            KlartextPanel.builder = builder;
+            KlartextPanel.keyPair = keyPair;
+            ChiffratSignaturPanel.builder = builder;
+            ChiffratSignaturPanel.keyPair = keyPair;
             KlartextPanel.openPanel();
             ChiffratSignaturPanel.openPanel();
         });

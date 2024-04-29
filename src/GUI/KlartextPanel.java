@@ -1,5 +1,11 @@
 package GUI;
 
+import GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
+import elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
+import elGamalMenezesVanstone.KeyPair;
+import encryption.EncryptionContext;
+import encryption.EncryptionContextParamBuilder;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -10,6 +16,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
 public class KlartextPanel {
     private static JFrame frame = new JFrame();
@@ -21,12 +28,16 @@ public class KlartextPanel {
     private static JButton encryptButton;
     private static JTextField anzeige_chiffrat;
     private static JTextField anzeige_signatur;
-
+    // TODO bessere Lösung
+    static EncryptionContext context = new EncryptionContext();
+    static EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
+    static KeyPair keyPair = new KeyPair();
 
     public static void openPanel() {
         if(panel == null) {
             setupGraphics();
         }
+        context.setStrategy(new ElGamalMenezesVanstoneStringService());
         fillParameters();
         panel.updateUI();
     }
@@ -122,6 +133,11 @@ public class KlartextPanel {
     }
 
     private static void encrypt() {
+        builder.setData(inputKlartext.getText());
+        Map<String, Object> encryptionParams = builder.build();
+        ElGamalMenezesVanstoneMessage encryptedMessage = (ElGamalMenezesVanstoneMessage) context.encrypt(builder.getData(), encryptionParams);
+        anzeige_chiffrat.setText(encryptedMessage.getCipherMessageString());
+        //TODO Signatur
     }
 
 

@@ -1,9 +1,15 @@
 package GUI;
 
+import elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
+import elGamalMenezesVanstone.KeyPair;
+import encryption.EncryptionContext;
+import encryption.EncryptionContextParamBuilder;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
 public class ChiffratSignaturPanel {
     private static JFrame frame = new JFrame();
@@ -16,6 +22,10 @@ public class ChiffratSignaturPanel {
     private static JButton decryptButton;
     private static JTextField anzeige_dechiffrat;
     private static JTextField anzeige_signatur_valid;
+    //TODO bessere Lösung
+    static EncryptionContext context = new EncryptionContext();
+    static EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
+    static KeyPair keyPair = new KeyPair();
 
     private ChiffratSignaturPanel() {
 /*
@@ -39,6 +49,7 @@ public class ChiffratSignaturPanel {
         if(panel == null) {
             setupGraphics();
         }
+        context.setStrategy(new ElGamalMenezesVanstoneStringService());
         fillParameters();
         panel.updateUI();
     }
@@ -91,7 +102,12 @@ public class ChiffratSignaturPanel {
     }
 
     private static void decrypt() {
-
+        builder.withElGamalMenezesVanstoneCipherMessage(input_chiffrat.getText());
+        builder.withElGamalMenezesVanstonePrivateKey(keyPair.getPrivateKey());
+        Map<String, Object> decryptionParams = builder.build();
+        String decrypted = context.decrypt(input_chiffrat.getText(), decryptionParams);
+        anzeige_dechiffrat.setText(decrypted);
+        //TODO Signaturvalidierung
     }
 
     public static void receiveSignaturAndChiffrat(String signatur, String chiffrat){
