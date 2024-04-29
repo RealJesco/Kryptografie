@@ -16,6 +16,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 public class KlartextPanel {
@@ -28,6 +29,7 @@ public class KlartextPanel {
     private static JButton encryptButton;
     private static JTextField anzeige_chiffrat;
     private static JTextField anzeige_signatur;
+    private static ElGamalMenezesVanstoneMessage input_cipherMessage;
     // TODO bessere Lösung
     static EncryptionContext context = new EncryptionContext();
     static EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
@@ -113,7 +115,11 @@ public class KlartextPanel {
         encryptButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                encrypt();
+                try {
+                    encrypt();
+                } catch (NoSuchAlgorithmException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -126,18 +132,19 @@ public class KlartextPanel {
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 5;
-        copyButton.addActionListener(e -> ChiffratSignaturPanel.receiveSignaturAndChiffrat(anzeige_signatur.getText(), anzeige_chiffrat.getText()));
+        copyButton.addActionListener(e -> ChiffratSignaturPanel.receiveSignaturAndChiffrat(anzeige_signatur.getText(), anzeige_chiffrat.getText(), input_cipherMessage));
         panel.add(copyButton, c);
 
         panel.updateUI();
     }
 
-    private static void encrypt() {
+    private static void encrypt() throws NoSuchAlgorithmException {
         builder.setData(inputKlartext.getText());
         Map<String, Object> encryptionParams = builder.build();
         ElGamalMenezesVanstoneMessage encryptedMessage = (ElGamalMenezesVanstoneMessage) context.encrypt(builder.getData(), encryptionParams);
         anzeige_chiffrat.setText(encryptedMessage.getCipherMessageString());
-        //TODO Signatur
+        anzeige_signatur.setText(context.sign(builder.getData(), encryptionParams));
+        input_cipherMessage = encryptedMessage;
     }
 
 

@@ -1,5 +1,6 @@
 package GUI;
 
+import GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
 import elGamalMenezesVanstone.KeyPair;
 import encryption.EncryptionContext;
@@ -9,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 public class ChiffratSignaturPanel {
@@ -22,6 +24,7 @@ public class ChiffratSignaturPanel {
     private static JButton decryptButton;
     private static JTextField anzeige_dechiffrat;
     private static JTextField anzeige_signatur_valid;
+    private static ElGamalMenezesVanstoneMessage input_cipherMessage;
     //TODO bessere Lösung
     static EncryptionContext context = new EncryptionContext();
     static EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
@@ -90,7 +93,13 @@ public class ChiffratSignaturPanel {
         panel.add(inputScrollPane, c);
 
         decryptButton = new JButton("Entschlüsseln");
-        decryptButton.addActionListener(e -> decrypt());
+        decryptButton.addActionListener(e -> {
+            try {
+                decrypt();
+            } catch (NoSuchAlgorithmException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         decryptButton.setPreferredSize(new Dimension(250,25));
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
@@ -101,13 +110,14 @@ public class ChiffratSignaturPanel {
         anzeige_signatur_valid = getNewTextfield(5, "Signaturvalidierung");
     }
 
-    private static void decrypt() {
-        builder.withElGamalMenezesVanstoneCipherMessage(input_chiffrat.getText());
+    private static void decrypt() throws NoSuchAlgorithmException {
+        builder.withElGamalMenezesVanstoneCipherMessage(input_cipherMessage);
         builder.withElGamalMenezesVanstonePrivateKey(keyPair.getPrivateKey());
         Map<String, Object> decryptionParams = builder.build();
-        String decrypted = context.decrypt(input_chiffrat.getText(), decryptionParams);
+        String decrypted = context.decrypt(input_cipherMessage.getCipherMessageString(), decryptionParams);
         anzeige_dechiffrat.setText(decrypted);
         //TODO Signaturvalidierung
+        context.verify(builder.getData(), input_signatur.getText(), decryptionParams);
     }
 
     public static void receiveSignaturAndChiffrat(String signatur, String chiffrat){
@@ -115,6 +125,11 @@ public class ChiffratSignaturPanel {
         input_chiffrat.setText(chiffrat);
     }
 
+    public static void receiveSignaturAndChiffrat(String signatur, String chiffrat, Object cipherMessage){
+        input_signatur.setText(signatur);
+        input_chiffrat.setText(chiffrat);
+        input_cipherMessage = (ElGamalMenezesVanstoneMessage) cipherMessage;
+    }
 
     private static JTextField getNewTextfield(int row, String headline, boolean editable) {
         JTextField field = new JTextField();
