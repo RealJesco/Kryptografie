@@ -27,26 +27,26 @@ public class SecureFiniteFieldEllipticCurve {
     }
 
     private BigInteger generatePrimeCongruentToFiveModEight(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
-        BigInteger p = new BigInteger(bitLengthOfP.intValue(), new SecureRandom());
-        // Adjust p to be congruent to 5 modulo 8
+        SecureRandom random = new SecureRandom();
+        BigInteger p = new BigInteger(bitLengthOfP.intValue(), random);
         BigInteger modEight = p.mod(BigInteger.valueOf(8));
-        if (!modEight.equals(BigInteger.valueOf(5))) {
-            p = p.add(BigInteger.valueOf(5).subtract(modEight));
-            if (p.bitLength() > bitLengthOfP.intValue()) {
-                p = p.subtract(BigInteger.valueOf(8));
-            }
+        p = p.add(BigInteger.valueOf(5).subtract(modEight));
+        if (p.bitLength() > bitLengthOfP.intValue()) {
+            p = p.subtract(BigInteger.valueOf(8));
         }
 
-        while (!MathMethods.millerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()))) {
-            p = p.add(BigInteger.valueOf(8));
+        BigInteger eight = BigInteger.valueOf(8);
+        while (!MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()))) {
+            p = p.add(eight);
             if (p.bitLength() > bitLengthOfP.intValue()) {
-                p = new BigInteger(bitLengthOfP.intValue(), new SecureRandom()); // Reset if size exceeds
-                p = p.add(BigInteger.valueOf(5).subtract(p.mod(BigInteger.valueOf(8))));
+                p = new BigInteger(bitLengthOfP.intValue(), random);
+                modEight = p.mod(BigInteger.valueOf(8));
+                p = p.add(BigInteger.valueOf(5).subtract(modEight));
             }
         }
         return p;
-
     }
+
 
     private BigInteger calculatePrimeMod8(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
         BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
@@ -77,7 +77,6 @@ public class SecureFiniteFieldEllipticCurve {
         BigInteger q;
 
         while (true){
-            double time = System.currentTimeMillis();
             p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve.setP(p);
             boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()));

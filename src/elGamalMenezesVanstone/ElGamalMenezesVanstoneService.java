@@ -2,6 +2,7 @@ package elGamalMenezesVanstone;
 
 import FiniteFieldEllipticCurve.*;
 import mathMethods.MathMethods;
+import org.apache.commons.math3.util.Pair;
 import resource.Resource;
 
 import java.math.BigInteger;
@@ -19,39 +20,74 @@ public class ElGamalMenezesVanstoneService {
         return possiblePrime;
     }
 
-    /**
-     * @param message   message to be encrypted
-     * @param publicKey public key
-     * @return cipher message
-     */
-    public static CipherMessage encrypt(Message message, PublicKey publicKey) {
+//    /**
+//     * @param message   message to be encrypted
+//     * @param publicKey public key
+//     * @return cipher message
+//     */
+//    public static CipherMessage encrypt(Message message, PublicKey publicKey) {
+//        SecureRandom random = new SecureRandom();
+//        SecureRandom randomRangePicker = new SecureRandom();
+//        FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
+//        BigInteger prime = ellipticCurve.getP();
+//        BigInteger q = ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(Resource.EIGHT);
+//        int primeBitLength = prime.bitLength();
+//        BigInteger qSubtractONE = q.subtract(Resource.ONE);
+//
+//        BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
+//
+//        while (k.equals(Resource.ZERO)) {
+//            k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
+//        }
+//
+//        EllipticCurvePoint ky = publicKey.groupElement().multiply(k, ellipticCurve);
+//
+//        while (ky.getX().equals(Resource.ZERO) || ky.getY().equals(Resource.ZERO)) {
+//            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
+//            ky = publicKey.groupElement().multiply(k, ellipticCurve);
+//        }
+//
+//        assert !(ky instanceof InfinitePoint);
+//        EllipticCurvePoint a = publicKey.generator().multiply(k, publicKey.ellipticCurve());
+//
+//        return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
+//    }
+
+
+    private static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger qSubtractONE) {
         SecureRandom random = new SecureRandom();
-        SecureRandom randomRangePicker = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
+        SecureRandom randomRangePicker = new SecureRandom();
         BigInteger prime = ellipticCurve.getP();
-        BigInteger q = ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(Resource.EIGHT);
         int primeBitLength = prime.bitLength();
-        BigInteger qSubtractONE = q.subtract(Resource.ONE);
+        BigInteger k;
 
-        BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
-
-        while (k.equals(Resource.ZERO)) {
+        do {
             k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
-        }
+        } while (k.equals(Resource.ZERO));
 
         EllipticCurvePoint ky = publicKey.groupElement().multiply(k, ellipticCurve);
 
         while (ky.getX().equals(Resource.ZERO) || ky.getY().equals(Resource.ZERO)) {
-            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
+            k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
             ky = publicKey.groupElement().multiply(k, ellipticCurve);
         }
-
         assert !(ky instanceof InfinitePoint);
-        EllipticCurvePoint a = publicKey.generator().multiply(k, publicKey.ellipticCurve());
+        return new Pair<>(k, ky);
+    }
 
+    public static CipherMessage encrypt(Message message, PublicKey publicKey, BigInteger k, EllipticCurvePoint ky) {
+        EllipticCurvePoint a = publicKey.generator().multiply(k, publicKey.ellipticCurve());
+        BigInteger prime = publicKey.ellipticCurve().getP();
         return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
     }
 
+    public static CipherMessage encrypt(Message message, PublicKey publicKey) {
+        BigInteger q = publicKey.order();
+        BigInteger qSubtractONE = q.subtract(Resource.ONE);
+        Pair<BigInteger, EllipticCurvePoint> kAndKy = generateKandKy(publicKey, qSubtractONE);
+        return encrypt(message, publicKey, kAndKy.getKey(), kAndKy.getValue());
+    }
     /**
      * @param cipherMessage
      * @param privateKey

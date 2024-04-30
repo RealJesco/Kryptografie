@@ -202,26 +202,30 @@ public class MathMethods {
      * @throws IllegalArgumentException if the exponent is negative or if 0^0 mod 1 is encountered
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
-        if (exp.signum() < 0) throw new IllegalArgumentException("Exponent must be positive");
-        if (exp.equals(Resource.ZERO) && mod.equals(Resource.ONE)) {
-            return Resource.ZERO;
+        if (exp.signum() < 0) {
+            throw new IllegalArgumentException("Exponent must be positive");
+        }
+        if (exp.equals(BigInteger.ZERO)) {
+            return mod.equals(BigInteger.ONE) ? BigInteger.ZERO : BigInteger.ONE;
+        }
+        if (base.equals(BigInteger.ZERO)) {
+            return BigInteger.ZERO;
         }
 
-        BigInteger result = Resource.ONE;
-        base = base.mod(mod);
+        BigInteger result = BigInteger.ONE;
+        base = base.mod(mod);  // Ensure base is reduced modulo mod initially
 
-        while (exp.signum() != 0) {
-            if (exp.testBit(0)) { // Check if exponent is odd
-                result = (result.multiply(base)).mod(mod);
+        while (!exp.equals(BigInteger.ZERO)) {
+            if (exp.testBit(0)) { // If the exponent's least significant bit is 1
+                result = result.multiply(base).mod(mod);
             }
-            exp = exp.shiftRight(1); // Halve the exponent
-            if (exp.signum() != 0) {
-                base = (base.multiply(base)).mod(mod);
-            }
+            base = base.multiply(base).mod(mod);  // Square the base for the next exponent bit
+            exp = exp.shiftRight(1);  // Divide the exponent by 2
         }
 
         return result;
     }
+
 
 
     /**
@@ -573,29 +577,31 @@ public class MathMethods {
      * @return true if the number is probably prime, false otherwise
      *
      */
+    private static final ForkJoinPool forkJoinPool = new ForkJoinPool();
+
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
-        if (possiblePrime.equals(Resource.TWO)) return true;
+        if (possiblePrime.equals(BigInteger.TWO)) return true;
         if (!possiblePrime.testBit(0)) return false;
-        if (possiblePrime.equals(Resource.ONE)) return false;
+        if (possiblePrime.equals(BigInteger.ONE)) return false;
 
-        int s = possiblePrime.subtract(Resource.ONE).getLowestSetBit();
-        BigInteger finalD = possiblePrime.subtract(Resource.ONE).shiftRight(s);
+        BigInteger d = possiblePrime.subtract(BigInteger.ONE);
+        int s = d.getLowestSetBit();
+        d = d.shiftRight(s);
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool();
-        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(Resource.ONE);
-        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(Resource.TWO);
+        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(BigInteger.ONE);
+        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(BigInteger.TWO);
+
+        BigInteger finalD = d;
         List<Callable<Boolean>> tasks = IntStream.range(0, numberOfTests)
                 .mapToObj(i -> (Callable<Boolean>) () -> {
-                    BigInteger modifiedCountOfN = countOfN.add(BigInteger.valueOf(i));
-                    BigInteger a = randomElsner(m, modifiedCountOfN, Resource.TWO, possiblePrimeMinusTwo);
+                    BigInteger a = randomElsner(m, countOfN.add(BigInteger.valueOf(i)), BigInteger.TWO, possiblePrimeMinusTwo);
                     BigInteger x = alternativeQuickExponentiation(a, finalD, possiblePrime);
 
-                    if (x.equals(Resource.ONE) || x.equals(possiblePrimeMinusOne)) {
+                    if (x.equals(BigInteger.ONE) || x.equals(possiblePrimeMinusOne)) {
                         return true;
                     }
-
                     for (int r = 1; r < s; r++) {
-                        x = alternativeQuickExponentiation(x, Resource.TWO, possiblePrime);
+                        x = alternativeQuickExponentiation(x, BigInteger.TWO, possiblePrime);
                         if (x.equals(possiblePrimeMinusOne)) return true;
                     }
                     return false;
@@ -605,12 +611,12 @@ public class MathMethods {
         try {
             return forkJoinPool.invokeAny(tasks);
         } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
             e.printStackTrace();
             return false;
-        } finally {
-            forkJoinPool.shutdown();
         }
     }
+
 
 
     /**

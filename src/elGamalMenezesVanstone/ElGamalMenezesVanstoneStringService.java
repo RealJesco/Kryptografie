@@ -106,7 +106,7 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         int blockSize = (int) (key.publicKey.ellipticCurve().getP().bitLength() * (Math.log(2) / Math.log(numberBase)));
         BigInteger hashedMessage = hashAndConvertMessageToBigInteger(message);
         MenezesVanstoneSignature menezesVanstoneSignature = ElGamalMenezesVanstoneService.sign(key, hashedMessage);
-        return FromDecimalBlockChiffre.encrypt(List.of(menezesVanstoneSignature.r(), menezesVanstoneSignature.s()), 55296, blockSize + 1);
+        return FromDecimalBlockChiffre.encrypt(List.of(menezesVanstoneSignature.r(), menezesVanstoneSignature.s()), numberBase, blockSize + 1);
     }
 
     /**
