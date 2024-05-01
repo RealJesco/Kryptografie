@@ -98,8 +98,8 @@ public class ChiffratSignaturPanel {
         decryptButton.addActionListener(e -> {
             try {
                 decrypt();
-            } catch (NoSuchAlgorithmException ex) {
-                throw new RuntimeException(ex);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame, ex.getMessage());
             }
         });
         decryptButton.setPreferredSize(new Dimension(250,25));
