@@ -10,13 +10,13 @@ public class InfinitePoint extends EllipticCurvePoint {
     }
 
     //Neutrales Element
-    public EllipticCurvePoint add (EllipticCurvePoint point2, FiniteFieldEllipticCurve ellipticCurve) {
+    public EllipticCurvePoint add(EllipticCurvePoint point2, FiniteFieldEllipticCurve ellipticCurve) {
         return point2;
     }
-    public EllipticCurvePoint doublePoint (FiniteFieldEllipticCurve ellipticCurve) {
+    public EllipticCurvePoint doublePoint(FiniteFieldEllipticCurve ellipticCurve) {
         return this;
     }
-    public EllipticCurvePoint multiply (int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
+    public EllipticCurvePoint multiply(int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
         return this;
     }
     @Override

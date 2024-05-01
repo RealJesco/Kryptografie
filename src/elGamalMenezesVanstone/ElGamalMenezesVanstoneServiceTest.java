@@ -11,6 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ElGamalMenezesVanstoneServiceTest {
 
+    /**
+     * Test the encryption and decryption of a message with random values
+     */
     @Test
     void encrypt() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(821));
@@ -30,6 +33,11 @@ class ElGamalMenezesVanstoneServiceTest {
         assertEquals(message.m2(), decryptedMessage.m2());
     }
 
+    /**
+     * Testing successful generation of a key pair
+     * Test the encryption and decryption of a message with random values
+     * random values
+     */
     @Test
     void testKeyGeneration() {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
@@ -49,6 +57,11 @@ class ElGamalMenezesVanstoneServiceTest {
         assertEquals(message.m2(), decryptedMessage.m2());
     }
 
+    /**
+     * Testing successful generation of a key pair
+     * Test the encryption and decryption of a message with random values
+     * random values
+     */
     @Test
     void testKeyGenerationWithSecureEllipticCurve() {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
@@ -66,6 +79,13 @@ class ElGamalMenezesVanstoneServiceTest {
         assertEquals(message.m1(), decryptedMessage.m1());
         assertEquals(message.m2(), decryptedMessage.m2());
     }
+
+    /**
+     * Testing successful generation of a key pair
+     * Test the encryption and decryption of a message with random values
+     * random values
+     * test with actual string content but random string
+     */
     @Test
     void fullTextCycle() {
         BigInteger bitLengthP = BigInteger.valueOf(512);
@@ -92,6 +112,12 @@ class ElGamalMenezesVanstoneServiceTest {
         assertNotEquals(text, encryptedText);
     }
 
+    /**
+     * Testing successful generation of a key pair
+     * Test the encryption and decryption of a message with random values
+     * random values
+     * test with sign and verify
+     */
     @Test
     void testSignAndVerifyWithText() throws NoSuchAlgorithmException {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
@@ -117,6 +143,12 @@ class ElGamalMenezesVanstoneServiceTest {
         assertFalse(verified);
     }
 
+    /**
+     * Testing successful generation of a key pair
+     * Test the encryption and decryption of a message with random values
+     * random values
+     * test with sign and verify without content string
+     */
     @Test
     void testSignAndVerify() {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));

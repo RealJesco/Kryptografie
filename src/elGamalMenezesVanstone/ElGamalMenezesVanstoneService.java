@@ -53,16 +53,19 @@ public class ElGamalMenezesVanstoneService {
 //        return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
 //    }
 
-
-    public static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger qSubtractONE) {
+    /**
+     * Skript S.
+     * @param publicKey public key
+     * @param qSubtractONE order of the elliptic curve subtracted by one
+     * @return random number k and public key generator point multiplied by k
+     */
+    private static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger qSubtractONE) {
         SecureRandom random = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
         SecureRandom randomRangePicker = new SecureRandom();
         BigInteger prime = ellipticCurve.getP();
         int primeBitLength = prime.bitLength();
         BigInteger k;
-
-        System.out.println("qSubtractONE: " + qSubtractONE);
 
         do {
             k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
@@ -74,27 +77,41 @@ public class ElGamalMenezesVanstoneService {
             k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
             ky = publicKey.groupElement().multiply(k, ellipticCurve);
         }
-        System.out.println("k: " + k);
         assert !(ky instanceof InfinitePoint);
         return new Pair<>(k, ky);
     }
 
+    /**
+     * Skript S. 71-72 Algorithm 3.3
+     * @param message  message (as biginteger tuple) to be encrypted
+     * @param publicKey public key
+     * @param k random number
+     * @param ky public key generator point multiplied by k
+     * @return cipher message
+     */
     public static CipherMessage encrypt(Message message, PublicKey publicKey, BigInteger k, EllipticCurvePoint ky) {
         EllipticCurvePoint a = publicKey.generator().multiply(k, publicKey.ellipticCurve());
         BigInteger prime = publicKey.ellipticCurve().getP();
         return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
     }
 
+    /**
+     * @param message  message to be encrypted
+     * @param publicKey public key
+     * @return cipher message
+     */
     public static CipherMessage encrypt(Message message, PublicKey publicKey) {
         BigInteger q = publicKey.order();
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
         Pair<BigInteger, EllipticCurvePoint> kAndKy = generateKandKy(publicKey, qSubtractONE);
         return encrypt(message, publicKey, kAndKy.getKey(), kAndKy.getValue());
     }
+
     /**
-     * @param cipherMessage
-     * @param privateKey
-     * @return
+     * Skript S. 72 Algorithm 3.3
+     * @param cipherMessage cipher message
+     * @param privateKey   private key
+     * @return  decrypted message
      */
     public static Message decrypt(CipherMessage cipherMessage, PrivateKey privateKey) {
         EllipticCurvePoint xa = cipherMessage.point().multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve());
@@ -108,9 +125,10 @@ public class ElGamalMenezesVanstoneService {
     }
 
     /**
-     * @param keyPair
-     * @param message
-     * @return
+     * Skript S. 73-75 Algorithm 3.5
+     * @param keyPair key pair
+     * @param message message
+     * @return signature
      */
     //sign and verify methods
     public static MenezesVanstoneSignature sign(final KeyPair keyPair, final BigInteger message) {
@@ -149,10 +167,11 @@ public class ElGamalMenezesVanstoneService {
     }
 
     /**
-     * @param publicKey
-     * @param message
-     * @param signature
-     * @return
+     * Skript S. 73-75 Algorithm 3.5
+     * @param publicKey public key
+     * @param message  message
+     * @param signature signature
+     * @return true if the signature is valid, false otherwise
      */
     public static boolean verify(final PublicKey publicKey, final BigInteger message, final MenezesVanstoneSignature signature) {
         BigInteger q = publicKey.order();
