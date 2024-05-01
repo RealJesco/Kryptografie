@@ -110,6 +110,7 @@ public class SecureFiniteFieldEllipticCurve {
         assert this.safeEllipticCurve.getP().equals(p);
         assert this.safeEllipticCurve.calculateOrder(a).equals(orderN);
         this.q = q;
+        this.safeEllipticCurve.setQ(q);
     }
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m) {
         assert n.compareTo(Resource.ZERO) > 0;

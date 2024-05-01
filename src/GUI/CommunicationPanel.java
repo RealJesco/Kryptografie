@@ -1,8 +1,12 @@
 package GUI;
 
+import FiniteFieldEllipticCurve.EllipticCurvePoint;
 import FiniteFieldEllipticCurve.SecureFiniteFieldEllipticCurve;
+import elGamalMenezesVanstone.ElGamalMenezesVanstoneService;
 import elGamalMenezesVanstone.KeyPair;
 import encryption.EncryptionContextParamBuilder;
+import org.apache.commons.math3.util.Pair;
+import resource.Resource;
 import rsa.RSA;
 import elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
 import encryption.EncryptionContext;
@@ -179,6 +183,9 @@ public class CommunicationPanel extends JFrame {
                 //Schlüssel setzen
                 keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
                 builder.withElGamalMenezesVanstoneKeyPair(keyPair);
+                Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey(), keyPair.getPublicKey().order().subtract(Resource.ONE));
+                builder.withK(kAndKy.getKey());
+                builder.withKy(kAndKy.getValue());
                 //Schlüssel übergeben
                 // builder erstmal übergeben, Werte überschreiben wo nötig TODO bessere Lösung finden
                 KlartextPanel.openPanel(builder.build());

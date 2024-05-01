@@ -1,5 +1,6 @@
 package encryption;
 
+import FiniteFieldEllipticCurve.EllipticCurvePoint;
 import elGamalMenezesVanstone.KeyPair;
 import elGamalMenezesVanstone.PrivateKey;
 import elGamalMenezesVanstone.PublicKey;
@@ -7,6 +8,7 @@ import rsa.KeyPairRsa;
 import rsa.PrivateKeyRsa;
 import rsa.PublicKeyRsa;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 public class EncryptionContextParamBuilder {
@@ -63,6 +65,16 @@ public class EncryptionContextParamBuilder {
 
     public EncryptionContextParamBuilder withRsaPrivateKey(PrivateKeyRsa privateKey) {
         params.put("PrivateKey", privateKey);
+        return this;
+    }
+
+    public EncryptionContextParamBuilder withK(BigInteger k) {
+        params.put("k", k);
+        return this;
+    }
+
+    public EncryptionContextParamBuilder withKy(EllipticCurvePoint ky) {
+        params.put("ky", ky);
         return this;
     }
 

@@ -12,6 +12,7 @@ public class FiniteFieldEllipticCurve {
     BigInteger a;
     BigInteger b;
     BigInteger p;
+    BigInteger q;
 
     public BigInteger getA() {
         return a;
@@ -23,6 +24,12 @@ public class FiniteFieldEllipticCurve {
 
     public BigInteger getP() {
         return p;
+    }
+    public BigInteger getQ(){
+        return this.q;
+    }
+    public void setQ(BigInteger q){
+        this.q = q;
     }
 
     public FiniteFieldEllipticCurve(BigInteger n, BigInteger p) {

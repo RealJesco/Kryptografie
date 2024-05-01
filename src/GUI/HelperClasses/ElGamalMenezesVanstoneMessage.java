@@ -2,9 +2,11 @@ package GUI.HelperClasses;
 
 import FiniteFieldEllipticCurve.EllipticCurvePoint;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public class ElGamalMenezesVanstoneMessage {
+    BigInteger k;
     List<EllipticCurvePoint> cipherMessagePoints;
 
     String cipherMessageString;
@@ -20,6 +22,14 @@ public class ElGamalMenezesVanstoneMessage {
 
     public String getCipherMessageString() {
         return cipherMessageString;
+    }
+
+    public BigInteger getK() {
+        return k;
+    }
+
+    public void setK(BigInteger k) {
+        this.k = k;
     }
 
 }

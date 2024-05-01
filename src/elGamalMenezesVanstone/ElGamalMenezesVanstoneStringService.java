@@ -23,43 +23,74 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         return new BigInteger(1, hashbytes);
     }
 
-    /**
-     * @param key The public key to encrypt the message with
-     * @param message The message to be encrypted
-     * @param numberBase The number base to be used for the encryption (e.g. 55296)
-     * @return The encrypted message as a ElGamalMenezesVanstoneMessage containing the cipher string and the specific point of the curve
-     */
-    public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, int numberBase) {
-        FiniteFieldEllipticCurve ellipticCurve = key.ellipticCurve();
-
-        int blockSize = (int) (ellipticCurve.getP().bitLength() * (Math.log(2) / Math.log(numberBase)));
-
-        List<BigInteger> blocks = ToDecimalBlockChiffre.encrypt(message, numberBase, blockSize);
-
-        if(blocks.size() % 2 != 0) {
-            blocks.add(Resource.ZERO);
+        /**
+         * Encrypts a message using the public key and a specific number base.
+         *
+         * @param key The public key to encrypt the message with.
+         * @param message The message to be encrypted.
+         * @param numberBase The number base to be used for the encryption.
+         * @return The encrypted message as an ElGamalMenezesVanstoneMessage.
+         */
+        public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, int numberBase) {
+            return encrypt(key, message, null, null, numberBase);
         }
 
-        List<CipherMessage> encryptedBlocks = new ArrayList<CipherMessage>();
-        for (int i = 0; i < blocks.size(); i+=2) {
-            Message clearMessage = new Message(blocks.get(i), blocks.get(i+1));
-            CipherMessage cipherMessage = ElGamalMenezesVanstoneService.encrypt(clearMessage, key);
-            encryptedBlocks.add(cipherMessage);
+        /**
+         * Encrypts a message using the public key, a specific number base, and provided elliptic curve parameters.
+         *
+         * @param key The public key to encrypt the message with.
+         * @param message The message to be encrypted.
+         * @param k The scalar multiplication factor.
+         * @param ky The elliptic curve point resulting from scalar multiplication.
+         * @param numberBase The number base to be used for the encryption.
+         * @return The encrypted message as an ElGamalMenezesVanstoneMessage.
+         */
+        public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, BigInteger k, EllipticCurvePoint ky, int numberBase) {
+            FiniteFieldEllipticCurve ellipticCurve = key.ellipticCurve();
+            int blockSize = calculateBlockSize(ellipticCurve.getP(), numberBase);
+            List<BigInteger> blocks = ToDecimalBlockChiffre.encrypt(message, numberBase, blockSize);
+            normalizeBlocks(blocks);
+
+            List<CipherMessage> encryptedBlocks = encryptBlocks(blocks, key, k, ky);
+            return constructElGamalMenezesVanstoneMessage(encryptedBlocks, numberBase, blockSize);
         }
 
-        List<EllipticCurvePoint>  sentCipherMessagePoints = new ArrayList<EllipticCurvePoint>();
-        List<BigInteger> sentCipherMessageBs = new ArrayList<BigInteger>();
-
-        for (int i = 0; i < encryptedBlocks.size(); i++) {
-            sentCipherMessagePoints.add(encryptedBlocks.get(i).point());
-            sentCipherMessageBs.add(encryptedBlocks.get(i).b1());
-            sentCipherMessageBs.add(encryptedBlocks.get(i).b2());
+        private static int calculateBlockSize(BigInteger prime, int numberBase) {
+            return (int) (prime.bitLength() * (Math.log(2) / Math.log(numberBase)));
         }
 
-        String cipherMessage =  FromDecimalBlockChiffre.encrypt(sentCipherMessageBs, numberBase, blockSize + 1);
+        private static void normalizeBlocks(List<BigInteger> blocks) {
+            if (blocks.size() % 2 != 0) {
+                blocks.add(Resource.ZERO);
+            }
+        }
 
-        return new ElGamalMenezesVanstoneMessage(sentCipherMessagePoints, cipherMessage);
-    }
+        private static List<CipherMessage> encryptBlocks(List<BigInteger> blocks, PublicKey key, BigInteger k, EllipticCurvePoint ky) {
+            List<CipherMessage> encryptedBlocks = new ArrayList<>();
+            for (int i = 0; i < blocks.size(); i += 2) {
+                Message clearMessage = new Message(blocks.get(i), blocks.get(i + 1));
+                CipherMessage cipherMessage = (k == null || ky == null)
+                        ? ElGamalMenezesVanstoneService.encrypt(clearMessage, key)
+                        : ElGamalMenezesVanstoneService.encrypt(clearMessage, key, k, ky);
+                encryptedBlocks.add(cipherMessage);
+            }
+            return encryptedBlocks;
+        }
+
+        private static ElGamalMenezesVanstoneMessage constructElGamalMenezesVanstoneMessage(List<CipherMessage> encryptedBlocks, int numberBase, int blockSize) {
+            List<EllipticCurvePoint> points = new ArrayList<>();
+            List<BigInteger> messageComponents = new ArrayList<>();
+
+            for (CipherMessage encryptedBlock : encryptedBlocks) {
+                points.add(encryptedBlock.point());
+                messageComponents.add(encryptedBlock.b1());
+                messageComponents.add(encryptedBlock.b2());
+            }
+
+            String cipherMessage = FromDecimalBlockChiffre.encrypt(messageComponents, numberBase, blockSize + 1);
+            return new ElGamalMenezesVanstoneMessage(points, cipherMessage);
+        }
+
 
     /**
      * @param key The private key to decrypt the message with
@@ -145,8 +176,12 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
     @Override
     public Object encrypt(String data, Map<String, Object> params) {
         KeyPair key = (KeyPair) params.get("KeyPair");
-
-        return encrypt( key.getPublicKey(), data, (int) params.get("numberBase"));
+        if(params.get("k") != null || params.get("ky") != null) {
+            System.out.println("Encrypting with k and ky: " + params.get("k") + " " + params.get("ky"));
+            return encrypt(key.getPublicKey(), data, (BigInteger) params.get("k"), (EllipticCurvePoint) params.get("ky"), (int) params.get("numberBase"));
+        } else {
+            return encrypt(key.getPublicKey(), data, (int) params.get("numberBase"));
+        }
     }
 
     @Override

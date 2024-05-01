@@ -1,8 +1,10 @@
 package GUI;
 
+import FiniteFieldEllipticCurve.EllipticCurvePoint;
 import GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
 import encryption.EncryptionContext;
+import org.apache.commons.math3.util.Pair;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -14,6 +16,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
@@ -109,6 +112,7 @@ public class KlartextPanel {
         c.gridy = 0;
         panel.add(inputScrollPane, c);
         anzeige_k = getNewTextfield(1, "Zufallszahl k");
+        anzeige_k.setText(contextParams.get("k").toString());
         encryptButton = new JButton("Verschlüsseln");
         encryptButton.addActionListener(new ActionListener() {
             @Override

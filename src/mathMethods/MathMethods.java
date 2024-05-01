@@ -403,7 +403,7 @@ public class MathMethods {
         }
     }
 
-    private static final MathContext context = new MathContext(10);
+    private static MathContext context = new MathContext(10);
     private static BigInteger randomElsnerA = Resource.ZERO;
     private static BigInteger randomElsnerB = Resource.ZERO;
     private static BigInteger randomElsnerM = Resource.ZERO;
@@ -449,7 +449,17 @@ public class MathMethods {
 
         BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
-        return a.add(randomSeedNumberOffset.toBigInteger());
+        BigInteger result = a.add(randomSeedNumberOffset.toBigInteger());
+        while (result.equals(Resource.ONE)|| result.equals(Resource.ZERO)) {
+            context = new MathContext(context.getPrecision() + 5);
+            randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
+            randomSeedNumberOffset = randomSeededNumber.multiply(range);
+            result = a.add(randomSeedNumberOffset.toBigInteger());
+        }
+        if(result.equals(Resource.ONE) || result.equals(Resource.ZERO)) {
+            return randomElsner(m, n, a, b);
+        }
+        return result;
     }
 
     public static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {

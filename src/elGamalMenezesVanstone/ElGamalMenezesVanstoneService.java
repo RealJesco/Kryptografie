@@ -54,13 +54,15 @@ public class ElGamalMenezesVanstoneService {
 //    }
 
 
-    private static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger qSubtractONE) {
+    public static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger qSubtractONE) {
         SecureRandom random = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
         SecureRandom randomRangePicker = new SecureRandom();
         BigInteger prime = ellipticCurve.getP();
         int primeBitLength = prime.bitLength();
         BigInteger k;
+
+        System.out.println("qSubtractONE: " + qSubtractONE);
 
         do {
             k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
@@ -72,6 +74,7 @@ public class ElGamalMenezesVanstoneService {
             k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
             ky = publicKey.groupElement().multiply(k, ellipticCurve);
         }
+        System.out.println("k: " + k);
         assert !(ky instanceof InfinitePoint);
         return new Pair<>(k, ky);
     }
