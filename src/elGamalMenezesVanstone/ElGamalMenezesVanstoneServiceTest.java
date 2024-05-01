@@ -68,9 +68,9 @@ class ElGamalMenezesVanstoneServiceTest {
     }
     @Test
     void fullTextCycle() {
-        BigInteger bitLengthP = BigInteger.valueOf(128);
+        BigInteger bitLengthP = BigInteger.valueOf(256);
         double time = System.currentTimeMillis();
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(120500), 100, BigInteger.valueOf(13));
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(120500), 10, BigInteger.valueOf(13));
         System.out.println("passed time: " + (System.currentTimeMillis() - time));
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         KeyPair keyPair = new KeyPair();
