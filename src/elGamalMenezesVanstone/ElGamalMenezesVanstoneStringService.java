@@ -74,8 +74,9 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         List<CipherMessage> receivedCipherMessagePoints = new ArrayList<CipherMessage>();
         List<BigInteger> receivedCipherMessageBs = FromDecimalBlockChiffre.decrypt(elGamalMenezesVanstoneCipherMessage.getCipherMessageString(), numberBase, blockSize + 1);
 
-
-        if(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().size() % 2 != 0 || receivedCipherMessageBs.size() % 2 != 0) {
+        if(receivedCipherMessageBs.size() % 2 != 0) {
+            System.out.println(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().size());
+            System.out.println(receivedCipherMessageBs.size());
             throw new IllegalArgumentException("The number of cipher points is not even, so the cipher message is either corrupted or not valid.");
         }
 
