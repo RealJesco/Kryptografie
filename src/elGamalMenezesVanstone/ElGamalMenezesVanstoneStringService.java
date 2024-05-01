@@ -24,6 +24,7 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
     }
 
     /**
+     *
      * @param key The public key to encrypt the message with
      * @param message The message to be encrypted
      * @param numberBase The number base to be used for the encryption (e.g. 55296)
@@ -85,7 +86,6 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
             decryptedBlocks.add(decryptedMessage);
         }
 
-
         List<BigInteger> decryptedText = new ArrayList<>();
         for (int i = 0; i < decryptedBlocks.size(); i++) {
             decryptedText.add(decryptedBlocks.get(i).m1());
@@ -127,8 +127,8 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
 
     /**
      *
-     * @param data
-     * @param params
+     * @param data the string to be encrypted
+     * @param params the parameters for the encryption --> EncryptionContextParamBuilder
      * @return - The encrypted message as a ElGamalMenezesVanstoneMessage containing the cipher string and the specific point of the curve
      */
     @Override
@@ -138,6 +138,12 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         return encrypt( key.getPublicKey(), data, (int) params.get("numberBase"));
     }
 
+    /**
+     *
+     * @param data the string to be decrypted
+     * @param params the parameters for the decryption --> EncryptionContextParamBuilder
+     * @return - The decrypted message
+     */
     @Override
     public String decrypt(String data, Map<String, Object> params) {
         ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = (ElGamalMenezesVanstoneMessage) params.get("elGamalMenezesVanstoneCipherMessage");
@@ -147,6 +153,12 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         return decrypt((PrivateKey) params.get("PrivateKey"), elGamalMenezesVanstoneCipherMessage, (int) params.get("numberBase"));
     }
 
+    /**
+     *
+     * @param data the string to be signed
+     * @param params the parameters for the signing --> EncryptionContextParamBuilder
+     * @return - The signature of the message
+     */
     @Override
     public String sign(String data, Map<String, Object> params) {
         try {
@@ -156,6 +168,13 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         }
     }
 
+    /**
+     *
+     * @param data the string to be verified
+     * @param signature the signature of the message
+     * @param params the parameters for the verification --> EncryptionContextParamBuilder
+     * @return - true if the signature is valid, false otherwise
+     */
     @Override
     public boolean verify(String data, String signature, Map<String, Object> params) {
         try {

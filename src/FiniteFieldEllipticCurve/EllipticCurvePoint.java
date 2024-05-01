@@ -22,6 +22,10 @@ public abstract class EllipticCurvePoint {
         return y;
     }
 
+    /**
+     * @param ellipticCurve
+     * @return
+     */
     public EllipticCurvePoint normalize(FiniteFieldEllipticCurve ellipticCurve) {
         EllipticCurvePoint normalizedEcPoint = new FiniteFieldEcPoint(x.mod(ellipticCurve.p).abs(), y.mod(ellipticCurve.p).abs());
         if (ellipticCurve.isValidPoint(normalizedEcPoint)) {
@@ -31,6 +35,11 @@ public abstract class EllipticCurvePoint {
         }
     }
 
+    /**
+     * @param point2
+     * @param ellipticCurve
+     * @return
+     */
     public EllipticCurvePoint add(EllipticCurvePoint point2, FiniteFieldEllipticCurve ellipticCurve) {
         if (point2 instanceof InfinitePoint) {
             return this;
@@ -47,6 +56,10 @@ public abstract class EllipticCurvePoint {
         return newPoint.normalize(ellipticCurve);
     }
 
+    /**
+     * @param ellipticCurve
+     * @return
+     */
     public EllipticCurvePoint doublePoint(FiniteFieldEllipticCurve ellipticCurve) {
         BigInteger y = this.getY();
         BigInteger x = this.getX();
@@ -69,6 +82,11 @@ public abstract class EllipticCurvePoint {
         return newPoint.normalize(ellipticCurve);
     }
 
+    /**
+     * @param scalarMultiplicator
+     * @param ellipticCurve
+     * @return
+     */
     public EllipticCurvePoint multiply(BigInteger scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
         EllipticCurvePoint result = new InfinitePoint();
         EllipticCurvePoint currentPoint = this;

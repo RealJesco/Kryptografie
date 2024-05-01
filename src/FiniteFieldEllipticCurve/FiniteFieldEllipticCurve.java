@@ -35,14 +35,19 @@ public class FiniteFieldEllipticCurve {
         this.p = p;
     }
 
-
-
+    /**
+     * @param ellipticCurvePoint
+     * @return
+     */
     public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint){
         BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getY(), Resource.TWO, p));
         BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getX(), Resource.THREE, p).add(a.multiply(ellipticCurvePoint.getX()))).mod(p);
         return inputYSquared.equals(valueToCheck);
     }
 
+    /**
+     * @return list of all points on the elliptic curve
+     */
     public List<EllipticCurvePoint> calculateAllPoints() {
         List<EllipticCurvePoint> calculatedPoints = new ArrayList<EllipticCurvePoint>();
         for (BigInteger i = Resource.ZERO; i.compareTo(p) < 0; i = i.add(Resource.ONE)) {
@@ -61,6 +66,12 @@ public class FiniteFieldEllipticCurve {
         calculatedPoints.add(new InfinitePoint());
         return calculatedPoints;
     }
+
+    /**
+     *
+     * @param n
+     * @return biginteger representing the order of the elements of the elliptic curve
+     */
     public BigInteger calculateOrder(BigInteger n){
         GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.p);
         BigInteger y;

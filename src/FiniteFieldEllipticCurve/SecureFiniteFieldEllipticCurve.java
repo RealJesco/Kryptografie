@@ -26,28 +26,41 @@ public class SecureFiniteFieldEllipticCurve {
         return safeEllipticCurve;
     }
 
+    /**
+     * Generate a prime congruent to 5 mod 8
+     * @param bitLengthOfP
+     * @param millerRabinIterations
+     * @param m
+     * @return p
+     */
     private BigInteger generatePrimeCongruentToFiveModEight(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
         SecureRandom random = new SecureRandom();
         BigInteger p = new BigInteger(bitLengthOfP.intValue(), random);
-        BigInteger modEight = p.mod(BigInteger.valueOf(8));
-        p = p.add(BigInteger.valueOf(5).subtract(modEight));
+        BigInteger modEight = p.mod(Resource.EIGHT);
+        p = p.add(Resource.FIVE.subtract(modEight));
         if (p.bitLength() > bitLengthOfP.intValue()) {
-            p = p.subtract(BigInteger.valueOf(8));
+            p = p.subtract(Resource.EIGHT);
         }
 
-        BigInteger eight = BigInteger.valueOf(8);
+        BigInteger eight = Resource.EIGHT;
         while (!MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()))) {
             p = p.add(eight);
             if (p.bitLength() > bitLengthOfP.intValue()) {
                 p = new BigInteger(bitLengthOfP.intValue(), random);
-                modEight = p.mod(BigInteger.valueOf(8));
-                p = p.add(BigInteger.valueOf(5).subtract(modEight));
+                modEight = p.mod(eight);
+                p = p.add(Resource.FIVE.subtract(modEight));
             }
         }
         return p;
     }
 
-
+    /**
+     * Calculate a prime p congruent to 5 mod 8
+     * @param bitLengthOfP
+     * @param millerRabinIterations
+     * @param m
+     * @return p
+     */
     private BigInteger calculatePrimeMod8(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
         BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
         BigInteger pMod8 = p.mod(Resource.EIGHT);
@@ -66,9 +79,24 @@ public class SecureFiniteFieldEllipticCurve {
         assert !(p.equals(n.multiply(Resource.TWO)));
         return p;
     }
-    private BigInteger calculateQ( BigInteger orderN){
+
+    /**
+     * Skript S.78
+     * Calculate q such that orderN = q*8
+     * @param orderN
+     * @return q
+     */
+    private BigInteger calculateQ(BigInteger orderN){
         return orderN.divide(Resource.EIGHT);
     }
+
+    /**
+     * Skript Satz 4.1 S.76-78
+     * Calculate a prime p congruent to 5 mod 8 and a prime q such that orderN = q*8
+     * @param bitLengthOfP
+     * @param millerRabinIterations
+     * @param m
+     */
     private void calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
 
         BigInteger p;
