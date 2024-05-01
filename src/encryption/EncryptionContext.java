@@ -28,4 +28,7 @@ public class EncryptionContext {
     public void setStrategy(StringEncryptionStrategy strategy) {
         this.strategy = strategy;
     }
+    public StringEncryptionStrategy getStrategy() {
+        return this.strategy;
+    }
 }

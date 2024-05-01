@@ -2,9 +2,7 @@ package GUI;
 
 import GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
-import elGamalMenezesVanstone.KeyPair;
 import encryption.EncryptionContext;
-import encryption.EncryptionContextParamBuilder;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -32,10 +30,10 @@ public class KlartextPanel {
     private static ElGamalMenezesVanstoneMessage input_cipherMessage;
     // TODO bessere Lösung
     static EncryptionContext context = new EncryptionContext();
-    static EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
-    static KeyPair keyPair = new KeyPair();
+    private static Map<String, Object> contextParams;
 
-    public static void openPanel() {
+    public static void openPanel(Map<String, Object> params) {
+        contextParams = params;
         if(panel == null) {
             setupGraphics();
         }
@@ -49,8 +47,8 @@ public class KlartextPanel {
 
     private static void setupGraphics() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(1200,700));
-        frame.setSize(new Dimension(1200,700));
+        frame.setPreferredSize(new Dimension(700,700));
+        frame.setSize(new Dimension(700,700));
         frame.setVisible(true);
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
@@ -139,11 +137,9 @@ public class KlartextPanel {
     }
 
     private static void encrypt() throws NoSuchAlgorithmException {
-        builder.setData(inputKlartext.getText());
-        Map<String, Object> encryptionParams = builder.build();
-        ElGamalMenezesVanstoneMessage encryptedMessage = (ElGamalMenezesVanstoneMessage) context.encrypt(builder.getData(), encryptionParams);
+        ElGamalMenezesVanstoneMessage encryptedMessage = (ElGamalMenezesVanstoneMessage) context.encrypt(inputKlartext.getText(), contextParams);
         anzeige_chiffrat.setText(encryptedMessage.getCipherMessageString());
-        anzeige_signatur.setText(context.sign(builder.getData(), encryptionParams));
+        anzeige_signatur.setText(context.sign(inputKlartext.getText(), contextParams));
         input_cipherMessage = encryptedMessage;
     }
 
