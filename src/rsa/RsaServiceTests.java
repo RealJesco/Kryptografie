@@ -13,6 +13,9 @@ class RsaServiceTests {
         Assertions.assertNotNull(keyPair);
         Assertions.assertEquals(keyPair.privateKeyRsa().n(), keyPair.publicKeyRsa().n());
         Assertions.assertNotEquals(keyPair.privateKeyRsa().d(), keyPair.publicKeyRsa().e());
+
+        KeyPairRsa keyPair2 = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(87));
+        Assertions.assertNotEquals(keyPair.privateKeyRsa().n(), keyPair2.privateKeyRsa().n());
     }
 
     @Test

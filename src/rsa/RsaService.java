@@ -12,6 +12,14 @@ import static mathMethods.MathMethods.generateRandomPrime;
  * Ein RSA Service für die Arbeit auf BigInteger.
  */
 public final class RsaService {
+    private static AtomicInteger counter = new AtomicInteger(1);
+
+    public static AtomicInteger getCounter() {
+        if(counter.get() == Integer.MAX_VALUE){
+            counter.set(1);
+        }
+        return counter;
+    }
 
     private static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter){
         BigInteger possiblePrime;
@@ -42,7 +50,6 @@ public final class RsaService {
 
     public static KeyPairRsa generateKeyPair(int bitLength, int millerRabinSteps, BigInteger m) {
 
-        AtomicInteger counter = new AtomicInteger(1);
         int bitLengthP = bitLength / 2;
         int bitLengthQ = bitLength / 2;
         BigInteger p;
@@ -52,15 +59,15 @@ public final class RsaService {
             bitLengthQ++;
         }
         do{
-            p = generateUniquePrime(BigInteger.valueOf(bitLengthP), millerRabinSteps, m, counter);
-            q = generateUniquePrime(BigInteger.valueOf(bitLengthQ), millerRabinSteps, m, counter);
+            p = generateUniquePrime(BigInteger.valueOf(bitLengthP), millerRabinSteps, m, getCounter());
+            q = generateUniquePrime(BigInteger.valueOf(bitLengthQ), millerRabinSteps, m, getCounter());
             n = p.multiply(q);
         } while(n.bitLength()!=bitLength);
 
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
         BigInteger phiN = (p.subtract(Resource.ONE)).multiply(qSubtractONE);
 
-        BigInteger e = calculateE(phiN, millerRabinSteps, m, counter);
+        BigInteger e = calculateE(phiN, millerRabinSteps, m, getCounter());
 
         BigInteger d = MathMethods.extendedEuclidean(e, phiN)[1].mod(phiN);
 

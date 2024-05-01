@@ -56,10 +56,8 @@ public class KeyPair {
             }
 
             generator = new FiniteFieldEcPoint(x,y);
-            System.out.println("generator: " + generator);
             EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
             if (qg instanceof InfinitePoint) {
-                System.out.println("I am exiting");
                 return generator;
             }
         }
