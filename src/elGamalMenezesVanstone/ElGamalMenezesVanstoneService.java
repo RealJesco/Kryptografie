@@ -59,7 +59,7 @@ public class ElGamalMenezesVanstoneService {
      * @param qSubtractONE order of the elliptic curve subtracted by one
      * @return random number k and public key generator point multiplied by k
      */
-    private static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger qSubtractONE) {
+    public static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger qSubtractONE) {
         SecureRandom random = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
         SecureRandom randomRangePicker = new SecureRandom();
