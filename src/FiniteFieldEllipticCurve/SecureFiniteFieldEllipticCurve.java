@@ -9,14 +9,14 @@ import java.security.SecureRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SecureFiniteFieldEllipticCurve {
-    private final BigInteger n;
+    private final BigInteger a;
     private BigInteger q;
 
     private FiniteFieldEllipticCurve safeEllipticCurve;
     AtomicInteger counter = new AtomicInteger(1);
 
-    public BigInteger getN() {
-        return this.n;
+    public BigInteger getA() {
+        return this.a;
     }
     public  BigInteger getQ(){
         return this.q;
@@ -64,7 +64,7 @@ public class SecureFiniteFieldEllipticCurve {
     private BigInteger calculatePrimeMod8(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
         BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
         BigInteger pMod8 = p.mod(Resource.EIGHT);
-        BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, p);
+        BigInteger legendreSign = MathMethods.verifyEulerCriterion(a, p);
 
 
         while (!pMod8.equals(Resource.FIVE) || !legendreSign.equals(Resource.ONE)){
@@ -72,11 +72,11 @@ public class SecureFiniteFieldEllipticCurve {
             p = generatePrimeCongruentToFiveModEight(bitLengthOfP, millerRabinIterations, m);
             assert p.isProbablePrime(100);
             pMod8 = p.mod(Resource.EIGHT);
-            legendreSign = MathMethods.verifyEulerCriterion(n, p);
+            legendreSign = MathMethods.verifyEulerCriterion(a, p);
         }
 
         assert legendreSign.equals(Resource.ONE);
-        assert !(p.equals(n.multiply(Resource.TWO)));
+        assert !(p.equals(a.multiply(Resource.TWO)));
         return p;
     }
 
@@ -100,7 +100,7 @@ public class SecureFiniteFieldEllipticCurve {
     private void calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m){
 
         BigInteger p;
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(n, null);
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(a, null);
         BigInteger orderN;
         BigInteger q;
 
@@ -114,9 +114,9 @@ public class SecureFiniteFieldEllipticCurve {
             }
 
 
-            orderN = ellipticCurve.calculateOrder(n);
+            orderN = ellipticCurve.calculateOrder(a);
 
-            if(orderN.equals(n.multiply(Resource.TWO)) || !orderN.mod(Resource.EIGHT).equals(Resource.ZERO)){
+            if(orderN.equals(a.multiply(Resource.TWO)) || !orderN.mod(Resource.EIGHT).equals(Resource.ZERO)){
                 continue;
             }
 
@@ -136,18 +136,18 @@ public class SecureFiniteFieldEllipticCurve {
 
         this.safeEllipticCurve = ellipticCurve;
         assert this.safeEllipticCurve.getP().equals(p);
-        assert this.safeEllipticCurve.calculateOrder(n).equals(orderN);
+        assert this.safeEllipticCurve.calculateOrder(a).equals(orderN);
         this.q = q;
     }
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m) {
         assert n.compareTo(Resource.ZERO) > 0;
-        this.n = n;
+        this.a = n.multiply(n).negate();
         calculatePAndQ(bitLengthOfP, millerRabinIterations, m);
     }
 
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m, FiniteFieldEllipticCurve ellipticCurve) {
         assert n.compareTo(Resource.ZERO) > 0;
-        this.n = n;
+        this.a = n.multiply(n).negate();
         this.safeEllipticCurve = ellipticCurve;
     }
 

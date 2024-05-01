@@ -79,6 +79,14 @@ public class EncryptionStrategyTest {
         System.out.println(verified);
 
         assert verified;
+
+        //assert unequal signature
+
+        String message2 = "Hello, World!";
+        signature = signature + "e";
+        boolean verified2 = context.verify(message2, signature, decryptionParams);
+        System.out.println(verified2);
+        assert !verified2;
     }
 
     @Test

@@ -1,6 +1,10 @@
 package GUI;
 
 import GUI.HelperClasses.Message;
+import encryption.EncryptionContext;
+import encryption.EncryptionContextParamBuilder;
+import rsa.PrivateKeyRsa;
+import rsa.PublicKeyRsa;
 import rsa.RSA;
 
 import javax.swing.*;
@@ -22,12 +26,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.awt.datatransfer.DataFlavor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.openxml4j.opc.OPCPackage;
+import rsa.RsaStringService;
+
 import java.io.FileInputStream;
 
 public class Communicator extends JFrame {
@@ -46,21 +53,26 @@ public class Communicator extends JFrame {
     private static GridBagConstraints c;
     private final Communicator thisInstance;
     private final ArrayList<Message> messageList = new ArrayList<>();
+    private EncryptionContext context;
+    Map<String, Object> contextParams;
 
 
-    public Communicator(String name, BigInteger n, Point point){
+    public Communicator(String name, Map<String, Object> contextParams, Point point){
         super(name);
         this.name = name;
-        this.n = n;
-        //berechne inverse zu d -> e
-        this.e = RSA.getE();
-        this.d = RSA.getD();
+        this.context = new EncryptionContext();
+        context.setStrategy(new RsaStringService());
+
+        this.n = ((PublicKeyRsa) contextParams.get("PublicKey")).n();
+        this.e = ((PublicKeyRsa) contextParams.get("PublicKey")).e();
+        this.d = ((PrivateKeyRsa) contextParams.get("PrivateKey")).d();
+        this.contextParams = contextParams;
 
         thisInstance = this;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(1200,700));
-        setSize(new Dimension(1200,700));
+        setPreferredSize(new Dimension(1000,700));
+        setSize(new Dimension(1000,700));
         setLocation(point);
         setVisible(true);
         panel = new JPanel();
@@ -226,10 +238,10 @@ public class Communicator extends JFrame {
                 }
             }
         });
-        startEncode.addActionListener(e -> {
+        startEncode.addActionListener(ex -> {
             Communicator receiver = getReceiver(thisInstance);
             try{
-                String encryptedMessage = RSA.encrypt(inputAndOutput.getText(), receiver.e, receiver.n);
+                String encryptedMessage = (String) context.encrypt(inputAndOutput.getText(), contextParams);
                 currentClearMessage.set(inputAndOutput.getText());
                 inputAndOutput.setText(encryptedMessage);
                 currentMessageIsEncrypted.set(true);
@@ -273,7 +285,7 @@ public class Communicator extends JFrame {
                 signingValid.setText("");
             }
         });
-        sendMessage.addActionListener(e -> {
+        sendMessage.addActionListener(ex -> {
             Message message = new Message(inputAndOutput.getText(), signature, thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get(), thisInstance, getReceiver(thisInstance), currentClearMessage.get());
             getReceiver(thisInstance).sendAMessage(message);
             messageListModel.addElement(message);
@@ -292,14 +304,14 @@ public class Communicator extends JFrame {
                 messageListModel.clear();
             }
         });
-        signMessage.addActionListener(e -> {
+        signMessage.addActionListener(ex -> {
             try {
-                signature = RSA.sign(inputAndOutput.getText(), d, n);
+                signature = context.sign(inputAndOutput.getText(), contextParams);
                 signings.setText(signature);
                 currentMessageIsSigned.set(true);
-            } catch (NoSuchAlgorithmException ex) {
-                System.out.println("Error while Signing" + ex);
-                throw new RuntimeException(ex);
+            } catch (NoSuchAlgorithmException exc) {
+                System.out.println("Error while Signing" + exc);
+                throw new RuntimeException(exc);
             }
         });
         loadTextFileButton.addActionListener(new ActionListener() {
@@ -322,7 +334,7 @@ public class Communicator extends JFrame {
                 }
             }
         });
-        startDecode.addActionListener(e -> {
+        startDecode.addActionListener(ex -> {
             Message selectedMessage = messageListJ.getSelectedValue(); // Get selected message
             //If none are selected, get the last one
             if(selectedMessage == null) {
@@ -338,7 +350,7 @@ public class Communicator extends JFrame {
                     //If the message belongs to me, use my private key
                     if(selectedMessage.getReceiver().equals(thisInstance)) {
                         try {
-                            messageToUse = RSA.decrypt(selectedMessage.message, d, n);
+                            messageToUse = context.decrypt(selectedMessage.message, contextParams);
                         } catch (Exception f){
                             JOptionPane.showMessageDialog(null, "Error while Decryption" + f);
                             return;
@@ -353,13 +365,13 @@ public class Communicator extends JFrame {
                 if(selectedMessage.isSigned()){
                     try {
                         if(selectedMessage.isEncrypted){
-                            signingValid.setText("" + RSA.verifySignature(selectedMessage.message, selectedMessage.getSignature(), selectedMessage.getE(), selectedMessage.getN()));
+                            signingValid.setText("" + context.verify(selectedMessage.message, selectedMessage.getSignature(), contextParams));
                         } else {
-                            signingValid.setText("" + RSA.verifySignature(messageToUse, selectedMessage.getSignature(), selectedMessage.getE(), selectedMessage.getN()));
+                            signingValid.setText("" + context.verify(messageToUse, selectedMessage.getSignature(), contextParams));
                         }
                         receivedSignature.setText(selectedMessage.getSignature());
-                    } catch (NoSuchAlgorithmException ex) {
-                        throw new RuntimeException(ex);
+                    } catch (NoSuchAlgorithmException exc) {
+                        throw new RuntimeException(exc);
                     }
                 } else {
                     signingValid.setText("");
@@ -385,12 +397,11 @@ public class Communicator extends JFrame {
 
 
     private Communicator getReceiver(Communicator sender) {
-    /*if(sender.name.equals("Bob")){
-        return CommunicationPanel.getInstance().getAlice();
-    } else {
-        return CommunicationPanel.getInstance().getBob();
-    }*/
-        return null;
+        if(sender.name.equals("Bob")){
+            return CommunicationPanel.getInstance().getAlice();
+        } else {
+            return CommunicationPanel.getInstance().getBob();
+        }
     }
 
     private static JTextField getNewTextfield(int row, String headline, boolean editable) {
