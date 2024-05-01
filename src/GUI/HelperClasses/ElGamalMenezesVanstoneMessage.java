@@ -21,4 +21,5 @@ public class ElGamalMenezesVanstoneMessage {
     public String getCipherMessageString() {
         return cipherMessageString;
     }
+
 }

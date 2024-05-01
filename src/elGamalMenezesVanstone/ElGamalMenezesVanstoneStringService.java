@@ -74,6 +74,10 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         List<CipherMessage> receivedCipherMessagePoints = new ArrayList<CipherMessage>();
         List<BigInteger> receivedCipherMessageBs = FromDecimalBlockChiffre.decrypt(elGamalMenezesVanstoneCipherMessage.getCipherMessageString(), numberBase, blockSize + 1);
 
+        if(receivedCipherMessageBs.size() % 2 != 0) {
+            receivedCipherMessageBs.add(Resource.ZERO);
+        }
+
         for (int i = 0; i < receivedCipherMessageBs.size(); i+=2) {
             CipherMessage cipherMessage = new CipherMessage(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().get(i/2), receivedCipherMessageBs.get(i), receivedCipherMessageBs.get(i+1));
             receivedCipherMessagePoints.add(cipherMessage);
@@ -145,9 +149,10 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
     public String decrypt(String data, Map<String, Object> params) {
         ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = (ElGamalMenezesVanstoneMessage) params.get("elGamalMenezesVanstoneCipherMessage");
         assert elGamalMenezesVanstoneCipherMessage != null;
+        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneMessage = new ElGamalMenezesVanstoneMessage(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints(), data);
         PrivateKey privateKey = (PrivateKey) params.get("PrivateKey");
         assert privateKey != null;
-        return decrypt((PrivateKey) params.get("PrivateKey"), elGamalMenezesVanstoneCipherMessage, (int) params.get("numberBase"));
+        return decrypt((PrivateKey) params.get("PrivateKey"), elGamalMenezesVanstoneMessage, (int) params.get("numberBase"));
     }
 
     @Override
