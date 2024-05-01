@@ -54,6 +54,7 @@ public class ElGamalMenezesVanstoneService {
 //    }
 
     /**
+     * Skript S.
      * @param publicKey public key
      * @param qSubtractONE order of the elliptic curve subtracted by one
      * @return random number k and public key generator point multiplied by k
@@ -166,6 +167,7 @@ public class ElGamalMenezesVanstoneService {
     }
 
     /**
+     * Skript S. 73-75 Algorithm 3.5
      * @param publicKey public key
      * @param message  message
      * @param signature signature
