@@ -79,7 +79,7 @@ public class CommunicationPanel extends JFrame {
         publicKeyField_q = getNewTextArea(ElGamalPanel, j++, "Public Key q");
         publicKeyField_g = getNewTextArea(ElGamalPanel, j++, "Public Key g");
         publicKeyField_y = getNewTextArea(ElGamalPanel, j++, "Public Key y");
-        publicKeyField_y = getNewTextArea(ElGamalPanel, j, "Zufallszahl x");
+        privateKeyField_x = getNewTextArea(ElGamalPanel, j, "Zufallszahl x");
 
         JButton toggleEncryptionContext = new JButton("Change Encryptionmode - Current: RSA");
         JButton finalizeButton = new JButton("Schlüssel erzeugen und Masken öffnen");
@@ -94,11 +94,11 @@ public class CommunicationPanel extends JFrame {
         numberSystemBaseField = getNewTextfield(panel, i++, "g (g-Adisches System)");
 
 
-        nonCubicNumberMField.setText("845");
+        nonCubicNumberMField.setText("13");
         onlyAllowNumbers(nonCubicNumberMField);
         numberSystemBaseField.setText("55296");
         onlyAllowNumbers(numberSystemBaseField);
-        millerRabinStepsField.setText("100");
+        millerRabinStepsField.setText("10");
         onlyAllowNumbers(millerRabinStepsField);
         lengthField_P.setText("128");
         onlyAllowNumbers(lengthField_P);
@@ -182,6 +182,12 @@ public class CommunicationPanel extends JFrame {
                 KeyPair keyPair = new KeyPair();
                 //Schlüssel setzen
                 keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
+                publicKeyField_p.setText(secureFiniteFieldEllipticCurve.getSafeEllipticCurve().getP().toString());
+                publicKeyField_q.setText(secureFiniteFieldEllipticCurve.getQ().toString());
+                publicKeyField_g.setText(keyPair.getPublicKey().generator().toString());
+                publicKeyField_y.setText(keyPair.getPublicKey().groupElement().toString());
+                publicKeyField_E.setText(keyPair.getPublicKey().toString());
+                privateKeyField_x.setText(keyPair.getPrivateKey().secretMultiplierX().toString());
                 builder.withElGamalMenezesVanstoneKeyPair(keyPair);
                 Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey(), keyPair.getPublicKey().order().subtract(Resource.ONE));
                 builder.withK(kAndKy.getKey());

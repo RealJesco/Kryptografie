@@ -222,6 +222,15 @@ public class MathMethods {
             base = base.multiply(base).mod(mod);  // Square the base for the next exponent bit
             exp = exp.shiftRight(1);  // Divide the exponent by 2
         }
+        //use modPow instead of multiply and mod
+//        while (!exp.equals(BigInteger.ZERO)) {
+//            if (exp.testBit(0)) { // If the exponent's least significant bit is 1
+//                result = result.multiply(base).mod(mod);
+//            }
+//            base = base.modPow(BigInteger.TWO, mod);  // Square the base for the next exponent bit
+//            exp = exp.shiftRight(1);  // Divide the exponent by 2
+//        }
+
 
         return result;
     }
@@ -451,7 +460,7 @@ public class MathMethods {
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
         BigInteger result = a.add(randomSeedNumberOffset.toBigInteger());
         while (result.equals(Resource.ONE)|| result.equals(Resource.ZERO)) {
-            context = new MathContext(context.getPrecision() + 5);
+            context = new MathContext(context.getPrecision() + 10);
             randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
             randomSeedNumberOffset = randomSeededNumber.multiply(range);
             result = a.add(randomSeedNumberOffset.toBigInteger());
