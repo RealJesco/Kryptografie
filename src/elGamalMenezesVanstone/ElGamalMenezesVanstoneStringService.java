@@ -72,7 +72,7 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         int blockSize = (int) (ellipticCurve.getP().bitLength() * (Math.log(2) / Math.log(numberBase)));
 
         List<CipherMessage> receivedCipherMessagePoints = new ArrayList<CipherMessage>();
-        List<BigInteger> receivedCipherMessageBs = FromDecimalBlockChiffre.decrypt(elGamalMenezesVanstoneCipherMessage.getCipherMessageString(), 55296, blockSize + 1);
+        List<BigInteger> receivedCipherMessageBs = FromDecimalBlockChiffre.decrypt(elGamalMenezesVanstoneCipherMessage.getCipherMessageString(), numberBase, blockSize + 1);
 
         for (int i = 0; i < receivedCipherMessageBs.size(); i+=2) {
             CipherMessage cipherMessage = new CipherMessage(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().get(i/2), receivedCipherMessageBs.get(i), receivedCipherMessageBs.get(i+1));
@@ -121,6 +121,9 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         int blockSize = (int) (key.ellipticCurve().getP().bitLength() * (Math.log(2) / Math.log(numberBase)));
         BigInteger hashedMessage = hashAndConvertMessageToBigInteger(message);
         List<BigInteger> menezesVanstoneSignatureList = FromDecimalBlockChiffre.decrypt(signature, 55296, blockSize + 1);
+        if(menezesVanstoneSignatureList.size() != 2) {
+            return false;
+        }
         MenezesVanstoneSignature menezesVanstoneSignature = new MenezesVanstoneSignature(menezesVanstoneSignatureList.get(0), menezesVanstoneSignatureList.get(1));
         return ElGamalMenezesVanstoneService.verify(key, hashedMessage, menezesVanstoneSignature );
     }
