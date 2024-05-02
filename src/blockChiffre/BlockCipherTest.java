@@ -10,6 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BlockCipherTest {
 
+    /**
+     * Test the encryption of a message to number blocks
+     * bitLength: bitlength of prime for encryption -> 256
+     * numberSystemBase: base of the number system (g-adic system base) (e.g. 55296)
+     * message: string to encrypt -> "Mathematik ist cool!"
+     * @expected: the encrypted message is not null
+     */
     @Test
     void encrypt() {
         int bitLength = 256;
@@ -21,6 +28,13 @@ class BlockCipherTest {
         assertNotNull(encryptedDecimalText);
     }
 
+    /**
+     * bitLength: bitlength of prime for encryption -> 512
+     * numberSystemBase: base of the number system (g-adic system base) (e.g. 55296)
+     * blockSize: block size for encryption
+     * message: string to encrypt -> "Da苉 ist eine Testnachricht"
+     * @expected: the decrypted message equals the original message
+     */
     @Test
     void decryptToDecimal() {
         int bitLength = 512;
@@ -33,6 +47,12 @@ class BlockCipherTest {
         assertEquals(message, decryptedDecimalText);
     }
 
+    /**
+     * bitLength: bitlength of prime for encryption -> 512
+     * numberSystemBase: base of the number system (g-adic system base) (e.g. 55296)
+     * blockSize: block size for encryption
+     * @expected: the expected decimals are equal to the decrypted decimals
+     */
     @Test
     void decryptFromDecimal() {
         int bitLength = 512;
@@ -48,6 +68,11 @@ class BlockCipherTest {
         assertEquals(expectedDecryptedDecimal, decryptedBlockcipher);
     }
 
+    /**
+     * Test the decryption of a message with random values
+     * @expected: the size of the decrypted message is not equal to the size of the expected decrypted message
+     * @expected: the decrypted message is not equal to the expected decrypted message
+     */
     @Test
     void decryptFromDecimalFail() {
         int bitLength = 512;
@@ -69,5 +94,4 @@ class BlockCipherTest {
 
         assertNotEquals(expectedDecryptedDecimal, decryptedBlockcipher);
     }
-
 }

@@ -18,6 +18,10 @@ import static resource.Resource.*;
  */
 public class FiniteFieldEllipticCurveTest {
 
+    /**
+     * Test the calculation of all points on the elliptic curve.
+     * @expected: the list of points has the correct size
+     */
     @Test
     void calculateAllPointsTest1() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3),  BigInteger.valueOf(11));
@@ -26,6 +30,10 @@ public class FiniteFieldEllipticCurveTest {
         assertEquals(12, allPoints.size());
     }
 
+    /**
+     * Test the calculation of all points on the elliptic curve.
+     * @expected: false if the list of points is empty, true otherwise
+     */
     @Test
     void calculateAllPointsTest2() {
         BigInteger coefficientOfX = BigInteger.valueOf(3);
@@ -36,6 +44,14 @@ public class FiniteFieldEllipticCurveTest {
         assertFalse(allPoints.isEmpty());
     }
 
+    /**
+     * Test the calculation of the order of the elliptic curve.
+     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 2
+     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 1
+     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 1 (different curve to 1)
+     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 3
+     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 2 (different curve)
+     */
     @Test
     void calculateCountOfElements() {
 
@@ -59,5 +75,4 @@ public class FiniteFieldEllipticCurveTest {
         BigInteger countOfElements5 = ellipticCurve5.calculateOrder(BigInteger.valueOf(2));
         assertEquals(500, countOfElements5.intValue());
     }
-
 }

@@ -12,7 +12,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class ElGamalMenezesVanstoneServiceTest {
 
     /**
-     * Test the encryption and decryption of a message with random values
+     * elliptic curve with prime p = 5 and a = 821
+     * private key with secret multiplier x = 80
+     * generator point with x = 115 and y = 253
+     * group element with x = 575 and y = 481
+     * q = order of the elliptic curve
+     * public key with elliptic curve, generator, group element and q
+     * message with m1 = 3 and m2 = 8
+     * @expected: the decrypted message m1 equals the original message m1
+     * @expected: the decrypted message m2 is equal to the original message m2
      */
     @Test
     void encrypt() {
@@ -34,9 +42,13 @@ class ElGamalMenezesVanstoneServiceTest {
     }
 
     /**
-     * Testing successful generation of a key pair
-     * Test the encryption and decryption of a message with random values
-     * random values
+     * secure elliptic curve
+     * key pair generation
+     * message of big integer tuple (3,8)
+     * @expected: the encrypted message part b1 is NOT equal to the original message part m1
+     * @expected: the encrypted message part b2 is not equal to the original message part m2
+     * @expected: the decrypted message m1 equals the original message m1
+     * @expected: the decrypted message m2 is not equal to the original message m2
      */
     @Test
     void testKeyGeneration() {
@@ -58,9 +70,13 @@ class ElGamalMenezesVanstoneServiceTest {
     }
 
     /**
-     * Testing successful generation of a key pair
-     * Test the encryption and decryption of a message with random values
-     * random values
+     * secure elliptic curve
+     * key pair generation
+     * message of big integer tuple (3,8)
+     * @expected: the encrypted message part b1 is NOT equal to the original message part m1
+     * @expected: the encrypted message part b2 is not equal to the original message part m2
+     * @expected: the decrypted message m1 equals the original message m1
+     * @expected: the decrypted message m2 is not equal to the original message m2
      */
     @Test
     void testKeyGenerationWithSecureEllipticCurve() {
@@ -81,10 +97,12 @@ class ElGamalMenezesVanstoneServiceTest {
     }
 
     /**
-     * Testing successful generation of a key pair
-     * Test the encryption and decryption of a message with random values
-     * random values
-     * test with actual string content but random string
+     * bitLength: bitlength of prime for encryption -> 128
+     * secure elliptic curve -> safe elliptic curve
+     * key pair generation
+     * message string with random content
+     * @expected: the decrypted message equals the original message
+     * @expected: the encrypted message is not equal to the original message
      */
     @Test
     void fullTextCycle() {
@@ -113,10 +131,12 @@ class ElGamalMenezesVanstoneServiceTest {
     }
 
     /**
-     * Testing successful generation of a key pair
-     * Test the encryption and decryption of a message with random values
-     * random values
+     * secure elliptic curve
+     * key pair generation
+     * message string -> "Hello, World! This is a test of a really long text! do you like it? I hope so!"
      * test with sign and verify
+     * @expected: the signature can be verified
+     * @expected: the signature can not be verified after changing the message
      */
     @Test
     void testSignAndVerifyWithText() throws NoSuchAlgorithmException {
@@ -144,10 +164,12 @@ class ElGamalMenezesVanstoneServiceTest {
     }
 
     /**
-     * Testing successful generation of a key pair
-     * Test the encryption and decryption of a message with random values
-     * random values
-     * test with sign and verify without content string
+     * secure elliptic curve
+     * key pair generation
+     * message in form of a big integer
+     * @expected: signature parameter r > 0
+     * @expected: signature parameter s > 0
+     * @expected: the signature can be verified
      */
     @Test
     void testSignAndVerify() {
@@ -164,5 +186,4 @@ class ElGamalMenezesVanstoneServiceTest {
 
         assertTrue(verified);
     }
-
 }

@@ -14,6 +14,14 @@ import java.util.Map;
 public class EncryptionStrategyTest {
     EncryptionContext context = new EncryptionContext();
 
+    /**
+     * Test the encryption and decryption of a message
+     * secure elliptic curve (128, 5, 100, 13)
+     * key pair generation
+     * message "Hello, World!"
+     * number base 55296
+     * @expected: param data equal to string after decryption
+     */
     @Test
     void testEncryptElGamalMenezesVanstoneStringStrategy() {
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
@@ -49,6 +57,15 @@ public class EncryptionStrategyTest {
 
     }
 
+    /**
+     * Test the encryption and decryption of a message
+     * secure elliptic curve (128, 5, 100, 13)
+     * key pair generation
+     * message "Hello, World!"
+     * number base 55296
+     * @expected: verification of the signature is successful
+     * @expected: verification of the signature is unsuccessful
+     */
     @Test
     void testElGamalMenezesVanstoneSignStringStrategy() throws NoSuchAlgorithmException {
 
@@ -89,6 +106,13 @@ public class EncryptionStrategyTest {
         assert !verified2;
     }
 
+    /**
+     * Test the encryption and decryption of a message (rsa strategy
+     * key pair generation (2048, 100, 13)
+     * message "Hello, World!"
+     * number base 55296
+     * @expected: message parameters are equal after decryption
+     */
     @Test
     void testEncryptRsaStringStrategy(){
         KeyPairRsa keyPairRsa = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(13));
@@ -122,6 +146,13 @@ public class EncryptionStrategyTest {
 
     }
 
+    /**
+     * Test the encryption and decryption of a message
+     * key pair generation (2048, 100, 13) (rsa strategy)
+     * message "Hello, World!"
+     * number base 55296
+     * @expected: verification of the signature is successful
+     */
     @Test
     void testRsaSignStringStrategy() throws NoSuchAlgorithmException {
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
