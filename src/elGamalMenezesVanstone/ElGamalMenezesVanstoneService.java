@@ -12,6 +12,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static mathMethods.MathMethods.generateRandomPrime;
 
 public class ElGamalMenezesVanstoneService {
+    /**
+     * @param bitLength bit length of the prime
+     * @param millerRabinSteps number of miller rabin steps
+     * @param m random number seed
+     * @param counter counter
+     * @return unique prime
+     */
     public static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter) {
         BigInteger possiblePrime;
         BigInteger lowerBound = Resource.FIVE;
@@ -54,7 +61,7 @@ public class ElGamalMenezesVanstoneService {
 //    }
 
     /**
-     * Skript S.
+     * Skript S.69-70
      * @param publicKey public key
      * @param qSubtractONE order of the elliptic curve subtracted by one
      * @return random number k and public key generator point multiplied by k
@@ -96,6 +103,7 @@ public class ElGamalMenezesVanstoneService {
     }
 
     /**
+     * Skript S. 71-72 Algorithm 3.3
      * @param message  message to be encrypted
      * @param publicKey public key
      * @return cipher message

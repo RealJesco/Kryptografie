@@ -25,10 +25,12 @@ public class FiniteFieldEllipticCurve {
     public BigInteger getP() {
         return p;
     }
-    public BigInteger getQ(){
+
+    public BigInteger getQ() {
         return this.q;
     }
-    public void setQ(BigInteger q){
+
+    public void setQ(BigInteger q) {
         this.q = q;
     }
 
@@ -43,16 +45,20 @@ public class FiniteFieldEllipticCurve {
     }
 
     /**
+     * Skript S.54 Def. 3.1
+     * checks if 4a^3 + 27b^2 != 0
      * @param ellipticCurvePoint
-     * @return
+     * @return true if the point is on the elliptic curve
      */
-    public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint){
+    public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint) {
         BigInteger inputYSquared = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getY(), Resource.TWO, p));
         BigInteger valueToCheck = (MathMethods.alternativeQuickExponentiation(ellipticCurvePoint.getX(), Resource.THREE, p).add(a.multiply(ellipticCurvePoint.getX()))).mod(p);
         return inputYSquared.equals(valueToCheck);
     }
 
     /**
+     * Skript S.28 & S. 59
+     * calculates all points represented by quadratic rest
      * @return list of all points on the elliptic curve
      */
     public List<EllipticCurvePoint> calculateAllPoints() {
@@ -65,8 +71,8 @@ public class FiniteFieldEllipticCurve {
                 BigInteger possibleQuadraticRest = p.subtract(ySquaredModuleR);
                 BigInteger squaredY = possibleQuadraticRest.pow(2);
                 BigInteger sqrtOfY = squaredY.sqrt();
-                if(ySquaredModuleR.equals(z) && (sqrtOfY.equals(possibleQuadraticRest) && !squaredY.equals(Resource.ONE))){
-                    calculatedPoints.add(new FiniteFieldEcPoint(i,j));
+                if (ySquaredModuleR.equals(z) && (sqrtOfY.equals(possibleQuadraticRest) && !squaredY.equals(Resource.ONE))) {
+                    calculatedPoints.add(new FiniteFieldEcPoint(i, j));
                 }
             }
         }
@@ -75,17 +81,17 @@ public class FiniteFieldEllipticCurve {
     }
 
     /**
-     *
+     * Skript S.61 - 63
      * @param n
      * @return biginteger representing the order of the elements of the elliptic curve
      */
-    public BigInteger calculateOrder(BigInteger n){
+    public BigInteger calculateOrder(BigInteger n) {
         GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.p);
         BigInteger y;
         BigInteger x;
-        if(!quadraticDivisors.real.mod(Resource.TWO).equals(Resource.ZERO)){
-           y = quadraticDivisors.real;
-           x = quadraticDivisors.imaginary;
+        if (!quadraticDivisors.real.mod(Resource.TWO).equals(Resource.ZERO)) {
+            y = quadraticDivisors.real;
+            x = quadraticDivisors.imaginary;
         } else {
             y = quadraticDivisors.imaginary;
             x = quadraticDivisors.real;
@@ -98,7 +104,7 @@ public class FiniteFieldEllipticCurve {
 //        System.out.println("realPartSign " + realPartSign);
         //TODO Test if this is correct for all cases
         BigInteger commonCalculation = Resource.TWO.multiply(y).multiply(legendreSign);
-        if(legendreSign.equals(realPartSign)){
+        if (legendreSign.equals(realPartSign)) {
             commonCalculation = commonCalculation.negate();
         }
         return this.p.add(Resource.ONE).subtract(commonCalculation);
