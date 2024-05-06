@@ -471,6 +471,7 @@ public class MathMethods {
         return result;
     }
 
+    //TODO: Method is never called => Is it still needed?
     public static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
         return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
                 primeCandidate.mod(smallPrime).equals(Resource.ZERO) || primeCandidate.equals(smallPrime));

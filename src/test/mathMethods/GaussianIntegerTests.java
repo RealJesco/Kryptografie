@@ -336,4 +336,13 @@ public class GaussianIntegerTests {
 
         assertTrue(expected.equals(input.normalizeGCD()));
     }
+
+    @Test
+    public void testToString() {
+        GaussianInteger input = new GaussianInteger(BigInteger.valueOf(4), BigInteger.valueOf(2));
+
+        String expected = "4 + 2i";
+
+        assertEquals(expected, input.toString());
+    }
 }
