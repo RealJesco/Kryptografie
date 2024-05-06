@@ -1,0 +1,432 @@
+package main.GUI;
+
+import main.GUI.HelperClasses.Message;
+import main.encryption.EncryptionContext;
+import main.rsa.PrivateKeyRsa;
+import main.rsa.PublicKeyRsa;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.awt.datatransfer.DataFlavor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import main.rsa.RsaStringService;
+
+public class Communicator extends JFrame {
+    public String name;
+    public BigInteger n;
+    public BigInteger e;
+    private final BigInteger d;
+    private String signature;
+    private static JPanel panel;
+    private final JTextArea inputAndOutput;
+    private final DefaultListModel<Message> messageListModel;
+    private final JList<Message> messageListJ;
+    private final JTextField signings;
+    private final JTextField signingValid;
+    private final JTextField receivedSignature;
+    private static GridBagConstraints c;
+    private final Communicator thisInstance;
+    private final ArrayList<Message> messageList = new ArrayList<>();
+    private EncryptionContext context;
+    Map<String, Object> contextParams;
+
+
+    public Communicator(String name, Map<String, Object> contextParams, Point point){
+        super(name);
+        this.name = name;
+        this.context = new EncryptionContext();
+        context.setStrategy(new RsaStringService());
+
+        this.n = ((PublicKeyRsa) contextParams.get("PublicKey")).n();
+        this.e = ((PublicKeyRsa) contextParams.get("PublicKey")).e();
+        this.d = ((PrivateKeyRsa) contextParams.get("PrivateKey")).d();
+        this.contextParams = contextParams;
+
+        thisInstance = this;
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(1000,700));
+        setSize(new Dimension(1000,700));
+        setLocation(point);
+        setVisible(true);
+        panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        c = new GridBagConstraints();
+
+        AtomicBoolean currentMessageIsEncrypted = new AtomicBoolean(false);
+        AtomicBoolean currentMessageIsSigned = new AtomicBoolean(false);
+        AtomicReference<String> currentClearMessage = new AtomicReference<>("");
+        inputAndOutput = new JTextArea();
+        inputAndOutput.setLineWrap(true);
+
+        JScrollPane scrollPane = new JScrollPane(inputAndOutput);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(450, 60));
+
+
+        // Create the list for displaying messages
+        messageListModel = new DefaultListModel<>();
+        messageListJ = new JList<>(messageListModel);
+
+
+        JScrollPane messageListScrollPane = new JScrollPane(messageListJ);
+        messageListScrollPane.setPreferredSize(new Dimension(450, 200));
+
+        // Add the new components to the panel
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 5;  // Adjust this as needed
+        panel.add(messageListScrollPane, c);
+
+
+        JButton startEncode = new JButton("Verschlüsseln");
+        startEncode.setPreferredSize(new Dimension(250,25));
+        JButton startDecode = new JButton("Entschlüsseln & Verifizieren");
+
+
+        startDecode.setPreferredSize(new Dimension(250,25));
+
+        JButton sendMessage = new JButton("Nachricht versenden");
+        sendMessage.setPreferredSize(new Dimension(250,25));
+        JButton clearEverything = new JButton("Alle Eingaben und Nachrichten löschen");
+        clearEverything.setPreferredSize(new Dimension(250,25));
+
+        JPanel buttons = new JPanel();
+        GridBagConstraints c1 = new GridBagConstraints();
+        int i = 0;
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
+        buttons.add(startEncode,c1);
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
+        buttons.add(startDecode,c1);
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
+        buttons.add(sendMessage,c1);
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.gridx = 0;
+        c1.gridy = i++;
+        buttons.add(clearEverything,c1);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        scrollPane.setPreferredSize(new Dimension(650,200));
+        panel.add(scrollPane,c);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 0;
+        buttons.setPreferredSize(new Dimension(300,200));
+        panel.add(buttons,c);
+        signings = getNewTextfield(1, "Eigene Signatur");
+
+        JButton signMessage = new JButton("Signieren der Nachricht");
+        signMessage.setPreferredSize(new Dimension(250,25));
+        buttons.add(signMessage,c1);
+        JButton loadTextFileButton = new JButton("Load Text File");
+
+        loadTextFileButton.setPreferredSize(new Dimension(250, 25));
+        c1.gridy = i++;
+        buttons.add(loadTextFileButton, c1);
+
+        signingValid = getNewTextfield(2, "Empfangene Signatur gültig");
+        receivedSignature = getNewTextfield(3, "Empfangene Signatur");
+
+        JTextArea secretField = new JTextArea();
+        secretField.setLineWrap(true);
+        secretField.setEditable(false);
+        secretField.setBackground(new Color(238,238,238));
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 4;
+        JPanel j = new JPanel();
+        JTextField t = new JTextField("Geheimer Schlüssel d");
+        t.setPreferredSize(new Dimension(200, 60));
+        t.setEditable(false);
+        j.add(t);
+        scrollPane = new JScrollPane(secretField);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(450, 60));
+        j.add(scrollPane);
+        panel.add(j, c);
+        secretField.setText(this.d.toString());
+
+
+
+
+        inputAndOutput.setDropTarget(new DropTarget() {
+            public synchronized void drop(DropTargetDropEvent evt) {
+                try {
+                    evt.acceptDrop(DnDConstants.ACTION_COPY);
+                    Transferable t = evt.getTransferable();
+
+                    if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                        // Handle dropped text
+                        String droppedText = (String) t.getTransferData(DataFlavor.stringFlavor);
+                        inputAndOutput.setText(droppedText);
+                    } else if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                        // Handle dropped files
+                        java.util.List<File> fileList = (java.util.List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+                        for (File file : fileList) {
+                            if (file.getName().toLowerCase().endsWith(".txt")) {
+                                // Handle .txt file content with UTF-8 encoding
+                                String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+                                inputAndOutput.setText(content);
+                        } else if (file.getName().toLowerCase().endsWith(".docx")) {
+                                // Handle .docx file content using Apache POI
+                                String content = readDocxFile(file);
+                                inputAndOutput.setText(content);
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+
+        messageListJ.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Message) {
+                    Message message = (Message) value;
+                    setText("Message from " + message.getSender().name + ": " + message.message);
+                }
+                return renderer;
+            }
+        });
+
+        messageListJ.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                JList list = (JList)evt.getSource();
+                if (evt.getClickCount() == 2) { // Double-click detected
+                    int index = list.locationToIndex(evt.getPoint());
+                    Message selectedMessage = messageListJ.getModel().getElementAt(index);
+                    inputAndOutput.setText(selectedMessage.message);
+                }
+            }
+        });
+        startEncode.addActionListener(ex -> {
+            Communicator receiver = getReceiver(thisInstance);
+            try{
+                String encryptedMessage = (String) context.encrypt(inputAndOutput.getText(), contextParams);
+                currentClearMessage.set(inputAndOutput.getText());
+                inputAndOutput.setText(encryptedMessage);
+                currentMessageIsEncrypted.set(true);
+            } catch (Exception f){
+                JOptionPane.showMessageDialog(null, "Error while Encryption" + f);
+                return;
+            }
+        });
+
+        inputAndOutput.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                //Remove the signature if the message is changed
+                signature = null;
+                signings.setText("");
+                receivedSignature.setText("");
+                signingValid.setText("");
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                //Remove the signature if the message is changed
+                signature = null;
+                signings.setText("");
+                receivedSignature.setText("");
+                signingValid.setText("");
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                //Remove the signature if the message is changed
+                signature = null;
+                signings.setText("");
+                receivedSignature.setText("");
+                signingValid.setText("");
+            }
+        });
+        sendMessage.addActionListener(ex -> {
+            Message message = new Message(inputAndOutput.getText(), signature, thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get(), thisInstance, getReceiver(thisInstance), currentClearMessage.get());
+            getReceiver(thisInstance).sendAMessage(message);
+            messageListModel.addElement(message);
+            inputAndOutput.setText("");
+        });
+        clearEverything.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inputAndOutput.setText("");
+                signings.setText("");
+                signingValid.setText("");
+                signature = null;
+                currentMessageIsEncrypted.set(false);
+                currentMessageIsSigned.set(false);
+                currentClearMessage.set("");
+                messageListModel.clear();
+            }
+        });
+        signMessage.addActionListener(ex -> {
+            try {
+                signature = context.sign(inputAndOutput.getText(), contextParams);
+                signings.setText(signature);
+                currentMessageIsSigned.set(true);
+            } catch (NoSuchAlgorithmException exc) {
+                System.out.println("Error while Signing" + exc);
+                throw new RuntimeException(exc);
+            }
+        });
+        loadTextFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+
+                int option = fileChooser.showOpenDialog(Communicator.this);
+                if (option == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    try {
+                        String content = new String(Files.readAllBytes(((File) selectedFile).toPath()), StandardCharsets.UTF_8);
+                        inputAndOutput.setText(content);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(Communicator.this, "Error reading file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+        startDecode.addActionListener(ex -> {
+            Message selectedMessage = messageListJ.getSelectedValue(); // Get selected message
+            //If none are selected, get the last one
+            if(selectedMessage == null) {
+                if(messageList.size() != 0){
+                    selectedMessage = messageList.get(messageList.size()-1);
+                } else {
+                    selectedMessage = null;
+                }
+            }
+            if (selectedMessage != null) { // Check if a message is selected
+                String messageToUse;
+                if(selectedMessage.isEncrypted()){
+                    //If the message belongs to me, use my private key
+                    if(selectedMessage.getReceiver().equals(thisInstance)) {
+                        try {
+                            messageToUse = context.decrypt(selectedMessage.message, contextParams);
+                        } catch (Exception f){
+                            JOptionPane.showMessageDialog(null, "Error while Decryption" + f);
+                            return;
+                        }
+                    } else {
+                        messageToUse = selectedMessage.getClearMessage(thisInstance);
+                    }
+                } else {
+                    messageToUse = selectedMessage.message;
+                }
+                inputAndOutput.setText(messageToUse);
+                if(selectedMessage.isSigned()){
+                    try {
+                        if(selectedMessage.isEncrypted){
+                            signingValid.setText("" + context.verify(selectedMessage.message, selectedMessage.getSignature(), contextParams));
+                        } else {
+                            signingValid.setText("" + context.verify(messageToUse, selectedMessage.getSignature(), contextParams));
+                        }
+                        receivedSignature.setText(selectedMessage.getSignature());
+                    } catch (NoSuchAlgorithmException exc) {
+                        throw new RuntimeException(exc);
+                    }
+                } else {
+                    signingValid.setText("");
+                }
+            } else {
+                // Optionally handle the case where no message is selected
+            }
+        });
+
+        add(panel);
+        panel.updateUI();
+    }
+
+    public void sendAMessage(Message m) {
+        messageList.add(m); // Add the message to the sender's list
+        Communicator sender = m.getSender();
+        Communicator receiver = getReceiver(sender);
+        SwingUtilities.invokeLater(() -> {
+            receiver.messageListModel.addElement(m); // Add the message to the receiver's list model
+        });
+    }
+
+
+
+    private Communicator getReceiver(Communicator sender) {
+        if(sender.name.equals("Bob")){
+            return CommunicationPanel.getInstance().getAlice();
+        } else {
+            return CommunicationPanel.getInstance().getBob();
+        }
+    }
+
+    private static JTextField getNewTextfield(int row, String headline, boolean editable) {
+        JTextField field = new JTextField();
+        field.setEditable(editable);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = row;
+        JPanel j = new JPanel();
+        JTextField t = new JTextField(headline);
+        t.setPreferredSize(new Dimension(200,20));
+        t.setEditable(false);
+        j.add(t);
+        field.setPreferredSize(new Dimension(450, 20));
+        j.add(field);
+        panel.add(j,c);
+        return field;
+    }
+    private String readDocxFile(File file) {
+        try (FileInputStream fis = new FileInputStream(file)) {
+            XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
+            XWPFWordExtractor extractor = new XWPFWordExtractor(document);
+            return extractor.getText();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+    private static JTextField getNewTextfield(int row, String headline) {
+        return getNewTextfield(row, headline,false);
+    }
+}
