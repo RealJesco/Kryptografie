@@ -76,4 +76,16 @@ public class FiniteFieldEllipticCurveTest {
         BigInteger countOfElements5 = ellipticCurve5.calculateOrder(BigInteger.valueOf(2));
         assertEquals(500, countOfElements5.intValue());
     }
+
+    @Test
+    public void testToString() {
+        // Test case: a = 3, b = 5, p = 11
+        BigInteger a = BigInteger.valueOf(3);
+        BigInteger b = BigInteger.valueOf(5);
+        BigInteger p = BigInteger.valueOf(11);
+        FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(a, p);
+        curve.setB(b);
+        String expected = "main.FiniteFieldEllipticCurve{a =-9, b =5, module prime =11}";
+        assertEquals(expected, curve.toString());
+    }
 }

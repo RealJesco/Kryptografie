@@ -22,6 +22,10 @@ public class FiniteFieldEllipticCurve {
         return b;
     }
 
+    public void setB(BigInteger b) {
+        this.b = b;
+    }
+
     public BigInteger getP() {
         return p;
     }
