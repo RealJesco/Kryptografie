@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import static java.math.BigInteger.*;
 
-
 /**
  * This class contains various mathematical methods used in the RSA main.encryption process.
  */
@@ -231,11 +230,8 @@ public class MathMethods {
 //            exp = exp.shiftRight(1);  // Divide the exponent by 2
 //        }
 
-
         return result;
     }
-
-
 
     /**
      * Calculates the extended Euclidean algorithm for two BigIntegers.
@@ -255,7 +251,8 @@ public class MathMethods {
             return new BigInteger[]{gcd, x, y};
         }
     }
-    public static BigInteger modularInverse(BigInteger a, BigInteger b){
+
+    public static BigInteger modularInverse(BigInteger a, BigInteger b) {
         BigInteger[] extendedEuclideanResult = extendedEuclidean(a,b);
         BigInteger gcd = extendedEuclideanResult[0];
         if(!gcd.equals(Resource.ONE)){
@@ -284,6 +281,7 @@ public class MathMethods {
 
         return z;
     }
+
     public static BigInteger verifyEulerCriterion(BigInteger c, BigInteger p) {
         if(alternativeQuickExponentiation(c, (p.subtract(Resource.ONE).divide(Resource.TWO)), p).equals(p.subtract(Resource.ONE))) {
             return Resource.ONE.negate();
@@ -317,7 +315,6 @@ public class MathMethods {
         if (!p.mod(Resource.FOUR).equals(Resource.ONE) || p.compareTo(Resource.FOUR) <= 0) {
             throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
-
 
         BigInteger randomZ = eulerCriterion(p);
         //Check if randomZ is a squared non-residue mod p
@@ -386,7 +383,6 @@ public class MathMethods {
      */
     // Function f for the extended Euclidean algorithm in Z[i]
     public static BigInteger[] f(BigInteger[] z) {
-
         BigInteger realPart = roundHalfUp(z[0]);
         BigInteger imaginaryPart = roundHalfUp(z[1]);
         return new BigInteger[]{realPart, imaginaryPart};
@@ -412,6 +408,7 @@ public class MathMethods {
         }
     }
 
+    //TODO: Is there a reason why those are down here?
     private static MathContext context = new MathContext(10);
     private static BigInteger randomElsnerA = Resource.ZERO;
     private static BigInteger randomElsnerB = Resource.ZERO;
@@ -528,7 +525,6 @@ public class MathMethods {
         return primeCandidate;
     }
 
-
     /**
      * Checks if a number is prime using the Miller-Rabin primality test and returns true if it is probably prime and the probability
      *
@@ -583,7 +579,6 @@ public class MathMethods {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -597,6 +592,8 @@ public class MathMethods {
      * @return true if the number is probably prime, false otherwise
      *
      */
+
+    //TODO: Why is this down here?
     private static final ForkJoinPool forkJoinPool = new ForkJoinPool();
 
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
@@ -637,8 +634,6 @@ public class MathMethods {
         }
     }
 
-
-
     /**
      * This is part of the block cipher main.encryption method.
      * It takes a message and encrypts it using the RSA algorithm.
@@ -650,7 +645,6 @@ public class MathMethods {
      * @return encryptedBlocks
      */
     public static List<BigInteger> prepareMessageForEncryption(List<Integer> message, int blockSize, int numberSystem) {
-
         List<List<Integer>> blocks = new ArrayList<>();
 
         for (int i = 0; i < message.size(); i++) {
@@ -665,7 +659,6 @@ public class MathMethods {
         for (List<Integer> block : blocks) {
             BigInteger blockValue = Resource.ZERO;
 
-
             int exponent = blockSize - 1;
             for (Integer integer : block) {
                 blockValue = blockValue.add(BigInteger.valueOf(integer).multiply(BigInteger.valueOf(numberSystem).pow(exponent)));
@@ -674,10 +667,8 @@ public class MathMethods {
             while (block.size() < blockSize) {
                 block.add(0, 0);
             }
-
             encryptedBlocks.add(blockValue);
         }
-
         return encryptedBlocks;
     }
 
@@ -711,7 +702,6 @@ public class MathMethods {
                 block = block.subtract(blockValue.multiply(numberSystemToThePowerOfI));
             }
         }
-
         return decryptedMessage;
     }
 
@@ -742,6 +732,4 @@ public class MathMethods {
         }
         return text.toString();
     }
-
-
 }

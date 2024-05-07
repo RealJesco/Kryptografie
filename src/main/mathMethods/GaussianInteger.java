@@ -16,6 +16,7 @@ public class GaussianInteger {
     public boolean isZero() {
         return real.equals(Resource.ZERO) && imaginary.equals(Resource.ZERO);
     }
+
     public boolean equals(GaussianInteger b) {
         return this.real.equals(b.real) && this.imaginary.equals(b.imaginary);
     }
@@ -35,7 +36,6 @@ public class GaussianInteger {
      * @return true if this GaussianInteger is a multiple of the given GaussianInteger, false otherwise
      */
     public boolean isMultiple(GaussianInteger b) {
-
         if (b.real.equals(Resource.ZERO) && b.imaginary.equals(Resource.ZERO)) {
             return false;
         }
@@ -61,7 +61,6 @@ public class GaussianInteger {
         return new GaussianInteger(realPart, imagPart);
     }
 
-
     public GaussianInteger multiply(GaussianInteger b) {
         BigInteger realPart = this.real.multiply(b.real).subtract(this.imaginary.multiply(b.imaginary));
         BigInteger imaginaryPart = this.real.multiply(b.imaginary).add(this.imaginary.multiply(b.real));
@@ -73,6 +72,7 @@ public class GaussianInteger {
         BigInteger imaginaryPart = this.imaginary.subtract(b.imaginary);
         return new GaussianInteger(realPart, imaginaryPart);
     }
+
     public GaussianInteger add(GaussianInteger b) {
         BigInteger realPart = this.real.add(b.real);
         BigInteger imaginaryPart = this.imaginary.add(b.imaginary);

@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SecureFiniteFieldEllipticCurve {
     private final BigInteger a;
     private BigInteger q;
-
     private FiniteFieldEllipticCurve safeEllipticCurve;
     AtomicInteger counter = new AtomicInteger(1);
 
@@ -100,7 +99,6 @@ public class SecureFiniteFieldEllipticCurve {
      * @param m
      */
     private void calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
-
         BigInteger p;
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(a, null);
         BigInteger orderN;

@@ -7,6 +7,7 @@ public class EncryptionContext {
     private StringEncryptionStrategy strategy;
 
     public EncryptionContext() {
+
     }
 
     public Object encrypt(String data, Map<String, Object> params) {

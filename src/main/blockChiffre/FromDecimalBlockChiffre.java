@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class FromDecimalBlockChiffre {
-
     public static String encrypt(final List<BigInteger> plaintext, final int numberBase, final int blockSize) {
         StringBuilder stringBuilder = new StringBuilder();
         var wrappedNumberBase = BigInteger.valueOf(numberBase);

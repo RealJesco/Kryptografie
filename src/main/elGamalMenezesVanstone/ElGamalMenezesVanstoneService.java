@@ -140,7 +140,6 @@ public class ElGamalMenezesVanstoneService {
      */
     //sign and verify methods
     public static MenezesVanstoneSignature sign(final KeyPair keyPair, final BigInteger message) {
-
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = keyPair.publicKey.ellipticCurve();
@@ -158,7 +157,6 @@ public class ElGamalMenezesVanstoneService {
         assert keyPair.publicKey.ellipticCurve().isValidPoint(kg);
         assert keyPair.publicKey.ellipticCurve().isValidPoint(keyPair.publicKey.generator());
         assert keyPair.publicKey.ellipticCurve().isValidPoint(keyPair.publicKey.groupElement());
-
 
         BigInteger r = kg.getX().mod(q);
         BigInteger x = keyPair.privateKey.secretMultiplierX();
@@ -196,4 +194,3 @@ public class ElGamalMenezesVanstoneService {
         return uvXModQ.equals(rModQ);
     }
 }
-

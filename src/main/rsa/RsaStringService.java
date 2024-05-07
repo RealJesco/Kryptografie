@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class RsaStringService implements StringEncryptionStrategy {
-
-    public static String encrypt(final PublicKeyRsa key, final String message, int numberBase){
+    public static String encrypt(final PublicKeyRsa key, final String message, int numberBase) {
         int blockSize = calculateBlockSize(numberBase, key.n());
         // BlockChiffre toDecimal Encrypt
         List<BigInteger> encryptedBlockCipher = ToDecimalBlockChiffre.encrypt(message, numberBase, blockSize);
@@ -83,7 +82,6 @@ public final class RsaStringService implements StringEncryptionStrategy {
                 break;
             }
         }
-
         return signatureValid;
     }
 

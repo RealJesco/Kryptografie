@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class ToDecimalBlockChiffre {
-
     public static List<BigInteger> encrypt(final String plaintext, final int numberBase, final int blockSize) {
         //Die beiden Methoden sind identisch
         return FromDecimalBlockChiffre.decrypt(plaintext, numberBase, blockSize);

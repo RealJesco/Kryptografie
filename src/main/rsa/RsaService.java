@@ -21,7 +21,7 @@ public final class RsaService {
         return counter;
     }
 
-    private static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter){
+    private static BigInteger generateUniquePrime(BigInteger bitLength, int millerRabinSteps, BigInteger m, AtomicInteger counter) {
         BigInteger possiblePrime;
         int intBitLength = bitLength.intValue();
         BigInteger lowerBound = Resource.TWO.pow(intBitLength - 1);
@@ -30,7 +30,7 @@ public final class RsaService {
         return possiblePrime;
     }
 
-    private static BigInteger calculateE (BigInteger phiN, int millerRabinSteps, BigInteger m, AtomicInteger counter){
+    private static BigInteger calculateE (BigInteger phiN, int millerRabinSteps, BigInteger m, AtomicInteger counter) {
         if(phiN.compareTo(Resource.THREE) < 0){
             throw new IllegalArgumentException("phiN is too small to calculate e");
         }
@@ -49,7 +49,6 @@ public final class RsaService {
     }
 
     public static KeyPairRsa generateKeyPair(int bitLength, int millerRabinSteps, BigInteger m) {
-
         int bitLengthP = bitLength / 2;
         int bitLengthQ = bitLength / 2;
         BigInteger p;
@@ -77,7 +76,7 @@ public final class RsaService {
         return new KeyPairRsa(publicKey, privateKey);
     }
 
-    public static BigInteger encrypt(final PublicKeyRsa key, final BigInteger message){
+    public static BigInteger encrypt(final PublicKeyRsa key, final BigInteger message) {
         return MathMethods.alternativeQuickExponentiation(message, key.e(), key.n());
     }
 

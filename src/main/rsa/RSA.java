@@ -11,9 +11,7 @@ import java.util.List;
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
 
-
 public class RSA {
-
     private static int millerRabinSteps = 0;
     private static int blockSize = 0;
     private static int blockSizePlusOne = 0;
@@ -30,7 +28,6 @@ public class RSA {
     private static BigInteger countOfN = BigInteger.valueOf(1);
     private static int bitLengthN = 128;
 
-
     public RSA(int millerRabinSteps, int bitLengthN, int numberSystemBase, BigInteger m) {
         RSA.millerRabinSteps = millerRabinSteps;
         RSA.bitLengthN = bitLengthN;
@@ -38,56 +35,69 @@ public class RSA {
         RSA.numberSystemBase = numberSystemBase;
         RSA.m = m;
     }
-    private static int calculateBlockSize(int bitLengthN, int numberSystemBase){
+
+    private static int calculateBlockSize(int bitLengthN, int numberSystemBase) {
         return (int)(bitLengthN * (Math.log(2) / Math.log(numberSystemBase)));
     }
-    private static void calculateAndSetBlockSizes(int bitLengthN, int numberSystemBase){
+
+    private static void calculateAndSetBlockSizes(int bitLengthN, int numberSystemBase) {
         blockSize = calculateBlockSize(bitLengthN, numberSystemBase);
         blockSizePlusOne = blockSize + 1;
     }
-    public static BigInteger getN(){
+
+    public static BigInteger getN() {
         return n;
     }
-    public static BigInteger getE(){
+
+    public static BigInteger getE() {
         return e;
     }
-    public static BigInteger getD(){
+
+    public static BigInteger getD() {
         return d;
     }
-    public static BigInteger getP(){
+
+    public static BigInteger getP() {
         return p;
     }
-    public static BigInteger getCountOfN(){
+
+    public static BigInteger getCountOfN() {
         return countOfN;
     }
-    public static BigInteger getQ(){
+
+    public static BigInteger getQ() {
         return q;
     }
-    public static int getBitLengthN(){
+
+    public static int getBitLengthN() {
         return bitLengthN;
     }
-    public static int getBlockSize(){
+
+    public static int getBlockSize() {
         return blockSize;
     }
-    public static void setBitLengthN(int bitLengthN){
+
+    public static void setBitLengthN(int bitLengthN) {
         RSA.bitLengthN = bitLengthN;
         //change blockSize
         calculateAndSetBlockSizes(bitLengthN, numberSystemBase);
     }
-    public static void setMillerRabinSteps(int millerRabinSteps){
+
+    public static void setMillerRabinSteps(int millerRabinSteps) {
         RSA.millerRabinSteps = millerRabinSteps;
     }
-    public static void setNumberSystemBase(int numberSystemBase){
+
+    public static void setNumberSystemBase(int numberSystemBase) {
         RSA.numberSystemBase = numberSystemBase;
         calculateAndSetBlockSizes(bitLengthN, numberSystemBase);
     }
 
-    public static void setM(BigInteger m){
+    public static void setM(BigInteger m) {
         if (m.compareTo(Resource.ZERO) < 0) {
             throw new IllegalArgumentException("Negative Numbers aren't allowed here");
         }
         BigDecimal sqrt = new BigDecimal(m).sqrt(new MathContext(1000));
-        if(sqrt.compareTo(sqrt.divideAndRemainder(Resource.DECIMAL_ONE)[0]) == 0){
+        if(sqrt.compareTo(sqrt.divideAndRemainder(Resource.DECIMAL_ONE)[0]) == 0) {
             throw new IllegalArgumentException("Cubic-numbers aren't allowed here");
         }
         RSA.m = m;
@@ -122,12 +132,12 @@ public class RSA {
      * @return the encrypted message as a string representation
      * @throws IllegalArgumentException if any Unicode value in the message is equal to or larger than the numberSystemBase
      */
-    private static String blockCipherEncrypt(String message, BigInteger e, BigInteger n){
+    private static String blockCipherEncrypt(String message, BigInteger e, BigInteger n) {
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = convertTextToUnicode(message);
         //Unicode values should not be equal or larger than numberSystemBase
-        for(int i = 0; i < unicodeMessage.size(); i++){
-            if(unicodeMessage.get(i) >= numberSystemBase){
+        for(int i = 0; i < unicodeMessage.size(); i++) {
+            if(unicodeMessage.get(i) >= numberSystemBase) {
                 throw new IllegalArgumentException("Unicode value is equal or larger than numberSystemBase");
             }
         }
@@ -147,7 +157,7 @@ public class RSA {
      * @param n the modulus used for main.encryption as a BigInteger
      * @return the encrypted message as a List of BigIntegers
      */
-    private static List<BigInteger> rsaEncryptNumericMessage(List<BigInteger> numericMessage, BigInteger e, BigInteger n){
+    private static List<BigInteger> rsaEncryptNumericMessage(List<BigInteger> numericMessage, BigInteger e, BigInteger n) {
      return rsaEncryptNumericBlocks(numericMessage, e, n);
     }
 
@@ -159,9 +169,10 @@ public class RSA {
      * @param n              the modulus value
      * @return the encrypted list of numeric blocks
      */
-    private static List<BigInteger> rsaEncryptNumericBlocks (List<BigInteger> numericMessage, BigInteger e, BigInteger n){
+    private static List<BigInteger> rsaEncryptNumericBlocks (List<BigInteger> numericMessage, BigInteger e, BigInteger n) {
         return encryptNumericBlocks(numericMessage, e, n);
     }
+
     /**
      * Encrypts a given message using the RSA algorithm.
      *
@@ -221,7 +232,6 @@ public class RSA {
         for (BigInteger block : encryptedBlocks) {
             encryptedNumericMessageStr.append(convertBlockToString(block));
         }
-
         return encryptedNumericMessageStr.toString();
     }
 
@@ -252,9 +262,9 @@ public class RSA {
         return numberList;
     }
 
-    private static List<String> splitStringIntoBlocks(String message){
+    private static List<String> splitStringIntoBlocks(String message) {
         List<String> blocks = new ArrayList<>();
-        for(int i = 0; i < message.length(); i += blockSizePlusOne){
+        for(int i = 0; i < message.length(); i += blockSizePlusOne) {
             blocks.add(message.substring(i, Math.min(message.length(), i + blockSizePlusOne)));
         }
         return blocks;
@@ -268,17 +278,16 @@ public class RSA {
      * @param n the modulus parameter
      * @return the decrypted message as a string
      */
-    public static String blockCipherDecrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n){
+    public static String blockCipherDecrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
         //Split into blocks
         List<String> splitBlocks = splitStringIntoBlocks(encryptedNumericMessageStr);
 
         // Step 1: Convert text to Unicode
         List<Integer> unicodeMessage = new ArrayList<>();
 
-        for(String block : splitBlocks){
+        for(String block : splitBlocks) {
             unicodeMessage.addAll(convertTextToUnicode(block));
         }
-
 
         //fill with leading zeros if necessary for the block size
         // Step 2: Create encrypted blocks from Unicode
@@ -307,7 +316,6 @@ public class RSA {
     public static String decrypt(String encryptedNumericMessageStr, BigInteger d, BigInteger n) {
         return blockCipherDecrypt(encryptedNumericMessageStr, d, n);
     }
-
 
     /**
      * Creates encrypted blocks from a list of Unicode values.
@@ -388,7 +396,6 @@ public class RSA {
     private static String convertIntegersToText(List<Integer> decryptedMessage) {
         return MathMethods.convertUniCodeToText(decryptedMessage);
     }
-
 
     private static String removePadding(String decryptedMessageStr) {
         return decryptedMessageStr.replace("\u0000", "");
@@ -511,5 +518,4 @@ public class RSA {
         final byte[] hashbytes = digest.digest(message.getBytes(StandardCharsets.UTF_8));
         return new BigInteger(1, hashbytes);
     }
-
 }

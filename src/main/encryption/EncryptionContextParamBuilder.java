@@ -29,6 +29,7 @@ public class EncryptionContextParamBuilder {
         params.put("PublicKey", publicKey);
         return this;
     }
+
     public EncryptionContextParamBuilder withElGamalMenezesVanstonePrivateKey(PrivateKey privateKey) {
         params.put("PrivateKey", privateKey);
         return this;
@@ -78,8 +79,6 @@ public class EncryptionContextParamBuilder {
         return this;
     }
 
-
-
     public Map<String, Object> build() {
         params.put("data", data);
         return params;
@@ -88,7 +87,6 @@ public class EncryptionContextParamBuilder {
     public String getData() {
         return data;
     }
-
 
     @Override
     public String toString() {

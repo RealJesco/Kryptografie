@@ -8,7 +8,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 public class KeyPair {
-
     PrivateKey privateKey;
     PublicKey publicKey;
 
@@ -19,12 +18,12 @@ public class KeyPair {
     public PrivateKey getPrivateKey() {
         return privateKey;
     }
+
     public PublicKey getPublicKey() {
         return publicKey;
     }
 
     public EllipticCurvePoint calculateSignatureSuitableGeneratorPoint (FiniteFieldEllipticCurve ellipticCurve, BigInteger q) {
-
         SecureRandom randomRangePicker = new SecureRandom();
 
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
@@ -75,11 +74,11 @@ public class KeyPair {
         EllipticCurvePoint generator = calculateSignatureSuitableGeneratorPoint(ellipticCurve, q);
         assert ellipticCurve.isValidPoint(generator);
 
-        //TODO Refactor this ASAP: Validate q*g == infinitePoint
+        //TODO: Refactor this ASAP: Validate q*g == infinitePoint
 
 
 
-        //TODO groupElement needs to be not an instance of InfinitePoint. Refactoring needed
+        //TODO: groupElement needs to be not an instance of InfinitePoint. Refactoring needed
         BigInteger secretMultiplierX  = MathMethods.randomElsner(new BigInteger(bitLengthOfP.bitLength(), random), new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, q.subtract(Resource.ONE));
 
         this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);
