@@ -1,11 +1,14 @@
 package main.elGamalMenezesVanstone;
 
+import main.elGamalMenezesVanstone.records.CipherMessage;
+import main.elGamalMenezesVanstone.records.Message;
+import main.elGamalMenezesVanstone.records.PrivateKey;
+import main.elGamalMenezesVanstone.records.PublicKey;
 import main.finiteFieldEllipticCurve.*;
 import main.GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
 
 import static org.junit.jupiter.api.Assertions.*;
 

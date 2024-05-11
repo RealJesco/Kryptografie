@@ -1,5 +1,6 @@
 package main.elGamalMenezesVanstone;
 
+import main.elGamalMenezesVanstone.records.*;
 import main.finiteFieldEllipticCurve.*;
 import main.GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import main.blockChiffre.FromDecimalBlockChiffre;

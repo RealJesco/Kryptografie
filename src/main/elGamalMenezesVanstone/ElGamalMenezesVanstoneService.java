@@ -1,5 +1,6 @@
 package main.elGamalMenezesVanstone;
 
+import main.elGamalMenezesVanstone.records.*;
 import main.finiteFieldEllipticCurve.*;
 import main.mathMethods.MathMethods;
 import org.apache.commons.math3.util.Pair;
@@ -60,6 +61,7 @@ public class ElGamalMenezesVanstoneService {
 //        return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
 //    }
 
+    //TODO: Doesn't the public key already contain q? => Do we need q-1 here?
     /**
      * Skript S.69-70
      * @param publicKey public key

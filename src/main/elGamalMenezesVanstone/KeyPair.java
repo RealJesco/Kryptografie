@@ -1,5 +1,7 @@
 package main.elGamalMenezesVanstone;
 
+import main.elGamalMenezesVanstone.records.PrivateKey;
+import main.elGamalMenezesVanstone.records.PublicKey;
 import main.finiteFieldEllipticCurve.*;
 import main.mathMethods.MathMethods;
 import main.resource.Resource;

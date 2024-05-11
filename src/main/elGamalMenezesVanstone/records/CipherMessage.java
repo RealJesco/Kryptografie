@@ -1,4 +1,4 @@
-package main.elGamalMenezesVanstone;
+package main.elGamalMenezesVanstone.records;
 
 import main.finiteFieldEllipticCurve.EllipticCurvePoint;
 

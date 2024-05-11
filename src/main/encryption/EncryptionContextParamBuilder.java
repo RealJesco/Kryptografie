@@ -2,8 +2,8 @@ package main.encryption;
 
 import main.finiteFieldEllipticCurve.EllipticCurvePoint;
 import main.elGamalMenezesVanstone.KeyPair;
-import main.elGamalMenezesVanstone.PrivateKey;
-import main.elGamalMenezesVanstone.PublicKey;
+import main.elGamalMenezesVanstone.records.PrivateKey;
+import main.elGamalMenezesVanstone.records.PublicKey;
 import main.rsa.KeyPairRsa;
 import main.rsa.PrivateKeyRsa;
 import main.rsa.PublicKeyRsa;
