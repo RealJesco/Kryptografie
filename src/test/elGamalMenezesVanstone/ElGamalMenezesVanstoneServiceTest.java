@@ -31,6 +31,15 @@ public class ElGamalMenezesVanstoneServiceTest {
         assertTrue(uniquePrime.compareTo(lowerBound) >= 0 && uniquePrime.compareTo(upperBound) <= 0);
     }
 
+    /**
+     * test for the generation of k and ky
+     * k is a random number in the range of 1 to q-1
+     * ky is the group element multiplied by k
+     * @expected: k is not null
+     * @expected: k is not zero
+     * @expected: ky is not null
+     * @expected: ky is not an infinite point
+     */
     @Test
     public void testGenerateKandKy() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(821));
@@ -49,6 +58,11 @@ public class ElGamalMenezesVanstoneServiceTest {
         assertFalse(result.getValue() instanceof InfinitePoint);
     }
 
+    /**
+     * test for entire encryption and decryption cycle
+     * @expected: decrypted text is equal to the original text
+     * @expected: encrypted text is not equal to the original text
+     */
     //TODO: Seems to loop indefinitely sometimes
     @Test
     void fullTextCycle() {
@@ -71,6 +85,12 @@ public class ElGamalMenezesVanstoneServiceTest {
         assertNotEquals(text, encryptedText);
     }
 
+    /**
+     * test for the signing and verifying of a message
+     * @expected: signature r is greater than 0
+     * @expected: signature s is greater than 0
+     * @expected: the signature is verified
+     */
     @Test
     void testSignAndVerify() {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));

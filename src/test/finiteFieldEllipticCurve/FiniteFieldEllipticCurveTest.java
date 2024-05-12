@@ -77,6 +77,9 @@ public class FiniteFieldEllipticCurveTest {
         assertEquals(500, countOfElements5.intValue());
     }
 
+    /**
+     * @expected: toString returns the expected string representation of the elliptic curve
+     */
     @Test
     public void testToString() {
         // Test case: a = 3, b = 5, p = 11

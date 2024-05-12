@@ -51,6 +51,4 @@ class RsaServiceTests {
         BigInteger signature = RsaService.sign(keyPair.privateKeyRsa(), message);
         Assertions.assertTrue(RsaService.verify(keyPair.publicKeyRsa(), signature, message));
     }
-
-
 }

@@ -113,6 +113,10 @@ class EllipticCurvePointTest {
         assertFalse(newPoint instanceof FiniteFieldEcPoint);
     }
 
+    /**
+     * Test the toString method of the elliptic curve point.
+     * @expected: the string representation of the point
+     */
     @Test
     public void testToString() {
         // Test case: x = 3, y = 5

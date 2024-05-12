@@ -9,6 +9,10 @@ import java.math.BigInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SecureFiniteFieldEllipticCurveTest {
+    /**
+     * Test the creation of a secure finite field elliptic curve.
+     * @expected: the value of a is equal to the expected value
+     */
     @Test
     public void testSecureFiniteFieldEllipticCurve() {
         BigInteger bitLengthOfP = BigInteger.valueOf(128);
