@@ -1,5 +1,7 @@
 package main.elGamalMenezesVanstone;
 
+//TODO: Klasse entfernen, wenn die Tests im test-package fertig sind!
+
 import main.elGamalMenezesVanstone.records.CipherMessage;
 import main.elGamalMenezesVanstone.records.Message;
 import main.elGamalMenezesVanstone.records.PrivateKey;
