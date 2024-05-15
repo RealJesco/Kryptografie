@@ -23,8 +23,9 @@ public abstract class EllipticCurvePoint {
     }
 
     /**
-     * @param ellipticCurve
-     * @return
+     * Skript S. 62
+     * @param ellipticCurve elliptic curve for which the point should be normalized
+     * @return EllipticCurvePoint that is a valid point on the elliptic curve passes as parameter
      */
     public EllipticCurvePoint normalize(FiniteFieldEllipticCurve ellipticCurve) {
         EllipticCurvePoint normalizedEcPoint = new FiniteFieldEcPoint(x.mod(ellipticCurve.p).abs(), y.mod(ellipticCurve.p).abs());
@@ -36,9 +37,10 @@ public abstract class EllipticCurvePoint {
     }
 
     /**
-     * @param point2
-     * @param ellipticCurve
-     * @return
+     * Skript S. 62
+     * @param point2 second point to add
+     * @param ellipticCurve elliptic curve the new point should be on
+     * @return new point that is the sum of the two points and is on the elliptic curve
      */
     public EllipticCurvePoint add(EllipticCurvePoint point2, FiniteFieldEllipticCurve ellipticCurve) {
         if (point2 instanceof InfinitePoint) {
@@ -57,8 +59,9 @@ public abstract class EllipticCurvePoint {
     }
 
     /**
-     * @param ellipticCurve
-     * @return
+     * Skrip S. 62
+     * @param ellipticCurve elliptic curve the point is on
+     * @return new point that is the double of the current point and is on the elliptic curve
      */
     public EllipticCurvePoint doublePoint(FiniteFieldEllipticCurve ellipticCurve) {
         BigInteger y = this.getY();
@@ -83,9 +86,10 @@ public abstract class EllipticCurvePoint {
     }
 
     /**
-     * @param scalarMultiplicator
-     * @param ellipticCurve
-     * @return
+     * Skript S. 63
+     * @param scalarMultiplicator scalar multiplicator for the point
+     * @param ellipticCurve elliptic curve the point is on
+     * @return new point that is the scalar multiplicator times the current point and is on the elliptic curve
      */
     public EllipticCurvePoint multiply(BigInteger scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
         EllipticCurvePoint result = new InfinitePoint();
@@ -99,6 +103,9 @@ public abstract class EllipticCurvePoint {
         return result;
     }
 
+    /**
+     * @return string representation of the elliptic curve point with params x and y
+     */
     @Override
     public String toString() {
         return "EllipticCurvePoint{" +
