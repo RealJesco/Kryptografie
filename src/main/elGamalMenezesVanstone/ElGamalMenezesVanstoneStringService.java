@@ -158,7 +158,7 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
     public static boolean verify(final PublicKey key, final String message, final String signature, int numberBase) throws NoSuchAlgorithmException {
         int blockSize = (int) (key.ellipticCurve().getP().bitLength() * (Math.log(2) / Math.log(numberBase)));
         BigInteger hashedMessage = hashAndConvertMessageToBigInteger(message);
-        List<BigInteger> menezesVanstoneSignatureList = FromDecimalBlockChiffre.decrypt(signature, 55296, blockSize + 1);
+        List<BigInteger> menezesVanstoneSignatureList = FromDecimalBlockChiffre.decrypt(signature, numberBase, blockSize + 1);
         if(menezesVanstoneSignatureList.size() != 2) {
             return false;
         }
