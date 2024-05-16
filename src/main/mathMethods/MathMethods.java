@@ -441,7 +441,7 @@ public class MathMethods {
         }
         BigDecimal decimalN = new BigDecimal(n);
 
-//        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(Resource.DECIMAL_ONE);
+        BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(Resource.DECIMAL_ONE);
 //        BigDecimal mathContextRange = range.add(decimalN);
 //
 //         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
@@ -455,7 +455,16 @@ public class MathMethods {
 
         BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
-        return a.add(randomSeedNumberOffset.toBigInteger());
+        BigInteger result =  a.add(randomSeedNumberOffset.toBigInteger());
+
+        while (result.equals(Resource.ZERO) || result.equals(Resource.ONE)) {
+            context = new MathContext(context.getPrecision() + 10);
+            decimalN = decimalN.add(BigDecimal.ONE);
+            randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
+            randomSeedNumberOffset = randomSeededNumber.multiply(range);
+            result =  a.add(randomSeedNumberOffset.toBigInteger());
+        }
+        return result;
     }
 
     //TODO: Method is never called => Is it still needed?
