@@ -86,9 +86,10 @@ class ElGamalMenezesVanstoneServiceTest {
      */
     @Test
     void testKeyGenerationWithSecureEllipticCurve() {
+        BigInteger m = BigInteger.valueOf(13);
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
         KeyPair keyPair = new KeyPair();
-        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
 
         Message message = new Message(BigInteger.valueOf(3), BigInteger.valueOf(8));
 
@@ -112,13 +113,14 @@ class ElGamalMenezesVanstoneServiceTest {
      */
     @Test
     void fullTextCycle() {
+        BigInteger m = BigInteger.valueOf(13);
         BigInteger bitLengthP = BigInteger.valueOf(128);
         double time = System.currentTimeMillis();
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(120500), 10, BigInteger.valueOf(13));
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(120500), 10, m);
         System.out.println("passed time: " + (System.currentTimeMillis() - time));
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         KeyPair keyPair = new KeyPair();
-        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
 
 //        String text = "Hello, World! This is a test of a really long text! do you like it? I hope so!";
         String text = "Ao0WDF!M57XkWm%ysCw1dUw0FoJ31tChJ1ajJ&NN2N2HuektYRJ703q20PYBjkGf4Shw0@GH42$Qpf!C6&UMU6uh94wyVuaQpEdJ\n" +

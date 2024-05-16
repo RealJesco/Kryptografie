@@ -177,7 +177,7 @@ public class CommunicationPanel extends JFrame {
                 SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(getBigIntegerOfField(lengthField_P), getBigIntegerOfField(parameterField_n), getIntOfField(millerRabinStepsField), getBigIntegerOfField(nonCubicNumberMField));
                 KeyPair keyPair = new KeyPair();
                 //Schlüssel setzen
-                keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
+                keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, getBigIntegerOfField(nonCubicNumberMField));
                 publicKeyField_p.setText(secureFiniteFieldEllipticCurve.getSafeEllipticCurve().getP().toString());
                 publicKeyField_q.setText(secureFiniteFieldEllipticCurve.getQ().toString());
                 publicKeyField_g.setText(keyPair.getPublicKey().generator().toString());

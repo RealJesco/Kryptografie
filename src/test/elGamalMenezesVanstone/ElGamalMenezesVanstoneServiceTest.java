@@ -66,12 +66,13 @@ public class ElGamalMenezesVanstoneServiceTest {
     //TODO: Seems to loop indefinitely sometimes
     @Test
     void fullTextCycle() {
+        BigInteger m = BigInteger.valueOf(13);
         BigInteger bitLengthP = BigInteger.valueOf(128);
         double time = System.currentTimeMillis();
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(120), 10, BigInteger.valueOf(13));
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(120), 10, m);
         System.out.println("passed time: " + (System.currentTimeMillis() - time));
         KeyPair keyPair = new KeyPair();
-        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
         System.out.println("Generation complete!");
 
         String text = "Ao0WDF!M57XkWm%ysCw1dUw0FoJ31tChJ1ajJ&NN2N2HuektYRJ703q20PYBjkGf4Shw0@GH42$Qpf!C6&UMU6uh94wyVuaQpEdJ\n";
@@ -93,9 +94,10 @@ public class ElGamalMenezesVanstoneServiceTest {
      */
     @Test
     void testSignAndVerify() {
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100,m);
         KeyPair keyPair = new KeyPair();
-        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
         BigInteger message = BigInteger.valueOf(123456789);
 
         MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);

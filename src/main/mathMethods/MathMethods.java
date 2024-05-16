@@ -449,23 +449,13 @@ public class MathMethods {
 
 //         In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
 //         So this condition will never be true. We can comment/remove this condition
-//         if (randomElsnerDecimalM.sqrt(context).remainder(Resource.DECIMAL_ONE).equals(Resource.DECIMAL_ZERO)) {
-//             randomElsnerDecimalM = randomElsnerDecimalM.add(Resource.DECIMAL_ONE);
-//         }
+        if (randomElsnerDecimalM.sqrt(context).remainder(Resource.DECIMAL_ONE).equals(Resource.DECIMAL_ZERO)) {
+            randomElsnerDecimalM = randomElsnerDecimalM.add(Resource.DECIMAL_ONE);
+        }
 
         BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
-        BigInteger result = a.add(randomSeedNumberOffset.toBigInteger());
-        while (result.equals(Resource.ONE)|| result.equals(Resource.ZERO)) {
-            context = new MathContext(context.getPrecision() + 10);
-            randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
-            randomSeedNumberOffset = randomSeededNumber.multiply(range);
-            result = a.add(randomSeedNumberOffset.toBigInteger());
-        }
-        if(result.equals(Resource.ONE) || result.equals(Resource.ZERO)) {
-            return randomElsner(m, n, a, b);
-        }
-        return result;
+        return a.add(randomSeedNumberOffset.toBigInteger());
     }
 
     //TODO: Method is never called => Is it still needed?

@@ -11,11 +11,9 @@ import java.security.NoSuchAlgorithmException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RsaStringServiceTest {
-
-    //TODO: This test failed!
     @Test
     void fullEncryptDecryptString() {
-        KeyPairRsa keyPair = RsaService.generateKeyPair(256, 100, BigInteger.valueOf(87));
+        KeyPairRsa keyPair = RsaService.generateKeyPair(256, 100, BigInteger.valueOf(13));
         String message = "Mathematik is spannend!";
         String encryptedMessage = RsaStringService.encrypt(keyPair.publicKeyRsa(), message, 55296);
         assertNotEquals(message, encryptedMessage);
