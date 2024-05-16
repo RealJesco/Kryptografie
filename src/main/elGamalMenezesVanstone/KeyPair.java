@@ -75,11 +75,9 @@ public class KeyPair {
         EllipticCurvePoint generator = calculateSignatureSuitableGeneratorPoint(ellipticCurve, q, m);
         assert ellipticCurve.isValidPoint(generator);
 
-        //TODO: Refactor this ASAP: Validate q*g == infinitePoint
 
 
 
-        //TODO: groupElement needs to be not an instance of InfinitePoint. Refactoring needed
         BigInteger secretMultiplierX  = MathMethods.randomElsner(m, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, q.subtract(Resource.ONE));
 
         this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);

@@ -2,15 +2,13 @@ package main.elGamalMenezesVanstone;
 
 //TODO: Klasse entfernen, wenn die Tests im test-package fertig sind!
 
-import main.elGamalMenezesVanstone.records.CipherMessage;
-import main.elGamalMenezesVanstone.records.Message;
-import main.elGamalMenezesVanstone.records.PrivateKey;
-import main.elGamalMenezesVanstone.records.PublicKey;
+import main.elGamalMenezesVanstone.records.*;
 import main.finiteFieldEllipticCurve.*;
 import main.GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -138,62 +136,62 @@ class ElGamalMenezesVanstoneServiceTest {
         assertNotEquals(text, encryptedText);
     }
 
-    //TODO: Does this run very long or indefinitely?
-//    /**
-//     * secure elliptic curve
-//     * key pair generation
-//     * message string -> "Hello, World! This is a test of a really long text! do you like it? I hope so!"
-//     * test with sign and verify
-//     * @expected: the signature can be verified
-//     * @expected: the signature can not be verified after changing the message
-//     */
-//    @Test
-//    void testSignAndVerifyWithText() throws NoSuchAlgorithmException {
-//        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
-//        KeyPair keyPair = new KeyPair();
-//        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
-//
-//        System.out.println(keyPair.publicKey.generator().multiply(keyPair.privateKey.secretMultiplierX(), keyPair.publicKey.ellipticCurve()));
-//        System.out.println(keyPair.publicKey.groupElement());
-//
-//        System.out.println(keyPair);
-//        String message = "Hello, World! This is a test of a really long text! do you like it? I hope so!";
-//
-//        String signature = ElGamalMenezesVanstoneStringService.sign(keyPair, message, 55296);
-//
-//        System.out.println(signature);
-//
-//        boolean verified = ElGamalMenezesVanstoneStringService.verify(keyPair.publicKey, message, signature, 55296);
-//
-//        assertTrue(verified);
-//
-//        message = message.substring(0, message.length() - 1);
-//        verified = ElGamalMenezesVanstoneStringService.verify(keyPair.publicKey, message, signature, 55296);
-//        assertFalse(verified);
-//    }
+    /**
+     * secure elliptic curve
+     * key pair generation
+     * message string -> "Hello, World! This is a test of a really long text! do you like it? I hope so!"
+     * test with sign and verify
+     * @expected: the signature can be verified
+     * @expected: the signature can not be verified after changing the message
+     */
+    @Test
+    void testSignAndVerifyWithText() throws NoSuchAlgorithmException {
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, m);
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
 
-    //TODO: Does this run very long or indefinitely?
-//    /**
-//     * secure elliptic curve
-//     * key pair generation
-//     * message in form of a big integer
-//     * @expected: signature parameter r > 0
-//     * @expected: signature parameter s > 0
-//     * @expected: the signature can be verified
-//     */
-//    @Test
-//    void testSignAndVerify() {
-//        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
-//        KeyPair keyPair = new KeyPair();
-//        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
-//        BigInteger message = BigInteger.valueOf(123456789);
-//
-//        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
-//
-//        assertTrue(signature.r().compareTo(BigInteger.ZERO) > 0);
-//        assertTrue(signature.s().compareTo(BigInteger.ZERO) > 0);
-//        boolean verified = ElGamalMenezesVanstoneService.verify(keyPair.publicKey, message, signature);
-//
-//        assertTrue(verified);
-//    }
+        System.out.println(keyPair.publicKey.generator().multiply(keyPair.privateKey.secretMultiplierX(), keyPair.publicKey.ellipticCurve()));
+        System.out.println(keyPair.publicKey.groupElement());
+
+        System.out.println(keyPair);
+        String message = "Hello, World! This is a test of a really long text! do you like it? I hope so!";
+
+        String signature = ElGamalMenezesVanstoneStringService.sign(keyPair, message, 55296);
+
+        System.out.println(signature);
+
+        boolean verified = ElGamalMenezesVanstoneStringService.verify(keyPair.publicKey, message, signature, 55296);
+
+        assertTrue(verified);
+
+        message = message.substring(0, message.length() - 1);
+        verified = ElGamalMenezesVanstoneStringService.verify(keyPair.publicKey, message, signature, 55296);
+        assertFalse(verified);
+    }
+
+    /**
+     * secure elliptic curve
+     * key pair generation
+     * message in form of a big integer
+     * @expected: signature parameter r > 0
+     * @expected: signature parameter s > 0
+     * @expected: the signature can be verified
+     */
+    @Test
+    void testSignAndVerify() {
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
+        BigInteger message = BigInteger.valueOf(123456789);
+
+        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
+
+        assertTrue(signature.r().compareTo(BigInteger.ZERO) > 0);
+        assertTrue(signature.s().compareTo(BigInteger.ZERO) > 0);
+        boolean verified = ElGamalMenezesVanstoneService.verify(keyPair.publicKey, message, signature);
+
+        assertTrue(verified);
+    }
 }

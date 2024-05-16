@@ -61,14 +61,13 @@ public class ElGamalMenezesVanstoneService {
 //        return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
 //    }
 
-    //TODO: Doesn't the public key already contain q? => Do we need q-1 here?
     /**
      * Skript S.69-70
      * @param publicKey public key
-     * @param qSubtractONE order of the elliptic curve subtracted by one
      * @return random number k and public key generator point multiplied by k
      */
-    public static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger qSubtractONE) {
+    public static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey) {
+        BigInteger qSubtractOne = publicKey.order().subtract(Resource.ONE);
         SecureRandom random = new SecureRandom();
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
         SecureRandom randomRangePicker = new SecureRandom();
@@ -77,13 +76,13 @@ public class ElGamalMenezesVanstoneService {
         BigInteger k;
 
         do {
-            k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
+            k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractOne);
         } while (k.equals(Resource.ZERO));
 
         EllipticCurvePoint ky = publicKey.groupElement().multiply(k, ellipticCurve);
 
         while (ky.getX().equals(Resource.ZERO) || ky.getY().equals(Resource.ZERO)) {
-            k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
+            k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractOne);
             ky = publicKey.groupElement().multiply(k, ellipticCurve);
         }
         assert !(ky instanceof InfinitePoint);
@@ -113,7 +112,7 @@ public class ElGamalMenezesVanstoneService {
     public static CipherMessage encrypt(Message message, PublicKey publicKey) {
         BigInteger q = publicKey.order();
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
-        Pair<BigInteger, EllipticCurvePoint> kAndKy = generateKandKy(publicKey, qSubtractONE);
+        Pair<BigInteger, EllipticCurvePoint> kAndKy = generateKandKy(publicKey);
         return encrypt(message, publicKey, kAndKy.getKey(), kAndKy.getValue());
     }
 

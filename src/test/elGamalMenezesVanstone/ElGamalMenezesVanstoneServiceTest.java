@@ -49,7 +49,7 @@ public class ElGamalMenezesVanstoneServiceTest {
         PublicKey publicKey = new PublicKey(ellipticCurve, generator, groupElement, q);
         BigInteger qSubtractONE = q.subtract(BigInteger.ONE);
 
-        Pair<BigInteger, EllipticCurvePoint> result = ElGamalMenezesVanstoneService.generateKandKy(publicKey, qSubtractONE);
+        Pair<BigInteger, EllipticCurvePoint> result = ElGamalMenezesVanstoneService.generateKandKy(publicKey);
 
         assertNotNull(result.getKey());
         assertTrue(result.getKey().compareTo(BigInteger.ZERO) != 0);
@@ -63,7 +63,7 @@ public class ElGamalMenezesVanstoneServiceTest {
      * @expected: decrypted text is equal to the original text
      * @expected: encrypted text is not equal to the original text
      */
-    //TODO: Seems to loop indefinitely sometimes
+
     @Test
     void fullTextCycle() {
         BigInteger m = BigInteger.valueOf(13);

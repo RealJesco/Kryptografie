@@ -141,7 +141,6 @@ public class ExtraTaskTests {
         int blockSize = 2;
         int numberSystem = 10;
         List<BigInteger> result = MathMethods.prepareMessageForEncryption(message, blockSize, numberSystem);
-        //TODO: We're padding with a 0 here -> Is that intentional?
         List<BigInteger> expected = List.of(BigInteger.valueOf(12), BigInteger.valueOf(34), BigInteger.valueOf(50));
         assertEquals(expected, result);
     }
@@ -152,7 +151,6 @@ public class ExtraTaskTests {
         int blockSize = 2;
         int numberSystem = 10;
         List<Integer> result = MathMethods.prepareMessageForDecryption(message, blockSize, numberSystem);
-        //TODO: Padding with 0 again?
         List<Integer> expected = List.of(4, 5, 2, 3, 0, 1);
         assertEquals(expected, result);
     }

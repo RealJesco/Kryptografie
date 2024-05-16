@@ -185,7 +185,7 @@ public class CommunicationPanel extends JFrame {
                 publicKeyField_E.setText(keyPair.getPublicKey().toString());
                 privateKeyField_x.setText(keyPair.getPrivateKey().secretMultiplierX().toString());
                 builder.withElGamalMenezesVanstoneKeyPair(keyPair);
-                Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey(), keyPair.getPublicKey().order().subtract(Resource.ONE));
+                Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey());
                 builder.withK(kAndKy.getKey());
                 builder.withKy(kAndKy.getValue());
                 //Schlüssel übergeben
