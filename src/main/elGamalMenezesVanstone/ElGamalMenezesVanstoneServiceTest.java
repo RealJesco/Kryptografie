@@ -46,34 +46,34 @@ class ElGamalMenezesVanstoneServiceTest {
         assertEquals(message.m2(), decryptedMessage.m2());
     }
 
-    //TODO: Does this run very long or indefinitely?
-//    /**
-//     * secure elliptic curve
-//     * key pair generation
-//     * message of big integer tuple (3,8)
-//     * @expected: the encrypted message part b1 is NOT equal to the original message part m1
-//     * @expected: the encrypted message part b2 is not equal to the original message part m2
-//     * @expected: the decrypted message m1 equals the original message m1
-//     * @expected: the decrypted message m2 is not equal to the original message m2
-//     */
-//    @Test
-//    void testKeyGeneration() {
-//        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(32), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
-////        main.FiniteFieldEllipticCurve ellipticCurve = new main.FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(821));
-//        KeyPair keyPair = new KeyPair();
-//        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve);
-//
-//        Message message = new Message(BigInteger.valueOf(3), BigInteger.valueOf(8));
-//
-//        CipherMessage cipherMessage = ElGamalMenezesVanstoneService.encrypt(message, keyPair.publicKey);
-//
-//        Message decryptedMessage = ElGamalMenezesVanstoneService.decrypt(cipherMessage, keyPair.privateKey);
-//
-//        assertNotEquals(message.m1(), cipherMessage.b1());
-//        assertNotEquals(message.m2(), cipherMessage.b2());
-//        assertEquals(message.m1(), decryptedMessage.m1());
-//        assertEquals(message.m2(), decryptedMessage.m2());
-//    }
+    /**
+     * secure elliptic curve
+     * key pair generation
+     * message of big integer tuple (3,8)
+     * @expected: the encrypted message part b1 is NOT equal to the original message part m1
+     * @expected: the encrypted message part b2 is not equal to the original message part m2
+     * @expected: the decrypted message m1 equals the original message m1
+     * @expected: the decrypted message m2 is not equal to the original message m2
+     */
+    @Test
+    void testKeyGeneration() {
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
+//        main.FiniteFieldEllipticCurve ellipticCurve = new main.FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(821));
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
+
+        Message message = new Message(BigInteger.valueOf(3), BigInteger.valueOf(8));
+
+        CipherMessage cipherMessage = ElGamalMenezesVanstoneService.encrypt(message, keyPair.publicKey);
+
+        Message decryptedMessage = ElGamalMenezesVanstoneService.decrypt(cipherMessage, keyPair.privateKey);
+
+        assertNotEquals(message.m1(), cipherMessage.b1());
+        assertNotEquals(message.m2(), cipherMessage.b2());
+        assertEquals(message.m1(), decryptedMessage.m1());
+        assertEquals(message.m2(), decryptedMessage.m2());
+    }
 
     /**
      * secure elliptic curve
