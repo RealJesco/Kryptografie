@@ -600,28 +600,28 @@ public class MathMethods {
     private static final ForkJoinPool forkJoinPool = new ForkJoinPool();
 
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
-        if (possiblePrime.equals(BigInteger.TWO)) return true;
+        if (possiblePrime.equals(Resource.TWO)) return true;
         if (!possiblePrime.testBit(0)) return false;
-        if (possiblePrime.equals(BigInteger.ONE)) return false;
+        if (possiblePrime.equals(Resource.ONE)) return false;
 
-        BigInteger d = possiblePrime.subtract(BigInteger.ONE);
+        BigInteger d = possiblePrime.subtract(Resource.ONE);
         int s = d.getLowestSetBit();
         d = d.shiftRight(s);
 
-        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(BigInteger.ONE);
-        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(BigInteger.TWO);
+        BigInteger possiblePrimeMinusOne = possiblePrime.subtract(Resource.ONE);
+        BigInteger possiblePrimeMinusTwo = possiblePrime.subtract(Resource.TWO);
 
         BigInteger finalD = d;
         List<Callable<Boolean>> tasks = IntStream.range(0, numberOfTests)
                 .mapToObj(i -> (Callable<Boolean>) () -> {
-                    BigInteger a = randomElsner(m, countOfN.add(BigInteger.valueOf(i)), BigInteger.TWO, possiblePrimeMinusTwo);
+                    BigInteger a = randomElsner(m, countOfN.add(BigInteger.valueOf(i)), Resource.TWO, possiblePrimeMinusTwo);
                     BigInteger x = alternativeQuickExponentiation(a, finalD, possiblePrime);
 
-                    if (x.equals(BigInteger.ONE) || x.equals(possiblePrimeMinusOne)) {
+                    if (x.equals(Resource.ONE) || x.equals(possiblePrimeMinusOne)) {
                         return true;
                     }
                     for (int r = 1; r < s; r++) {
-                        x = alternativeQuickExponentiation(x, BigInteger.TWO, possiblePrime);
+                        x = alternativeQuickExponentiation(x, Resource.TWO, possiblePrime);
                         if (x.equals(possiblePrimeMinusOne)) return true;
                     }
                     return false;

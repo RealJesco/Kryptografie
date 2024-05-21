@@ -121,10 +121,6 @@ public class SecureFiniteFieldEllipticCurve {
             ellipticCurve.setP(p);
             boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()));
 
-            if (!pIsPrime) {
-                continue;
-            }
-
             orderN = ellipticCurve.calculateOrder(a);
 
             if (orderN.equals(a.multiply(Resource.TWO)) || !orderN.mod(Resource.EIGHT).equals(Resource.ZERO)) {
@@ -145,8 +141,6 @@ public class SecureFiniteFieldEllipticCurve {
         assert p.mod(Resource.EIGHT).equals(Resource.FIVE);
 
         this.safeEllipticCurve = ellipticCurve;
-        assert this.safeEllipticCurve.getP().equals(p);
-        assert this.safeEllipticCurve.calculateOrder(a).equals(orderN);
         this.q = q;
         this.safeEllipticCurve.setQ(q);
     }
