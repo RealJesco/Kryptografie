@@ -30,27 +30,29 @@ public class KeyPair {
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
 
         BigInteger prime = ellipticCurve.getP();
+        BigInteger inverseTwo = MathMethods.modularInverse(Resource.TWO, prime);
+        BigInteger yExponent = (prime).add(Resource.THREE).divide(Resource.EIGHT);
+        BigInteger qSubtractONE = q.subtract(Resource.ONE);
+        BigInteger ellipticCurveA = ellipticCurve.getA();
+        BigInteger ellipticCurveB = ellipticCurve.getB();
         EllipticCurvePoint generator;
-
         while ( true ) {
             BigInteger y;
-            BigInteger x = MathMethods.randomElsner(m, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), BigInteger.ONE, q.subtract(Resource.ONE));
-            BigInteger r = x.pow(3).add(ellipticCurve.getA().multiply(x)).add(ellipticCurve.getB());
+            BigInteger x = MathMethods.randomElsner(m, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, qSubtractONE);
+            BigInteger r = x.pow(3).add(ellipticCurveA.multiply(x)).add(ellipticCurveB);
             BigInteger legendreSign = MathMethods.verifyEulerCriterion(r, prime);
 
-            if (legendreSign.equals(BigInteger.ONE.negate())){
+            if (legendreSign.equals(Resource.ONE.negate())){
                 continue;
             }
 
             BigInteger rExponent = prime.subtract(Resource.ONE).divide(Resource.FOUR);
             BigInteger rConditionMod = MathMethods.alternativeQuickExponentiation(r, rExponent, prime);
 
-            BigInteger yExponent = (prime).add(Resource.THREE).divide(Resource.EIGHT);
 
             if (rConditionMod.equals(Resource.ONE)) {
                 y = MathMethods.alternativeQuickExponentiation(r, yExponent, prime);
             } else {
-                BigInteger inverseTwo = MathMethods.modularInverse(Resource.TWO, prime);
                 y = MathMethods.alternativeQuickExponentiation(Resource.FOUR.multiply(r), yExponent, prime);
                 y = y.multiply(inverseTwo).mod(prime);
             }

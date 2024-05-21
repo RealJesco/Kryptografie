@@ -13,6 +13,8 @@ public class SecureFiniteFieldEllipticCurve {
     private BigInteger q;
     private FiniteFieldEllipticCurve safeEllipticCurve;
     AtomicInteger counter = new AtomicInteger(1);
+    private static final BigInteger EIGHT = BigInteger.valueOf(8);
+    private static final BigInteger FIVE = BigInteger.valueOf(5);
 
     public BigInteger getA() {
         return this.a;
@@ -27,34 +29,44 @@ public class SecureFiniteFieldEllipticCurve {
     }
 
     /**
-     * Skript S.76 -79
-     * Generate a prime congruent to 5 mod 8
-     * @param bitLengthOfP          angegebene Bitlänge für Primzahl p
-     * @param millerRabinIterations Anzahl der Miller-Rabin-Iterationen
-     * @param m                     Modulus
-     * @return p Primzahl
+     * Generates a prime number that is congruent to 5 mod 8.
+     *
+     * @param bitLengthOfP        The bit length of the prime number to be generated.
+     * @param millerRabinIterations The number of Miller-Rabin iterations for the primality test.
+     * @param m                   The modulus used in the primality test.
+     * @return A prime number that is congruent to 5 mod 8.
      */
-    private BigInteger generatePrimeCongruentToFiveModEight(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
-        SecureRandom random = new SecureRandom();
-        BigInteger p = new BigInteger(bitLengthOfP.intValue(), random);
-        BigInteger modEight = p.mod(Resource.EIGHT);
-        p = p.add(Resource.FIVE.subtract(modEight));
-        if (p.bitLength() > bitLengthOfP.intValue()) {
-            p = p.subtract(Resource.EIGHT);
-        }
+    public BigInteger generatePrimeCongruentToFiveModEight(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
+        BigInteger p;
+        while (true) {
+            // Generate a unique prime using the ElGamalMenezesVanstoneService
+            p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
+            p = adjustToFiveModEight(p, bitLengthOfP.intValue());
 
-        BigInteger eight = Resource.EIGHT;
-        while (!MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()))) {
-            p = p.add(eight);
-            if (p.bitLength() > bitLengthOfP.intValue()) {
-                p = new BigInteger(bitLengthOfP.intValue(), random);
-                modEight = p.mod(eight);
-                p = p.add(Resource.FIVE.subtract(modEight));
+            // Test the primality using parallelMillerRabinTest
+            if (MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()))) {
+                break;
             }
         }
         return p;
     }
 
+    /**
+     * Adjusts the given number to be congruent to 5 mod 8.
+     *
+     * @param number The number to be adjusted.
+     * @param bitLength The bit length of the number to be adjusted.
+     * @return The adjusted number that is congruent to 5 mod 8.
+     */
+    private BigInteger adjustToFiveModEight(BigInteger number, int bitLength) {
+        BigInteger modEight = number.mod(EIGHT);
+        BigInteger adjustment = FIVE.subtract(modEight);
+        number = number.add(adjustment);
+        if (number.bitLength() > bitLength) {
+            number = number.subtract(EIGHT);
+        }
+        return number;
+    }
     /**
      * Skript S.76-79
      * Calculate a prime p congruent to 5 mod 8
@@ -105,7 +117,7 @@ public class SecureFiniteFieldEllipticCurve {
         BigInteger q;
 
         while (true) {
-            p = calculatePrimeMod8(bitLengthOfP, millerRabinIterations, m);
+            p = generatePrimeCongruentToFiveModEight(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve.setP(p);
             boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()));
 

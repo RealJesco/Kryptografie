@@ -201,6 +201,7 @@ public class MathMethods {
      * @throws IllegalArgumentException if the exponent is negative or if 0^0 mod 1 is encountered
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
+
         if (exp.signum() < 0) {
             throw new IllegalArgumentException("Exponent must be positive");
         }
@@ -208,18 +209,21 @@ public class MathMethods {
             return mod.equals(BigInteger.ONE) ? BigInteger.ZERO : BigInteger.ONE;
         }
         if (base.equals(BigInteger.ZERO)) {
-            return BigInteger.ZERO;
+            return Resource.ZERO;
         }
 
         BigInteger result = BigInteger.ONE;
         base = base.mod(mod);  // Ensure base is reduced modulo mod initially
 
-        while (!exp.equals(BigInteger.ZERO)) {
-            if (exp.testBit(0)) { // If the exponent's least significant bit is 1
-                result = result.multiply(base).mod(mod);
+        String expBinary = exp.toString(2);
+        int len = expBinary.length();
+
+        for (int i = 0; i < len; i++) {
+            // Process the most significant bit first (left to right)
+            result = result.multiply(result).mod(mod);  // Square result and mod
+            if (expBinary.charAt(i) == '1') {
+                result = result.multiply(base).mod(mod);  // Multiply by base and mod if the bit is 1
             }
-            base = base.multiply(base).mod(mod);  // Square the base for the next exponent bit
-            exp = exp.shiftRight(1);  // Divide the exponent by 2
         }
         //use modPow instead of multiply and mod
 //        while (!exp.equals(BigInteger.ZERO)) {
@@ -449,9 +453,9 @@ public class MathMethods {
 
 //         In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
 //         So this condition will never be true. We can comment/remove this condition
-        if (randomElsnerDecimalM.sqrt(context).remainder(Resource.DECIMAL_ONE).equals(Resource.DECIMAL_ZERO)) {
-            randomElsnerDecimalM = randomElsnerDecimalM.add(Resource.DECIMAL_ONE);
-        }
+//        if (randomElsnerDecimalM.sqrt(context).remainder(Resource.DECIMAL_ONE).equals(Resource.DECIMAL_ZERO)) {
+//            randomElsnerDecimalM = randomElsnerDecimalM.add(Resource.DECIMAL_ONE);
+//        }
 
         BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
