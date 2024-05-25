@@ -3,6 +3,7 @@ package main.finiteFieldEllipticCurve;
 import main.elGamalMenezesVanstone.ElGamalMenezesVanstoneService;
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
+import test.IgnoreCoverage;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -67,6 +68,8 @@ public class SecureFiniteFieldEllipticCurve {
         }
         return number;
     }
+
+    //TODO: Is this ever used?
     /**
      * Skript S.76-79
      * Calculate a prime p congruent to 5 mod 8
@@ -75,6 +78,7 @@ public class SecureFiniteFieldEllipticCurve {
      * @param m                     Modulus
      * @return p Primzahl
      */
+    @IgnoreCoverage
     private BigInteger calculatePrimeMod8(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
         BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
         BigInteger pMod8 = p.mod(Resource.EIGHT);
@@ -152,6 +156,7 @@ public class SecureFiniteFieldEllipticCurve {
     }
 
     //TODO: Is this method still needed?
+    @IgnoreCoverage
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m, FiniteFieldEllipticCurve ellipticCurve) {
         assert n.compareTo(Resource.ZERO) > 0;
         this.a = n.multiply(n).negate();

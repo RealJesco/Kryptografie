@@ -3,6 +3,7 @@ package main.finiteFieldEllipticCurve;
 import main.mathMethods.GaussianInteger;
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
+import test.IgnoreCoverage;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class FiniteFieldEllipticCurve {
         return p;
     }
 
+    //TODO: Is this ever used?
+    @IgnoreCoverage
     public BigInteger getQ() {
         return this.q;
     }

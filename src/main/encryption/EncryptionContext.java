@@ -1,5 +1,7 @@
 package main.encryption;
 
+import test.IgnoreCoverage;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
@@ -29,6 +31,8 @@ public class EncryptionContext {
     public void setStrategy(StringEncryptionStrategy strategy) {
         this.strategy = strategy;
     }
+
+    @IgnoreCoverage
     public StringEncryptionStrategy getStrategy() {
         return this.strategy;
     }

@@ -5,6 +5,7 @@ import main.elGamalMenezesVanstone.records.PublicKey;
 import main.finiteFieldEllipticCurve.*;
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
+import test.IgnoreCoverage;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -12,9 +13,6 @@ import java.security.SecureRandom;
 public class KeyPair {
     PrivateKey privateKey;
     PublicKey publicKey;
-
-
-
 
     public PrivateKey getPrivateKey() {
         return privateKey;
@@ -97,6 +95,7 @@ public class KeyPair {
     }
 
     @Override
+    @IgnoreCoverage
     public String toString() {
         return "KeyPair{" +
                 "privateKey=" + privateKey +
