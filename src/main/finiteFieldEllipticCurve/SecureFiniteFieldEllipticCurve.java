@@ -13,7 +13,6 @@ public class SecureFiniteFieldEllipticCurve {
     private final BigInteger a;
     private BigInteger q;
     private FiniteFieldEllipticCurve safeEllipticCurve;
-    AtomicInteger counter = new AtomicInteger(1);
     private static final BigInteger EIGHT = BigInteger.valueOf(8);
     private static final BigInteger FIVE = BigInteger.valueOf(5);
 
@@ -41,11 +40,11 @@ public class SecureFiniteFieldEllipticCurve {
         BigInteger p;
         while (true) {
             // Generate a unique prime using the ElGamalMenezesVanstoneService
-            p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
+            p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, Resource.counter);
             p = adjustToFiveModEight(p, bitLengthOfP.intValue());
 
             // Test the primality using parallelMillerRabinTest
-            if (MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()))) {
+            if (MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(Resource.counter.incrementAndGet()))) {
                 break;
             }
         }
@@ -80,7 +79,7 @@ public class SecureFiniteFieldEllipticCurve {
      */
     @IgnoreCoverage
     private BigInteger calculatePrimeMod8(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
-        BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, counter);
+        BigInteger p = ElGamalMenezesVanstoneService.generateUniquePrime(bitLengthOfP, millerRabinIterations, m, Resource.counter);
         BigInteger pMod8 = p.mod(Resource.EIGHT);
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(a, p);
 
@@ -123,7 +122,7 @@ public class SecureFiniteFieldEllipticCurve {
         while (true) {
             p = generatePrimeCongruentToFiveModEight(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve.setP(p);
-            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()));
+            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(Resource.counter.incrementAndGet()));
 
             orderN = ellipticCurve.calculateOrder(a);
 
@@ -133,7 +132,7 @@ public class SecureFiniteFieldEllipticCurve {
 
             q = calculateQ(orderN);
 
-            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, m, BigInteger.valueOf(counter.incrementAndGet()));
+            boolean qIsPrime = MathMethods.parallelMillerRabinTest(q, millerRabinIterations, m, BigInteger.valueOf(Resource.counter.incrementAndGet()));
 
             if (qIsPrime && orderN.equals(q.multiply(Resource.EIGHT))) {
                 break;
