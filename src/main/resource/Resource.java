@@ -2,6 +2,7 @@ package main.resource;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class Resource {
     public static final BigInteger ZERO = BigInteger.ZERO;
@@ -17,4 +18,7 @@ public final class Resource {
     public static final BigDecimal DECIMAL_ZERO = BigDecimal.ZERO;
     public static final BigDecimal DECIMAL_ONE = BigDecimal.ONE;
     public static final BigDecimal DECIMAL_TWO = BigDecimal.valueOf(2);
+
+    public static AtomicInteger counter = new AtomicInteger(1);
+
 }

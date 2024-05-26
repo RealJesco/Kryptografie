@@ -57,9 +57,16 @@ class ElGamalMenezesVanstoneServiceTest {
     void testKeyGeneration() {
         BigInteger m = BigInteger.valueOf(13);
         //Current time
-        long time = System.currentTimeMillis();
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(512), BigInteger.valueOf(5), 10, BigInteger.valueOf(13));
-        System.out.println("passed time: " + (System.currentTimeMillis() - time));
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = null;
+        long time = 0;
+        for (int i = 0; i < 5; i++) {
+            long time2 = System.currentTimeMillis();
+            System.out.println("i: " + i);
+            secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(256), BigInteger.valueOf(5), 100, BigInteger.valueOf(13));
+            time += System.currentTimeMillis() - time2;
+        }
+        System.out.println("passed time: " + time);
+        System.out.println("average time: " + time / 50);
 
 
 //        main.FiniteFieldEllipticCurve ellipticCurve = new main.FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(821));

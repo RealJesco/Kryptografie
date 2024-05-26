@@ -1,7 +1,6 @@
 package main.mathMethods;
 
 import main.resource.Resource;
-import main.rsa.RSA;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -312,7 +311,7 @@ public class MathMethods {
             randomNonSquareNumber = new BigInteger(new SecureRandom().nextInt(100), new SecureRandom());
         }
 
-        if (!parallelMillerRabinTest(p, 100, randomNonSquareNumber, RSA.getCountOfN())) {
+        if (!parallelMillerRabinTest(p, 100, randomNonSquareNumber, BigInteger.valueOf(Resource.counter.incrementAndGet()))) {
             throw new IllegalArgumentException("The number " + p + " is not a prime number.");
         }
         // Check if p is of the form 4n + 1
