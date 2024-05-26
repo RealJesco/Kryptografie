@@ -13,8 +13,6 @@ public class SecureFiniteFieldEllipticCurve {
     private final BigInteger a;
     private BigInteger q;
     private FiniteFieldEllipticCurve safeEllipticCurve;
-    private static final BigInteger EIGHT = BigInteger.valueOf(8);
-    private static final BigInteger FIVE = BigInteger.valueOf(5);
 
     public BigInteger getA() {
         return this.a;
@@ -59,11 +57,11 @@ public class SecureFiniteFieldEllipticCurve {
      * @return The adjusted number that is congruent to 5 mod 8.
      */
     private BigInteger adjustToFiveModEight(BigInteger number, int bitLength) {
-        BigInteger modEight = number.mod(EIGHT);
-        BigInteger adjustment = FIVE.subtract(modEight);
+        BigInteger modEight = number.mod(Resource.EIGHT);
+        BigInteger adjustment = Resource.FIVE.subtract(modEight);
         number = number.add(adjustment);
         if (number.bitLength() > bitLength) {
-            number = number.subtract(EIGHT);
+            number = number.subtract(Resource.EIGHT);
         }
         return number;
     }

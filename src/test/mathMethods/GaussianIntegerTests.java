@@ -1,6 +1,7 @@
 package test.mathMethods;
 
 import main.mathMethods.GaussianInteger;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -312,7 +313,7 @@ public class GaussianIntegerTests {
 
     @Test
     public void testNormalizeGCD_WithZeroRealPart() {
-        GaussianInteger input = new GaussianInteger(ZERO, BigInteger.valueOf(5));
+        GaussianInteger input = new GaussianInteger(ZERO, Resource.FIVE);
 
         GaussianInteger expected = new GaussianInteger(new BigInteger("5"), ZERO);
 
@@ -321,7 +322,7 @@ public class GaussianIntegerTests {
 
     @Test
     public void testNormalizeGCD_WithZeroImaginaryPart() {
-        GaussianInteger input = new GaussianInteger(BigInteger.valueOf(5), ZERO);
+        GaussianInteger input = new GaussianInteger(Resource.FIVE, ZERO);
 
         GaussianInteger expected = new GaussianInteger(new BigInteger("5"), ZERO);
 

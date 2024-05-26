@@ -6,6 +6,7 @@ import main.elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
 import main.elGamalMenezesVanstone.KeyPair;
 import main.encryption.EncryptionContext;
 import main.encryption.EncryptionContextParamBuilder;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 import main.rsa.*;
 
@@ -30,7 +31,7 @@ public class EncryptionStrategyTest {
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
 
         context.setStrategy(new ElGamalMenezesVanstoneStringService());
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, m);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 100, m);
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve,m);
         builder.withElGamalMenezesVanstoneKeyPair(keyPair);
@@ -67,7 +68,7 @@ public class EncryptionStrategyTest {
     void testElGamalMenezesVanstoneSignStringStrategy() throws NoSuchAlgorithmException {
         BigInteger m = BigInteger.valueOf(13);
         context.setStrategy(new ElGamalMenezesVanstoneStringService());
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, m);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 100, m);
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
 

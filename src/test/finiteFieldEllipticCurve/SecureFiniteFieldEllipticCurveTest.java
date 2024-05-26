@@ -2,6 +2,7 @@ package test.finiteFieldEllipticCurve;
 
 import main.finiteFieldEllipticCurve.FiniteFieldEllipticCurve;
 import main.finiteFieldEllipticCurve.SecureFiniteFieldEllipticCurve;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -16,7 +17,7 @@ public class SecureFiniteFieldEllipticCurveTest {
     @Test
     public void testSecureFiniteFieldEllipticCurve() {
         BigInteger bitLengthOfP = BigInteger.valueOf(128);
-        BigInteger n = BigInteger.valueOf(7);
+        BigInteger n = Resource.SEVEN;
         int millerRabinIterations = 5;
         BigInteger m = BigInteger.valueOf(2);
         SecureFiniteFieldEllipticCurve curve = new SecureFiniteFieldEllipticCurve(bitLengthOfP, n, millerRabinIterations, m);

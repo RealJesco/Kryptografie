@@ -43,7 +43,7 @@ public final class FromDecimalBlockChiffre {
         List<BigInteger> result = new ArrayList<>();
         for (List<Integer> chunk : encodedCharsChunks) {
             BigInteger acc = Resource.ZERO;
-            BigInteger accBase = BigInteger.ONE;
+            BigInteger accBase = Resource.ONE;
             for (int i = chunk.size() - 1; i >= 0; i--) {
                 BigInteger product = accBase.multiply(BigInteger.valueOf(chunk.get(i)));
                 acc = acc.add(product);

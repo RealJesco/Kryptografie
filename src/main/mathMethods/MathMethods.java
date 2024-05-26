@@ -20,10 +20,10 @@ import static java.math.BigInteger.*;
  */
 public class MathMethods {
     private static final BigInteger[] SMALL_PRIMES = {
-            BigInteger.valueOf(2),
-            BigInteger.valueOf(3),
-            BigInteger.valueOf(5),
-            BigInteger.valueOf(7),
+            Resource.TWO,
+            Resource.THREE,
+            Resource.FIVE,
+            Resource.SEVEN,
             BigInteger.valueOf(11),
             BigInteger.valueOf(13),
             BigInteger.valueOf(17),
@@ -205,14 +205,14 @@ public class MathMethods {
         if (exp.signum() < 0) {
             throw new IllegalArgumentException("Exponent must be positive");
         }
-        if (exp.equals(BigInteger.ZERO)) {
-            return mod.equals(BigInteger.ONE) ? BigInteger.ZERO : BigInteger.ONE;
+        if (exp.equals(Resource.ZERO)) {
+            return mod.equals(Resource.ONE) ? Resource.ZERO : Resource.ONE;
         }
-        if (base.equals(BigInteger.ZERO)) {
+        if (base.equals(Resource.ZERO)) {
             return Resource.ZERO;
         }
 
-        BigInteger result = BigInteger.ONE;
+        BigInteger result = Resource.ONE;
         base = base.mod(mod);  // Ensure base is reduced modulo mod initially
 
         String expBinary = exp.toString(2);
@@ -226,11 +226,11 @@ public class MathMethods {
             }
         }
         //use modPow instead of multiply and mod
-//        while (!exp.equals(BigInteger.ZERO)) {
+//        while (!exp.equals(Resource.ZERO)) {
 //            if (exp.testBit(0)) { // If the exponent's least significant bit is 1
 //                result = result.multiply(base).mod(mod);
 //            }
-//            base = base.modPow(BigInteger.TWO, mod);  // Square the base for the next exponent bit
+//            base = base.modPow(Resource.TWO, mod);  // Square the base for the next exponent bit
 //            exp = exp.shiftRight(1);  // Divide the exponent by 2
 //        }
 
@@ -463,7 +463,7 @@ public class MathMethods {
 
         while (result.equals(Resource.ZERO) || result.equals(Resource.ONE)) {
             context = new MathContext(context.getPrecision() + 10);
-            decimalN = decimalN.add(BigDecimal.ONE);
+            decimalN = decimalN.add(Resource.DECIMAL_ONE);
             randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
             randomSeedNumberOffset = randomSeededNumber.multiply(range);
             result =  a.add(randomSeedNumberOffset.toBigInteger());

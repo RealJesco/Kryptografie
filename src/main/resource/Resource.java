@@ -20,5 +20,4 @@ public final class Resource {
     public static final BigDecimal DECIMAL_TWO = BigDecimal.valueOf(2);
 
     public static AtomicInteger counter = new AtomicInteger(1);
-
 }
