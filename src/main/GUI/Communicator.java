@@ -67,8 +67,8 @@ public class Communicator extends JFrame {
         thisInstance = this;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(1000,700));
-        setSize(new Dimension(1000,700));
+        setPreferredSize(new Dimension(990,700));
+        setSize(new Dimension(990,700));
         setLocation(point);
         setVisible(true);
         panel = new JPanel();

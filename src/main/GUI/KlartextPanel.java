@@ -1,6 +1,7 @@
 package main.GUI;
 
 import main.GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
+import main.GUI.HelperClasses.UISetUpMethods;
 import main.elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
 import main.encryption.EncryptionContext;
 
@@ -17,56 +18,75 @@ import java.awt.event.ActionListener;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
+/*
+- Ein Feld zum Hineinkopieren des Klartextes
+
+- Anzeige einer zufällig erzeugten Zahl k
+
+- Den Startbutton zum Verschlüsseln
+
+- Ein Feld mit der Anzeige des chiffrierten Textes
+
+- Ein Feld mit der Anzeige einer automatisch mit einer Nachricht erstellten Signatur
+
+ 1 Input D&D, 3 Anzeigen, 1 Button
+ */
 public class KlartextPanel {
     private static JFrame frame = new JFrame();
     private static JPanel panel;
     private static GridBagConstraints c;
 
     private static JTextArea inputKlartext;
-    private static JTextField anzeige_k;
+    private static JTextArea anzeige_k;
     private static JButton encryptButton;
-    private static JTextField anzeige_chiffrat;
-    private static JTextField anzeige_signatur;
+    private static JTextArea anzeige_chiffrat;
+    private static JTextArea anzeige_signatur;
     private static ElGamalMenezesVanstoneMessage input_cipherMessage;
     // TODO bessere Lösung
     static EncryptionContext context = new EncryptionContext();
     private static Map<String, Object> contextParams;
 
-    public static void openPanel(Map<String, Object> params) {
+    public static void open(Map<String, Object> params) {
         contextParams = params;
         if(panel == null) {
             setupGraphics();
         }
         context.setStrategy(new ElGamalMenezesVanstoneStringService());
+
         fillParameters();
+
         panel.updateUI();
+        frame.setVisible(true);
+    }
+
+    public static void close() {
+        frame.setVisible(false);
     }
 
     private static void fillParameters() {
+        cleanUp();
+        anzeige_k.setText(contextParams.get("k").toString());
+    }
+
+    private static void cleanUp() {
+        inputKlartext.setText("");
+        anzeige_k.setText("");
+        anzeige_chiffrat.setText("");
+        inputKlartext.setText("");
+        anzeige_signatur.setText("");
+        input_cipherMessage = null;
     }
 
     private static void setupGraphics() {
+        frame.setTitle("main.GUI.KlartextPanel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(700,700));
-        frame.setSize(new Dimension(700,700));
-        frame.setVisible(true);
+        frame.setPreferredSize(new Dimension(700,800));
+        frame.setSize(new Dimension(700,800));
+        frame.setLocation(new Point(350, 150));
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         frame.add(panel);
         c = new GridBagConstraints();
-        /*
-        - Ein Feld zum Hineinkopieren des Klartextes
-
-        - Anzeige einer zufällig erzeugten Zahl k
-
-        - Den Startbutton zum Verschlüsseln
-
-        - Ein Feld mit der Anzeige des chiffrierten Textes
-
-        - Ein Feld mit der Anzeige einer automatisch mit einer Nachricht erstellten Signatur
-
-         1 Input D&D, 3 Anzeigen, 1 Button
-         */
 
         inputKlartext = new JTextArea();
         inputKlartext.setLineWrap(true);
@@ -108,8 +128,7 @@ public class KlartextPanel {
         c.gridx = 0;
         c.gridy = 0;
         panel.add(inputScrollPane, c);
-        anzeige_k = getNewTextfield(1, "Zufallszahl k");
-        anzeige_k.setText(contextParams.get("k").toString());
+        anzeige_k = UISetUpMethods.getjTextArea(panel, c, 1, "Zufallszahl k", false);
         encryptButton = new JButton("Verschlüsseln");
         encryptButton.addActionListener(new ActionListener() {
             @Override
@@ -125,8 +144,8 @@ public class KlartextPanel {
         c.gridx = 0;
         c.gridy = 2;
         panel.add(encryptButton, c);
-        anzeige_chiffrat = getNewTextfield(3, "Chiffrat");
-        anzeige_signatur = getNewTextfield(4, "Signatur");
+        anzeige_chiffrat = UISetUpMethods.getjTextArea(panel, c, 3, "Chiffrat", true);
+        anzeige_signatur = UISetUpMethods.getjTextArea(panel, c, 4, "Signatur", false);
         JButton copyButton = new JButton("Chiffrat + Signatur übertragen");
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
@@ -144,25 +163,4 @@ public class KlartextPanel {
         input_cipherMessage = encryptedMessage;
     }
 
-
-    private static JTextField getNewTextfield(int row, String headline, boolean editable)
-    {
-        JTextField field = new JTextField();
-        field.setEditable(editable);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 0;
-        c.gridy = row;
-        JPanel j = new JPanel();
-        JTextField t = new JTextField(headline);
-        t.setPreferredSize(new Dimension(200,50));
-        t.setEditable(false);
-        j.add(t);
-        field.setPreferredSize(new Dimension(450, 50));
-        j.add(field);
-        panel.add(j,c);
-        return field;
-    }
-    private static JTextField getNewTextfield(int row, String headline) {
-        return getNewTextfield(row, headline,false);
-    }
 }
