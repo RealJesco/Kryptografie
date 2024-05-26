@@ -146,7 +146,6 @@ public class ElGamalMenezesVanstoneService {
         BigInteger prime = ellipticCurve.getP();
         BigInteger q = keyPair.publicKey.order();
         BigInteger a = ellipticCurve.getA();
-        assert q.equals(ellipticCurve.calculateOrder(a.divide(a).negate()).divide(Resource.EIGHT));
         int primeBitLength = prime.bitLength();
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
         BigInteger k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);

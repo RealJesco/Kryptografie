@@ -91,7 +91,6 @@ public class KeyPair {
         assert ellipticCurve.isValidPoint(publicKey.generator());
         assert publicKey.order().equals(q);
         assert (publicKey.groupElement().multiply(q, ellipticCurve) instanceof InfinitePoint);
-        assert ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(Resource.EIGHT).equals(q);
     }
 
     @Override

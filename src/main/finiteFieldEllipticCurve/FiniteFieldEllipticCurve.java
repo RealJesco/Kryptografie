@@ -96,13 +96,14 @@ public class FiniteFieldEllipticCurve {
         GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.p);
         BigInteger y;
         BigInteger x;
-        if (!quadraticDivisors.real.mod(Resource.TWO).equals(Resource.ZERO)) {
-            y = quadraticDivisors.real;
-            x = quadraticDivisors.imaginary;
-        } else {
+        if (quadraticDivisors.real.mod(Resource.TWO).equals(Resource.ZERO)) {
             y = quadraticDivisors.imaginary;
             x = quadraticDivisors.real;
+        } else {
+            y = quadraticDivisors.real;
+            x = quadraticDivisors.imaginary;
         }
+        ///////////////////////
 
         BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.p);
 
