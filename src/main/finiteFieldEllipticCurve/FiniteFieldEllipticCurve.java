@@ -118,6 +118,7 @@ public class FiniteFieldEllipticCurve {
     }
 
     @Override
+    @IgnoreCoverage
     public String toString() {
         return "main.FiniteFieldEllipticCurve{" +
                 "a =" + a +

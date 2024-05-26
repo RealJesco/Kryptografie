@@ -12,7 +12,7 @@ public final class FromDecimalBlockChiffre {
         var wrappedNumberBase = BigInteger.valueOf(numberBase);
         plaintext.stream().map(
                 (BigInteger block) -> {
-                    var string = unicode_g_adic_development(block, wrappedNumberBase);
+                    var string = unicodeGAdicDevelopment(block, wrappedNumberBase);
 
                     if (string.length() < blockSize) {
                         var diff = blockSize - string.length();
@@ -58,7 +58,7 @@ public final class FromDecimalBlockChiffre {
      * Führt eine g-adische Entwicklung von einer Dezimalzahl zu einer Zielbasis aus.
      * Die Zielbasis wird dabei als höchstes Zeichen im Unicode-Zeichensatz interpretiert.
      */
-    public static String unicode_g_adic_development(final BigInteger source, final BigInteger targetBase) {
+    public static String unicodeGAdicDevelopment(final BigInteger source, final BigInteger targetBase) {
         var source_clone = source;
         var result = new StringBuilder();
 

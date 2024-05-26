@@ -64,6 +64,8 @@ public class ElGamalMenezesVanstoneServiceTest {
      * @expected: encrypted text is not equal to the original text
      */
 
+    //TODO: Test encrypt, encrypt, decrypt, sign and verify independently
+
     @Test
     void fullTextCycle() {
         BigInteger m = BigInteger.valueOf(13);

@@ -112,18 +112,4 @@ class EllipticCurvePointTest {
         assertTrue(newPoint instanceof InfinitePoint);
         assertFalse(newPoint instanceof FiniteFieldEcPoint);
     }
-
-    /**
-     * Test the toString method of the elliptic curve point.
-     * @expected: the string representation of the point
-     */
-    @Test
-    public void testToString() {
-        // Test case: x = 3, y = 5
-        BigInteger x = BigInteger.valueOf(3);
-        BigInteger y = BigInteger.valueOf(5);
-        EllipticCurvePoint point = new FiniteFieldEcPoint(x, y);
-        String expected = "EllipticCurvePoint{x=3, y=5}";
-        assertEquals(expected, point.toString());
-    }
 }

@@ -13,7 +13,7 @@ public final class ToDecimalBlockChiffre {
     public static String decrypt(final List<BigInteger> ciphertext, final int numberBase) {
         return ciphertext
                 .stream()
-                .map((BigInteger block) -> FromDecimalBlockChiffre.unicode_g_adic_development(block, BigInteger.valueOf(numberBase)))
+                .map((BigInteger block) -> FromDecimalBlockChiffre.unicodeGAdicDevelopment(block, BigInteger.valueOf(numberBase)))
                 .collect(Collectors.joining(""));
     }
 }

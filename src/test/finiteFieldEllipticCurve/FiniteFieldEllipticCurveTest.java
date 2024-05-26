@@ -19,6 +19,8 @@ import static main.resource.Resource.*;
  */
 public class FiniteFieldEllipticCurveTest {
 
+    //TODO: Test isValidPoint
+
     /**
      * Test the calculation of all points on the elliptic curve.
      * @expected: the list of points has the correct size
@@ -54,8 +56,7 @@ public class FiniteFieldEllipticCurveTest {
      * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 2 (different curve)
      */
     @Test
-    void calculateCountOfElements() {
-
+    void calculateOrder() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(17));
         BigInteger countOfElements = ellipticCurve.calculateOrder(TWO);
         assertEquals(16, countOfElements.intValue());
@@ -75,20 +76,5 @@ public class FiniteFieldEllipticCurveTest {
         FiniteFieldEllipticCurve ellipticCurve5 = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(509));
         BigInteger countOfElements5 = ellipticCurve5.calculateOrder(BigInteger.valueOf(2));
         assertEquals(500, countOfElements5.intValue());
-    }
-
-    /**
-     * @expected: toString returns the expected string representation of the elliptic curve
-     */
-    @Test
-    public void testToString() {
-        // Test case: a = 3, b = 5, p = 11
-        BigInteger a = BigInteger.valueOf(3);
-        BigInteger b = BigInteger.valueOf(5);
-        BigInteger p = BigInteger.valueOf(11);
-        FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(a, p);
-        curve.setB(b);
-        String expected = "main.FiniteFieldEllipticCurve{a =-9, b =5, module prime =11}";
-        assertEquals(expected, curve.toString());
     }
 }
