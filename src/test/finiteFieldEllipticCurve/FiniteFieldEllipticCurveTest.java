@@ -2,6 +2,7 @@ package test.finiteFieldEllipticCurve;
 
 import main.finiteFieldEllipticCurve.EllipticCurvePoint;
 import main.finiteFieldEllipticCurve.FiniteFieldEllipticCurve;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -18,6 +19,8 @@ import static main.resource.Resource.*;
  * ensuring its correctness given a variety of inputs.
  */
 public class FiniteFieldEllipticCurveTest {
+
+    //TODO: Test isValidPoint
 
     /**
      * Test the calculation of all points on the elliptic curve.
@@ -37,8 +40,8 @@ public class FiniteFieldEllipticCurveTest {
      */
     @Test
     void calculateAllPointsTest2() {
-        BigInteger coefficientOfX = BigInteger.valueOf(3);
-        BigInteger moduleR = BigInteger.valueOf(7);
+        BigInteger coefficientOfX = Resource.THREE;
+        BigInteger moduleR = Resource.SEVEN;
         FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(coefficientOfX,  moduleR);
 
         List<EllipticCurvePoint> allPoints = curve.calculateAllPoints();
@@ -54,8 +57,7 @@ public class FiniteFieldEllipticCurveTest {
      * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 2 (different curve)
      */
     @Test
-    void calculateCountOfElements() {
-
+    void calculateOrder() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(17));
         BigInteger countOfElements = ellipticCurve.calculateOrder(TWO);
         assertEquals(16, countOfElements.intValue());

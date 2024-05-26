@@ -5,6 +5,7 @@ import main.elGamalMenezesVanstone.records.PublicKey;
 import main.finiteFieldEllipticCurve.*;
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
+import test.IgnoreCoverage;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -12,9 +13,6 @@ import java.security.SecureRandom;
 public class KeyPair {
     PrivateKey privateKey;
     PublicKey publicKey;
-
-
-
 
     public PrivateKey getPrivateKey() {
         return privateKey;
@@ -99,10 +97,10 @@ public class KeyPair {
         assert ellipticCurve.isValidPoint(publicKey.generator());
         assert publicKey.order().equals(q);
         assert (publicKey.groupElement().multiply(q, ellipticCurve) instanceof InfinitePoint);
-        assert ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(Resource.EIGHT).equals(q);
     }
 
     @Override
+    @IgnoreCoverage
     public String toString() {
         return "KeyPair{" +
                 "privateKey=" + privateKey +

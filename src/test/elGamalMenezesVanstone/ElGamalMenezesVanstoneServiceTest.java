@@ -27,7 +27,7 @@ public class ElGamalMenezesVanstoneServiceTest {
         BigInteger uniquePrime = ElGamalMenezesVanstoneService.generateUniquePrime(bitLength, millerRabinSteps, m, counter);
 
         BigInteger lowerBound = Resource.FIVE;
-        BigInteger upperBound = BigInteger.valueOf(2).pow(bitLength.intValue()).subtract(BigInteger.ONE);
+        BigInteger upperBound = BigInteger.valueOf(2).pow(bitLength.intValue()).subtract(Resource.ONE);
         assertTrue(uniquePrime.compareTo(lowerBound) >= 0 && uniquePrime.compareTo(upperBound) <= 0);
     }
 
@@ -42,7 +42,7 @@ public class ElGamalMenezesVanstoneServiceTest {
      */
     @Test
     public void testGenerateKandKy() {
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 10, BigInteger.valueOf(13));
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 10, BigInteger.valueOf(13));
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, BigInteger.valueOf(13));
@@ -54,7 +54,7 @@ public class ElGamalMenezesVanstoneServiceTest {
         Pair<BigInteger, EllipticCurvePoint> result = ElGamalMenezesVanstoneService.generateKandKy(publicKey);
 
         assertNotNull(result.getKey());
-        assertTrue(result.getKey().compareTo(BigInteger.ZERO) != 0);
+        assertTrue(result.getKey().compareTo(Resource.ZERO) != 0);
 
         assertNotNull(result.getValue());
         assertFalse(result.getValue() instanceof InfinitePoint);
@@ -66,12 +66,16 @@ public class ElGamalMenezesVanstoneServiceTest {
      * @expected: encrypted text is not equal to the original text
      */
 
+    //TODO: Test encrypt, encrypt, decrypt, sign and verify independently
+
     @Test
     void fullTextCycle() {
         BigInteger m = BigInteger.valueOf(13);
         BigInteger bitLengthP = BigInteger.valueOf(128);
         double time = System.currentTimeMillis();
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(120), 10, m);
+        System.out.println(secureFiniteFieldEllipticCurve);
+        System.out.println(secureFiniteFieldEllipticCurve.getSafeEllipticCurve());
         System.out.println("passed time: " + (System.currentTimeMillis() - time));
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
@@ -97,15 +101,15 @@ public class ElGamalMenezesVanstoneServiceTest {
     @Test
     void testSignAndVerify() {
         BigInteger m = BigInteger.valueOf(13);
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100,m);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 100,m);
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
         BigInteger message = BigInteger.valueOf(123456789);
 
         MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
 
-        assertTrue(signature.r().compareTo(BigInteger.ZERO) > 0);
-        assertTrue(signature.s().compareTo(BigInteger.ZERO) > 0);
+        assertTrue(signature.r().compareTo(Resource.ZERO) > 0);
+        assertTrue(signature.s().compareTo(Resource.ZERO) > 0);
         boolean verified = ElGamalMenezesVanstoneService.verify(keyPair.getPublicKey(), message, signature);
 
         assertTrue(verified);

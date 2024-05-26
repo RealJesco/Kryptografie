@@ -6,6 +6,7 @@ import main.elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
 import main.elGamalMenezesVanstone.KeyPair;
 import main.encryption.EncryptionContext;
 import main.encryption.EncryptionContextParamBuilder;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 import main.rsa.*;
 
@@ -29,22 +30,18 @@ public class EncryptionStrategyTest {
         BigInteger m = BigInteger.valueOf(13);
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
 
-
         context.setStrategy(new ElGamalMenezesVanstoneStringService());
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, m);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 100, m);
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve,m);
         builder.withElGamalMenezesVanstoneKeyPair(keyPair);
         builder.withNumberBase(55296);
         builder.setData("Hello, World!");
 
-
         Map<String, Object> encryptionParams = builder.build();
         ElGamalMenezesVanstoneMessage encryptedMessage = (ElGamalMenezesVanstoneMessage) context.encrypt(builder.getData(), encryptionParams);
         String encrypted = encryptedMessage.getCipherMessageString();
         System.out.println(encrypted);
-
-
 
         EncryptionContextParamBuilder decryptionBuilder = new EncryptionContextParamBuilder();
         decryptionBuilder.withElGamalMenezesVanstoneCipherMessage(encryptedMessage);
@@ -56,8 +53,6 @@ public class EncryptionStrategyTest {
         System.out.println(decrypted);
 
         assert decrypted.equals(builder.getData());
-
-
     }
 
     /**
@@ -73,7 +68,7 @@ public class EncryptionStrategyTest {
     void testElGamalMenezesVanstoneSignStringStrategy() throws NoSuchAlgorithmException {
         BigInteger m = BigInteger.valueOf(13);
         context.setStrategy(new ElGamalMenezesVanstoneStringService());
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 100, m);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 100, m);
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
 
@@ -86,7 +81,6 @@ public class EncryptionStrategyTest {
         String message = builder.getData();
         String signature = (String) context.sign(message, encryptionParams);
         System.out.println(signature);
-
 
         EncryptionContextParamBuilder decryptionBuilder = new EncryptionContextParamBuilder();
         decryptionBuilder.withElGamalMenezesVanstonePublicKey(keyPair.getPublicKey());
@@ -117,7 +111,7 @@ public class EncryptionStrategyTest {
      * @expected: message parameters are equal after decryption
      */
     @Test
-    void testEncryptRsaStringStrategy(){
+    void testEncryptRsaStringStrategy() {
         KeyPairRsa keyPairRsa = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(13));
 
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
@@ -127,7 +121,6 @@ public class EncryptionStrategyTest {
         builder.setData("Hello, World!");
 
         Map<String, Object> encryptionParams = builder.build();
-
 
         context.setStrategy(new RsaStringService());
 
@@ -140,7 +133,6 @@ public class EncryptionStrategyTest {
         decryptionBuilder.withNumberBase(55296);
         decryptionBuilder.setData(encryptedMessage);
         Map<String, Object> decryptionParams = decryptionBuilder.build();
-
 
         String decrypted = (String) context.decrypt(encryptedMessage, decryptionParams);
         System.out.println(decrypted);
@@ -177,11 +169,11 @@ public class EncryptionStrategyTest {
         decryptionBuilder.setData(message);
         Map<String, Object> decryptionParams = decryptionBuilder.build();
 
-
-
         boolean verified = context.verify(message, signature, decryptionParams);
         System.out.println(verified);
 
         assert verified;
     }
+
+    //TODO: Test withK and withKy
 }

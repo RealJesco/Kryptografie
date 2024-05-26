@@ -8,6 +8,8 @@ import java.math.BigInteger;
 
 class RsaServiceTests {
 
+    //TODO: Test generateUniquePrime, calculateE
+
     @Test
     void generateKeyPair() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(87));

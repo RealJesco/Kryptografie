@@ -3,6 +3,7 @@ package main.finiteFieldEllipticCurve;
 import main.mathMethods.GaussianInteger;
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
+import test.IgnoreCoverage;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class FiniteFieldEllipticCurve {
         return p;
     }
 
+    //TODO: Is this ever used?
+    @IgnoreCoverage
     public BigInteger getQ() {
         return this.q;
     }
@@ -93,28 +96,40 @@ public class FiniteFieldEllipticCurve {
         GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.p);
         BigInteger y;
         BigInteger x;
-        if (!quadraticDivisors.real.mod(Resource.TWO).equals(Resource.ZERO)) {
-            y = quadraticDivisors.real;
-            x = quadraticDivisors.imaginary;
-        } else {
+        if (quadraticDivisors.real.mod(Resource.TWO).equals(Resource.ZERO)) {
             y = quadraticDivisors.imaginary;
             x = quadraticDivisors.real;
+        } else {
+            y = quadraticDivisors.real;
+            x = quadraticDivisors.imaginary;
         }
 
-        BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.p);
+        BigInteger h;
+        if (x.mod(Resource.FOUR).equals(Resource.ZERO)) {
+            if (y.mod(Resource.FOUR).equals(Resource.THREE)) {
+                h = Resource.TWO.negate().multiply(y);
+            } else {
+                h = Resource.TWO.multiply(y);
+            }
+        } else {
+            if (y.mod(Resource.FOUR).equals(Resource.THREE)) {
+                h = Resource.TWO.multiply(y);
+            } else {
+                h = Resource.TWO.negate().multiply(y);
+            }
+        }
 
         BigInteger realPartSign = y.mod(Resource.TWO).equals(Resource.ZERO) ? Resource.ONE : Resource.ONE.negate();
-//        System.out.println("legendreSign + " + legendreSign);
-//        System.out.println("realPartSign " + realPartSign);
-        //TODO Test if this is correct for all cases
-        BigInteger commonCalculation = Resource.TWO.multiply(y).multiply(legendreSign);
+        BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.p);
         if (legendreSign.equals(realPartSign)) {
-            commonCalculation = commonCalculation.negate();
+            h = h.negate();
         }
-        return this.p.add(Resource.ONE).subtract(commonCalculation);
+
+        return this.p.add(Resource.ONE).subtract(h);
     }
 
     @Override
+    @IgnoreCoverage
     public String toString() {
         return "main.FiniteFieldEllipticCurve{" +
                 "\n\ta = " + a +

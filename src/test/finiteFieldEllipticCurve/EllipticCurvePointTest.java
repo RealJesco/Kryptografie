@@ -4,6 +4,7 @@ import main.finiteFieldEllipticCurve.EllipticCurvePoint;
 import main.finiteFieldEllipticCurve.FiniteFieldEcPoint;
 import main.finiteFieldEllipticCurve.FiniteFieldEllipticCurve;
 import main.finiteFieldEllipticCurve.InfinitePoint;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -20,7 +21,7 @@ class EllipticCurvePointTest {
     @Test
     void normalize() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(ONE, BigInteger.valueOf(13));
-        EllipticCurvePoint point = new FiniteFieldEcPoint(BigInteger.valueOf(5), BigInteger.valueOf(4));
+        EllipticCurvePoint point = new FiniteFieldEcPoint(Resource.FIVE, Resource.FOUR);
         assertTrue(ellipticCurve.isValidPoint(point));
     }
 
@@ -32,9 +33,9 @@ class EllipticCurvePointTest {
      */
     @Test
     void add() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(13));
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(Resource.FIVE, BigInteger.valueOf(13));
         FiniteFieldEcPoint point1 = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(2));
-        FiniteFieldEcPoint point2 = new FiniteFieldEcPoint(BigInteger.valueOf(7), BigInteger.valueOf(5));
+        FiniteFieldEcPoint point2 = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
         EllipticCurvePoint newPoint = point1.add(point2, ellipticCurve);
         assertEquals(BigInteger.valueOf(6), newPoint.getX());
         assertEquals(BigInteger.valueOf(12), newPoint.getY());
@@ -50,7 +51,7 @@ class EllipticCurvePointTest {
     @Test
     void doublePoint() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(TWO, BigInteger.valueOf(17));
-        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(7));
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(3), Resource.SEVEN);
         EllipticCurvePoint doubledPoint = point.doublePoint(ellipticCurve);
         assertTrue(ellipticCurve.isValidPoint(doubledPoint));
         assertEquals(BigInteger.valueOf(15), doubledPoint.getX());
@@ -76,8 +77,8 @@ class EllipticCurvePointTest {
     @Test
     void multiply() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
-        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(7), BigInteger.valueOf(5));
-        EllipticCurvePoint newPoint = point.multiply(BigInteger.valueOf(4), ellipticCurve);
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
+        EllipticCurvePoint newPoint = point.multiply(Resource.FOUR, ellipticCurve);
         assertEquals(BigInteger.valueOf(16), newPoint.getX());
         assertEquals(BigInteger.valueOf(12), newPoint.getY());
     }
@@ -89,7 +90,7 @@ class EllipticCurvePointTest {
     @Test
     void multiplyWithZero () {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
-        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(7), BigInteger.valueOf(5));
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
         EllipticCurvePoint newPoint = point.multiply(BigInteger.valueOf(0), ellipticCurve);
         assertTrue(newPoint instanceof InfinitePoint);
     }
@@ -104,7 +105,7 @@ class EllipticCurvePointTest {
     @Test
     void reachInfinitePoint() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
-        FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(7), BigInteger.valueOf(5));
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
         EllipticCurvePoint newPoint = point.multiply(BigInteger.valueOf(9), ellipticCurve);
         assertTrue(newPoint instanceof FiniteFieldEcPoint);
         assertFalse(newPoint instanceof InfinitePoint);

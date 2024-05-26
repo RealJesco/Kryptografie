@@ -7,6 +7,7 @@ import main.elGamalMenezesVanstone.records.PublicKey;
 import main.rsa.KeyPairRsa;
 import main.rsa.PrivateKeyRsa;
 import main.rsa.PublicKeyRsa;
+import test.IgnoreCoverage;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class EncryptionContextParamBuilder {
         return this;
     }
 
+    @IgnoreCoverage
     public EncryptionContextParamBuilder setParams(Map<String, Object> params) {
         this.params = params;
         return this;
@@ -88,6 +90,7 @@ public class EncryptionContextParamBuilder {
         return data;
     }
 
+    @IgnoreCoverage
     @Override
     public String toString() {
         return "EncryptionContextParamBuilder{" +

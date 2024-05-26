@@ -2,6 +2,7 @@ package test.mathMethods;
 
 import main.mathMethods.GaussianInteger;
 import main.mathMethods.MathMethods;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -16,8 +17,8 @@ public class ExtraTaskTests {
         BigInteger prime = new BigInteger("13");
 
         GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
-        assertEquals(BigInteger.valueOf(3), result.real);
-        assertEquals(BigInteger.valueOf(2), result.imaginary);
+        assertEquals(Resource.THREE, result.real);
+        assertEquals(Resource.TWO, result.imaginary);
     }
 
     @Test
@@ -25,8 +26,8 @@ public class ExtraTaskTests {
         BigInteger prime = new BigInteger("17");
 
         GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
-        assertEquals(BigInteger.valueOf(4), result.real);
-        assertEquals(BigInteger.valueOf(1), result.imaginary);
+        assertEquals(Resource.FOUR, result.real);
+        assertEquals(Resource.ONE, result.imaginary);
     }
 
     @Test
@@ -34,8 +35,8 @@ public class ExtraTaskTests {
         BigInteger prime = new BigInteger("29");
 
         GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
-        assertEquals(BigInteger.valueOf(5), result.real);
-        assertEquals(BigInteger.valueOf(2), result.imaginary);
+        assertEquals(Resource.FIVE, result.real);
+        assertEquals(Resource.TWO, result.imaginary);
     }
 
     @Test
@@ -92,26 +93,26 @@ public class ExtraTaskTests {
 
     @Test
     public void testModularInverse() {
-        BigInteger a = BigInteger.valueOf(3);
+        BigInteger a = Resource.THREE;
         BigInteger b = BigInteger.valueOf(11);
         BigInteger result = MathMethods.modularInverse(a, b);
-        assertEquals(BigInteger.valueOf(4), result);
+        assertEquals(Resource.FOUR, result);
     }
 
     @Test
     public void testVerifyEulerCriterion() {
         BigInteger c = BigInteger.valueOf(2);
-        BigInteger p = BigInteger.valueOf(7);
+        BigInteger p = Resource.SEVEN;
         BigInteger result = MathMethods.verifyEulerCriterion(c, p);
-        assertEquals(BigInteger.ONE, result);
+        assertEquals(Resource.ONE, result);
     }
 
     @Test
     public void testF() {
-        BigInteger[] z = {BigInteger.valueOf(3), BigInteger.valueOf(4)};
+        BigInteger[] z = {Resource.THREE, Resource.FOUR};
         BigInteger[] result = MathMethods.f(z);
-        assertEquals(BigInteger.valueOf(3), result[0]);
-        assertEquals(BigInteger.valueOf(4), result[1]);
+        assertEquals(Resource.THREE, result[0]);
+        assertEquals(Resource.FOUR, result[1]);
     }
 
     @Test
@@ -130,7 +131,7 @@ public class ExtraTaskTests {
         BigInteger possiblePrime = BigInteger.valueOf(17);
         int numberOfTests = 5;
         BigInteger m = BigInteger.valueOf(2);
-        BigInteger countOfN = BigInteger.ZERO;
+        BigInteger countOfN = Resource.ZERO;
         boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
         assertTrue(result);
     }

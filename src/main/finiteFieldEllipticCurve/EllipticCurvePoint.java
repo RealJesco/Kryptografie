@@ -2,6 +2,7 @@ package main.finiteFieldEllipticCurve;
 
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
+import test.IgnoreCoverage;
 
 import java.math.BigInteger;
 
@@ -107,6 +108,7 @@ public abstract class EllipticCurvePoint {
      * @return string representation of the elliptic curve point with params x and y
      */
     @Override
+    @IgnoreCoverage
     public String toString() {
         return "EllipticCurvePoint{" +
                 "\n\tx = " + x +
