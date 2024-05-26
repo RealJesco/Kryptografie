@@ -1,6 +1,7 @@
 package main.mathMethods;
 
 import main.resource.Resource;
+import test.IgnoreCoverage;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -471,6 +472,7 @@ public class MathMethods {
     }
 
     //TODO: Method is never called => Is it still needed?
+    @IgnoreCoverage
     public static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
         return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
                 primeCandidate.mod(smallPrime).equals(Resource.ZERO) || primeCandidate.equals(smallPrime));
