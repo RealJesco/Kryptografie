@@ -119,6 +119,12 @@ public class FiniteFieldEllipticCurve {
             }
         }
 
+        BigInteger realPartSign = y.mod(Resource.TWO).equals(Resource.ZERO) ? Resource.ONE : Resource.ONE.negate();
+        BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.p);
+        if (legendreSign.equals(realPartSign)) {
+            h = h.negate();
+        }
+
         return this.p.add(Resource.ONE).subtract(h);
     }
 
