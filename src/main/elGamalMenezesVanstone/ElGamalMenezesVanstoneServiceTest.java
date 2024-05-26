@@ -29,8 +29,13 @@ class ElGamalMenezesVanstoneServiceTest {
     void encrypt() {
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 10, BigInteger.valueOf(13));
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
+        System.out.println("happy");
         KeyPair keyPair = new KeyPair();
+        System.out.println("happy2");
+
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, BigInteger.valueOf(13));
+        System.out.println("happy3");
+
         EllipticCurvePoint generator = keyPair.getPublicKey().generator();
         EllipticCurvePoint groupElement = keyPair.getPublicKey().groupElement();
         BigInteger q = keyPair.getPublicKey().order();

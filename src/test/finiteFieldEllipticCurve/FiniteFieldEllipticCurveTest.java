@@ -88,7 +88,7 @@ public class FiniteFieldEllipticCurveTest {
         BigInteger p = BigInteger.valueOf(11);
         FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(a, p);
         curve.setB(b);
-        String expected = "main.FiniteFieldEllipticCurve{a =-9, b =5, module prime =11}";
+        String expected = "main.FiniteFieldEllipticCurve{\n\ta = -9, \n\tb = 5, \n\tmodule prime = 11}";
         assertEquals(expected, curve.toString());
     }
 }

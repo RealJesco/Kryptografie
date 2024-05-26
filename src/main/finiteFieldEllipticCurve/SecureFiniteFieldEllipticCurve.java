@@ -153,7 +153,7 @@ public class SecureFiniteFieldEllipticCurve {
     //TODO: Is this method still needed?
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m, FiniteFieldEllipticCurve ellipticCurve) {
         assert n.compareTo(Resource.ZERO) > 0;
-        this.a = n.multiply(n).negate();
+        this.a = n.negate();
         this.safeEllipticCurve = ellipticCurve;
     }
 }

@@ -123,7 +123,7 @@ class EllipticCurvePointTest {
         BigInteger x = BigInteger.valueOf(3);
         BigInteger y = BigInteger.valueOf(5);
         EllipticCurvePoint point = new FiniteFieldEcPoint(x, y);
-        String expected = "EllipticCurvePoint{x=3, y=5}";
+        String expected = "EllipticCurvePoint{\n\tx = 3, \n\ty = 5}";
         assertEquals(expected, point.toString());
     }
 }
