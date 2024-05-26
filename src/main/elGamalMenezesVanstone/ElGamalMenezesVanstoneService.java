@@ -81,11 +81,10 @@ public class ElGamalMenezesVanstoneService {
 
         EllipticCurvePoint ky = publicKey.groupElement().multiply(k, ellipticCurve);
 
-        while (ky.getX().equals(Resource.ZERO) || ky.getY().equals(Resource.ZERO)) {
+        while (ky instanceof InfinitePoint || ky.getX().equals(Resource.ZERO) || ky.getY().equals(Resource.ZERO)) {
             k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractOne);
             ky = publicKey.groupElement().multiply(k, ellipticCurve);
         }
-        assert !(ky instanceof InfinitePoint);
         return new Pair<>(k, ky);
     }
 
