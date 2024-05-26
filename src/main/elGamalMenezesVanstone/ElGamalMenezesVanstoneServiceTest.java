@@ -27,12 +27,16 @@ class ElGamalMenezesVanstoneServiceTest {
      */
     @Test
     void encrypt() {
-        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(5), BigInteger.valueOf(821));
-        PrivateKey privateKey = new PrivateKey(ellipticCurve, BigInteger.valueOf(80));
-        EllipticCurvePoint generator = new FiniteFieldEcPoint(BigInteger.valueOf(115), BigInteger.valueOf(253));
-        EllipticCurvePoint groupElement = new FiniteFieldEcPoint(BigInteger.valueOf(575), BigInteger.valueOf(481));
-        BigInteger q = ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(BigInteger.valueOf(8));
-        PublicKey publicKey = new PublicKey(ellipticCurve, generator, groupElement, q);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), BigInteger.valueOf(5), 10, BigInteger.valueOf(13));
+        FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, BigInteger.valueOf(13));
+        EllipticCurvePoint generator = keyPair.getPublicKey().generator();
+        EllipticCurvePoint groupElement = keyPair.getPublicKey().groupElement();
+        BigInteger q = keyPair.getPublicKey().order();
+        PublicKey publicKey = keyPair.getPublicKey();
+        PrivateKey privateKey = keyPair.getPrivateKey();
+
 
         Message message = new Message(BigInteger.valueOf(3), BigInteger.valueOf(8));
 
