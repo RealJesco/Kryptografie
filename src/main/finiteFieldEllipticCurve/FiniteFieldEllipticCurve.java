@@ -122,9 +122,9 @@ public class FiniteFieldEllipticCurve {
     @IgnoreCoverage
     public String toString() {
         return "main.FiniteFieldEllipticCurve{" +
-                "a =" + a +
-                ", b =" + b +
-                ", module prime =" + p +
+                "\n\ta = " + a +
+                ", \n\tb = " + b +
+                ", \n\tmodule prime = " + p +
                 '}';
     }
 }

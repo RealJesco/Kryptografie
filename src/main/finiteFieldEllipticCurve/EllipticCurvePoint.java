@@ -111,8 +111,8 @@ public abstract class EllipticCurvePoint {
     @IgnoreCoverage
     public String toString() {
         return "EllipticCurvePoint{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+                "\n\tx = " + x +
+                ", \n\ty = " + y +
+                "}";
     }
 }

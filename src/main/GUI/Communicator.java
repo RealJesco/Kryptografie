@@ -49,14 +49,13 @@ public class Communicator extends JFrame {
     private static GridBagConstraints c;
     private final Communicator thisInstance;
     private final ArrayList<Message> messageList = new ArrayList<>();
-    private EncryptionContext context;
+    private final EncryptionContext context = new EncryptionContext();
     Map<String, Object> contextParams;
 
 
     public Communicator(String name, Map<String, Object> contextParams, Point point){
         super(name);
         this.name = name;
-        this.context = new EncryptionContext();
         context.setStrategy(new RsaStringService());
 
         this.n = ((PublicKeyRsa) contextParams.get("PublicKey")).n();
@@ -67,8 +66,8 @@ public class Communicator extends JFrame {
         thisInstance = this;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(1000,700));
-        setSize(new Dimension(1000,700));
+        setPreferredSize(new Dimension(990,700));
+        setSize(new Dimension(990,700));
         setLocation(point);
         setVisible(true);
         panel = new JPanel();
