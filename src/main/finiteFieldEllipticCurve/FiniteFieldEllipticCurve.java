@@ -103,19 +103,23 @@ public class FiniteFieldEllipticCurve {
             y = quadraticDivisors.real;
             x = quadraticDivisors.imaginary;
         }
-        ///////////////////////
 
-        BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.p);
-
-        BigInteger realPartSign = y.mod(Resource.TWO).equals(Resource.ZERO) ? Resource.ONE : Resource.ONE.negate();
-//        System.out.println("legendreSign + " + legendreSign);
-//        System.out.println("realPartSign " + realPartSign);
-        //TODO Test if this is correct for all cases
-        BigInteger commonCalculation = Resource.TWO.multiply(y).multiply(legendreSign);
-        if (legendreSign.equals(realPartSign)) {
-            commonCalculation = commonCalculation.negate();
+        BigInteger h;
+        if (x.mod(Resource.FOUR).equals(Resource.ZERO)) {
+            if (y.mod(Resource.FOUR).equals(Resource.THREE)) {
+                h = Resource.TWO.negate().multiply(y);
+            } else {
+                h = Resource.TWO.multiply(y);
+            }
+        } else {
+            if (y.mod(Resource.FOUR).equals(Resource.THREE)) {
+                h = Resource.TWO.multiply(y);
+            } else {
+                h = Resource.TWO.negate().multiply(y);
+            }
         }
-        return this.p.add(Resource.ONE).subtract(commonCalculation);
+
+        return this.p.add(Resource.ONE).subtract(h);
     }
 
     @Override
