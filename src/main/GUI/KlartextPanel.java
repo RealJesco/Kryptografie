@@ -32,9 +32,9 @@ import java.util.Map;
  1 Input D&D, 3 Anzeigen, 1 Button
  */
 public class KlartextPanel {
-    private static JFrame frame = new JFrame();
+    private static final JFrame frame = new JFrame();
     private static JPanel panel;
-    private static GridBagConstraints c;
+    private static final GridBagConstraints c = new GridBagConstraints();
 
     private static JTextArea inputKlartext;
     private static JTextArea anzeige_k;
@@ -86,7 +86,6 @@ public class KlartextPanel {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         frame.add(panel);
-        c = new GridBagConstraints();
 
         inputKlartext = new JTextArea();
         inputKlartext.setLineWrap(true);
@@ -130,14 +129,11 @@ public class KlartextPanel {
         panel.add(inputScrollPane, c);
         anzeige_k = UISetUpMethods.getjTextArea(panel, c, 1, "Zufallszahl k", false);
         encryptButton = new JButton("Verschlüsseln");
-        encryptButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    encrypt();
-                } catch (NoSuchAlgorithmException ex) {
-                    throw new RuntimeException(ex);
-                }
+        encryptButton.addActionListener(e -> {
+            try {
+                encrypt();
+            } catch (NoSuchAlgorithmException ex) {
+                throw new RuntimeException(ex);
             }
         });
         c.fill = GridBagConstraints.HORIZONTAL;

@@ -140,11 +140,6 @@ public class ChiffratSignaturPanel {
         anzeige_signatur_valid.setText("" + context.verify(anzeige_dechiffrat.getText(), input_signatur.getText(), contextParams));
     }
 
-    public static void receiveSignaturAndChiffrat(String signatur, String chiffrat){
-        input_signatur.setText(signatur);
-        input_chiffrat.setText(chiffrat);
-    }
-
     public static void receiveSignaturAndChiffrat(String signatur, String chiffrat, ElGamalMenezesVanstoneMessage cipherMessage){
         input_signatur.setText(signatur);
         input_chiffrat.setText(chiffrat);
