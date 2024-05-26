@@ -2,6 +2,7 @@ package test.finiteFieldEllipticCurve;
 
 import main.finiteFieldEllipticCurve.EllipticCurvePoint;
 import main.finiteFieldEllipticCurve.FiniteFieldEllipticCurve;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -39,8 +40,8 @@ public class FiniteFieldEllipticCurveTest {
      */
     @Test
     void calculateAllPointsTest2() {
-        BigInteger coefficientOfX = BigInteger.valueOf(3);
-        BigInteger moduleR = BigInteger.valueOf(7);
+        BigInteger coefficientOfX = Resource.THREE;
+        BigInteger moduleR = Resource.SEVEN;
         FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(coefficientOfX,  moduleR);
 
         List<EllipticCurvePoint> allPoints = curve.calculateAllPoints();
