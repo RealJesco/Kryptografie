@@ -191,6 +191,17 @@ public class MathMethods {
     };
     private static final BigInteger MINUSONE = BigInteger.valueOf(-1);
 
+    private static MathContext context = new MathContext(10);
+    private static BigInteger randomElsnerA = Resource.ZERO;
+    private static BigInteger randomElsnerB = Resource.ZERO;
+    private static BigInteger randomElsnerM = Resource.ZERO;
+    private static BigDecimal randomElsnerDecimalA = Resource.DECIMAL_ZERO;
+    private static BigDecimal randomElsnerDecimalB = Resource.DECIMAL_ZERO;
+    private static BigDecimal randomElsnerDecimalM = Resource.DECIMAL_ZERO;
+    private static BigDecimal range = Resource.DECIMAL_ZERO;
+
+    private static final ForkJoinPool forkJoinPool = new ForkJoinPool();
+
     /**
      * Calculates the alternative quick exponentiation of a base raised to the power of an exponent modulo a given modulus.
      *
@@ -412,16 +423,6 @@ public class MathMethods {
         }
     }
 
-    //TODO: Is there a reason why those are down here?
-    private static MathContext context = new MathContext(10);
-    private static BigInteger randomElsnerA = Resource.ZERO;
-    private static BigInteger randomElsnerB = Resource.ZERO;
-    private static BigInteger randomElsnerM = Resource.ZERO;
-    private static BigDecimal randomElsnerDecimalA = Resource.DECIMAL_ZERO;
-    private static BigDecimal randomElsnerDecimalB = Resource.DECIMAL_ZERO;
-    private static BigDecimal randomElsnerDecimalM = Resource.DECIMAL_ZERO;
-    private static BigDecimal range = Resource.DECIMAL_ZERO;
-
     /**
      * Generates a random BigInteger within the range [a, b] using Elsner's algorithm.
      * The precision was chosen to be 10 decimal places for the sake of performance.
@@ -596,10 +597,6 @@ public class MathMethods {
      * @return true if the number is probably prime, false otherwise
      *
      */
-
-    //TODO: Why is this down here?
-    private static final ForkJoinPool forkJoinPool = new ForkJoinPool();
-
     public static boolean parallelMillerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
         if (possiblePrime.equals(Resource.TWO)) return true;
         if (!possiblePrime.testBit(0)) return false;
