@@ -74,6 +74,8 @@ public class ElGamalMenezesVanstoneServiceTest {
         BigInteger bitLengthP = BigInteger.valueOf(128);
         double time = System.currentTimeMillis();
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(bitLengthP, BigInteger.valueOf(120), 10, m);
+        System.out.println(secureFiniteFieldEllipticCurve);
+        System.out.println(secureFiniteFieldEllipticCurve.getSafeEllipticCurve());
         System.out.println("passed time: " + (System.currentTimeMillis() - time));
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
