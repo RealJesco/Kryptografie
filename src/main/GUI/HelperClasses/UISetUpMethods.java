@@ -5,6 +5,11 @@ import java.awt.*;
 
 public class UISetUpMethods {
     public static JTextField getjTextField(JPanel p, GridBagConstraints c, int row, String headline, boolean editable) {
+        return getjTextField(p, c, row, headline, editable, HeightEnum.TINY);
+    }
+
+    public static JTextField getjTextField(JPanel p, GridBagConstraints c, int row, String headline, boolean editable, HeightEnum h) {
+        int height = getHeight(h);
         JTextField field = new JTextField();
         field.setEditable(editable);
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -12,21 +17,25 @@ public class UISetUpMethods {
         c.gridy = row;
         JPanel j = new JPanel();
         JTextField t = new JTextField(headline);
-        t.setPreferredSize(new Dimension(200,60));
+        t.setPreferredSize(new Dimension(200,height));
         t.setEditable(false);
         j.add(t);
-        field.setPreferredSize(new Dimension(450, 60));
+        field.setPreferredSize(new Dimension(450, height));
         j.add(field);
         p.add(j, c);
         return field;
     }
 
-    public static JTextField getjTextField(JPanel p, GridBagConstraints c, int row, String headline) {
-        return getjTextField(p, c, row, headline,false);
+    private static int getHeight(HeightEnum h) {
+        return switch (h) {
+            case TINY -> 20;
+            case BIG -> 180;
+            default -> 60;
+        };
     }
 
-    public static JTextArea getjTextArea(JPanel p, GridBagConstraints c, int row, String headline, boolean big) {
-        int height = big ? 180 : 60;
+    public static JTextArea getjTextArea(JPanel p, GridBagConstraints c, int row, String headline, HeightEnum h) {
+        int height = getHeight(h);
         JTextArea area = new JTextArea();
         area.setLineWrap(true);
         area.setEditable(false);

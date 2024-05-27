@@ -1,6 +1,7 @@
 package main.GUI;
 
 import main.GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
+import main.GUI.HelperClasses.HeightEnum;
 import main.GUI.HelperClasses.UISetUpMethods;
 import main.elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
 import main.elGamalMenezesVanstone.records.PublicKey;
@@ -38,7 +39,7 @@ public class ChiffratSignaturPanel {
     private static JTextArea anzeige_dechiffrat;
     private static JTextArea anzeige_signatur_valid;
     private static ElGamalMenezesVanstoneMessage input_cipherMessage;
-    //TODO bessere Lösung
+
     static EncryptionContext context = new EncryptionContext();
     private static Map<String, Object> contextParams;
     private static EncryptionContextParamBuilder contextBuilder;
@@ -85,7 +86,7 @@ public class ChiffratSignaturPanel {
         panel.setLayout(new GridBagLayout());
         frame.add(panel);
 
-        anzeige_public_key = UISetUpMethods.getjTextArea(panel, c, 0, "Public Key (E,p,q,g,y)", true);
+        anzeige_public_key = UISetUpMethods.getjTextArea(panel, c, 0, "Public Key (E,p,q,g,y)", HeightEnum.BIG);
         anzeige_public_key.setToolTipText("E = ellipticCurve, " +
                 "p = module prime, " +
                 "q = order, " +
@@ -128,8 +129,8 @@ public class ChiffratSignaturPanel {
         c.gridy = 3;
         panel.add(decryptButton, c);
 
-        anzeige_dechiffrat = UISetUpMethods.getjTextArea(panel, c, 4, "Entschlüsseltes Chiffrat", true);
-        anzeige_signatur_valid = UISetUpMethods.getjTextArea(panel, c, 5, "Signaturvalidierung", false);
+        anzeige_dechiffrat = UISetUpMethods.getjTextArea(panel, c, 4, "Entschlüsseltes Chiffrat", HeightEnum.BIG);
+        anzeige_signatur_valid = UISetUpMethods.getjTextArea(panel, c, 5, "Signaturvalidierung", HeightEnum.NORMAL);
     }
 
     private static void decrypt() throws NoSuchAlgorithmException {
@@ -144,7 +145,7 @@ public class ChiffratSignaturPanel {
         input_signatur.setText(signatur);
         input_chiffrat.setText(chiffrat);
         input_cipherMessage = cipherMessage;
-        contextBuilder.withElGamalMenezesVanstoneCipherMessage(cipherMessage);
+        contextBuilder.withElGamalMenezesVanstoneCipherMessage(input_cipherMessage);
         contextParams = contextBuilder.build();
     }
 }
