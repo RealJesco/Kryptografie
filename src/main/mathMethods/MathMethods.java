@@ -520,7 +520,6 @@ public class MathMethods {
      * @return true if the number is probably prime, false otherwise
      */
     public static boolean millerRabinTest(BigInteger possiblePrime, int numberOfTests, BigInteger m, BigInteger countOfN) {
-
         if (possiblePrime.equals(Resource.ONE)) {
             return false;
         }

@@ -2,6 +2,7 @@ package main.rsa;
 
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
+import test.IgnoreCoverage;
 
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,6 +15,7 @@ import static main.mathMethods.MathMethods.generateRandomPrime;
 public final class RsaService {
     private static AtomicInteger counter = new AtomicInteger(1);
 
+    @IgnoreCoverage
     public static AtomicInteger getCounter() {
         if(counter.get() == Integer.MAX_VALUE){
             counter.set(1);
@@ -40,7 +42,6 @@ public final class RsaService {
             if (!e.gcd(phiN).equals(Resource.ONE)) {
                 BigInteger upperBoundForE = phiN.subtract(Resource.ONE); // e must be less than phiN
                 do {
-//                    upperBoundForE = upperBoundForE.subtract(ONE);
                     e = generateRandomPrime(m, Resource.TWO, upperBoundForE, millerRabinSteps, counter);
                 } while (!e.gcd(phiN).equals(Resource.ONE));
             }

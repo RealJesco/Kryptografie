@@ -48,34 +48,45 @@ public class FiniteFieldEllipticCurveTest {
         assertFalse(allPoints.isEmpty());
     }
 
-    /**
-     * Test the calculation of the order of the elliptic curve.
-     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 2
-     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 1
-     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 1 (different curve to 1)
-     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 3
-     * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 2 (different curve)
-     */
     @Test
-    public void calculateOrder() {
+    public void calculateOrder1() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(17));
         BigInteger countOfElements = ellipticCurve.calculateOrder(TWO);
         assertEquals(16, countOfElements.intValue());
+    }
 
+    @Test
+    public void calculateOrder2() {
         FiniteFieldEllipticCurve ellipticCurve2 = new FiniteFieldEllipticCurve(BigInteger.valueOf(1), BigInteger.valueOf(13));
         BigInteger countOfElements2 = ellipticCurve2.calculateOrder(ONE);
         assertEquals(8, countOfElements2.intValue());
+    }
 
+    @Test
+    public void calculateOrder3() {
         FiniteFieldEllipticCurve ellipticCurve3 = new FiniteFieldEllipticCurve(BigInteger.valueOf(1), BigInteger.valueOf(17));
         BigInteger countOfElements3 = ellipticCurve3.calculateOrder(ONE);
         assertEquals(16, countOfElements3.intValue());
+    }
 
+    @Test
+    public void calculateOrder4() {
         FiniteFieldEllipticCurve ellipticCurve4 = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(13));
         BigInteger countOfElements4 = ellipticCurve4.calculateOrder(THREE);
         assertEquals(8, countOfElements4.intValue());
+    }
 
+    @Test
+    public void calculateOrder5() {
         FiniteFieldEllipticCurve ellipticCurve5 = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(509));
         BigInteger countOfElements5 = ellipticCurve5.calculateOrder(BigInteger.valueOf(2));
         assertEquals(500, countOfElements5.intValue());
+    }
+
+    @Test
+    public void calculateOrder6() {
+        FiniteFieldEllipticCurve ellipticCurve5 = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(73));
+        BigInteger countOfElements5 = ellipticCurve5.calculateOrder(BigInteger.valueOf(2));
+        assertEquals(80, countOfElements5.intValue());
     }
 }

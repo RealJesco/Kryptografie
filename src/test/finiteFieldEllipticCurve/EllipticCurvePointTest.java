@@ -41,6 +41,15 @@ class EllipticCurvePointTest {
         assertTrue(ellipticCurve.isValidPoint(newPoint));
     }
 
+    @Test
+    public void addInfinitePoint() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(Resource.FIVE, BigInteger.valueOf(13));
+        FiniteFieldEcPoint point1 = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(2));
+        EllipticCurvePoint point2 = new InfinitePoint();
+        EllipticCurvePoint newPoint = point1.add(point2, ellipticCurve);
+        assertEquals(point1, newPoint);
+    }
+
     /**
      * Test double point for point (3,7) on the elliptic curve.
      * @expected: true if the point is on the elliptic curve, false otherwise
@@ -67,6 +76,14 @@ class EllipticCurvePointTest {
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(ZERO, ZERO);
         ArithmeticException thrown = assertThrows(ArithmeticException.class, () -> point.doublePoint(ellipticCurve));
         assertTrue(thrown.getMessage().contains("No modular inverse exists for these parameters"));
+    }
+
+    @Test
+    public void doublePointForYIsZero() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(ONE, BigInteger.valueOf(13));
+        FiniteFieldEcPoint point = new FiniteFieldEcPoint(THREE, ZERO);
+        EllipticCurvePoint doubledPoint = point.doublePoint(ellipticCurve);
+        assertTrue(doubledPoint instanceof InfinitePoint);
     }
 
     /**

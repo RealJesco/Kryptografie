@@ -22,6 +22,32 @@ public class MathMethodsTest {
     }
 
     @Test
+    public void testAlternativeQuickExponentiationNegativeExponent() {
+        BigInteger base = BigInteger.valueOf(42);
+        BigInteger exponent = BigInteger.valueOf(-13);
+        BigInteger mod = BigInteger.valueOf(23);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.alternativeQuickExponentiation(base, exponent, mod));
+    }
+
+    @Test
+    public void testAlternativeQuickExponentiationExponentZero() {
+        BigInteger base = BigInteger.valueOf(42);
+        BigInteger exponent = Resource.ZERO;
+        BigInteger mod = BigInteger.valueOf(23);
+        BigInteger expected = Resource.ONE;
+        assertEquals(expected, MathMethods.alternativeQuickExponentiation(base, exponent, mod));
+    }
+
+    @Test
+    public void testAlternativeQuickExponentiationExponentZeroModOne() {
+        BigInteger base = BigInteger.valueOf(42);
+        BigInteger exponent = Resource.ZERO;
+        BigInteger mod = Resource.ONE;
+        BigInteger expected = Resource.ZERO;
+        assertEquals(expected, MathMethods.alternativeQuickExponentiation(base, exponent, mod));
+    }
+
+    @Test
     public void testExtendedEuclidean() {
         BigInteger a = BigInteger.TEN;
         BigInteger b = BigInteger.valueOf(6);
@@ -37,6 +63,13 @@ public class MathMethodsTest {
         BigInteger b = BigInteger.valueOf(11);
         BigInteger result = MathMethods.modularInverse(a, b);
         assertEquals(Resource.FOUR, result);
+    }
+
+    @Test
+    public void testModularInverseThrows() {
+        BigInteger a = Resource.THREE;
+        BigInteger b = BigInteger.valueOf(12);
+        assertThrows(ArithmeticException.class, () -> MathMethods.modularInverse(a, b));
     }
 
     @Test
@@ -172,6 +205,36 @@ public class MathMethodsTest {
     }
 
     @Test
+    public void testGenerateRandomPrimeThrows1() {
+        BigInteger m = BigInteger.valueOf(2);
+        BigInteger a = BigInteger.valueOf(20);
+        BigInteger b = BigInteger.TEN;
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.generateRandomPrime(m, a, b, millerRabinSteps, counter));
+    }
+
+    @Test
+    public void testGenerateRandomPrimeThrows2() {
+        BigInteger m = BigInteger.valueOf(2);
+        BigInteger a = BigInteger.TEN.negate();
+        BigInteger b = BigInteger.valueOf(20);
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.generateRandomPrime(m, a, b, millerRabinSteps, counter));
+    }
+
+    @Test
+    public void testGenerateRandomPrimeThrows3() {
+        BigInteger m = BigInteger.valueOf(2).negate();
+        BigInteger a = BigInteger.TEN;
+        BigInteger b = BigInteger.valueOf(20);
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.generateRandomPrime(m, a, b, millerRabinSteps, counter));
+    }
+
+    @Test
     public void testMillerRabinTest() {
         BigInteger possiblePrime = BigInteger.valueOf(17);
         int numberOfTests = 5;
@@ -179,6 +242,36 @@ public class MathMethodsTest {
         BigInteger countOfN = Resource.ZERO;
         boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
         assertTrue(result);
+    }
+
+    @Test
+    public void testMillerRabinTestOne() {
+        BigInteger possiblePrime = BigInteger.valueOf(1);
+        int numberOfTests = 5;
+        BigInteger m = BigInteger.valueOf(2);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertFalse(result);
+    }
+
+    @Test
+    public void testMillerRabinTestTwo() {
+        BigInteger possiblePrime = BigInteger.valueOf(2);
+        int numberOfTests = 5;
+        BigInteger m = BigInteger.valueOf(2);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertTrue(result);
+    }
+
+    @Test
+    public void testMillerRabinTestEven() {
+        BigInteger possiblePrime = BigInteger.valueOf(16);
+        int numberOfTests = 5;
+        BigInteger m = BigInteger.valueOf(2);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertFalse(result);
     }
 
     //TODO: Test parallelMillerRabinTest
