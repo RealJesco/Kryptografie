@@ -16,7 +16,7 @@ public class InfinitePoint extends EllipticCurvePoint {
         return this;
     }
 
-    public EllipticCurvePoint multiply(int scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
+    public EllipticCurvePoint multiply(BigInteger scalarMultiplicator, FiniteFieldEllipticCurve ellipticCurve) {
         return this;
     }
 

@@ -1,5 +1,7 @@
 package test.encryption;
 
+import main.elGamalMenezesVanstone.ElGamalMenezesVanstoneService;
+import main.finiteFieldEllipticCurve.EllipticCurvePoint;
 import main.finiteFieldEllipticCurve.SecureFiniteFieldEllipticCurve;
 import main.GUI.HelperClasses.ElGamalMenezesVanstoneMessage;
 import main.elGamalMenezesVanstone.ElGamalMenezesVanstoneStringService;
@@ -7,6 +9,7 @@ import main.elGamalMenezesVanstone.KeyPair;
 import main.encryption.EncryptionContext;
 import main.encryption.EncryptionContextParamBuilder;
 import main.resource.Resource;
+import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.Test;
 import main.rsa.*;
 
@@ -26,7 +29,7 @@ public class EncryptionStrategyTest {
      * @expected: param data equal to string after decryption
      */
     @Test
-    void testEncryptElGamalMenezesVanstoneStringStrategy() {
+    public void testEncryptElGamalMenezesVanstoneStringStrategy() {
         BigInteger m = BigInteger.valueOf(13);
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
 
@@ -65,7 +68,7 @@ public class EncryptionStrategyTest {
      * @expected: verification of the signature is unsuccessful
      */
     @Test
-    void testElGamalMenezesVanstoneSignStringStrategy() throws NoSuchAlgorithmException {
+    public void testElGamalMenezesVanstoneSignStringStrategy() throws NoSuchAlgorithmException {
         BigInteger m = BigInteger.valueOf(13);
         context.setStrategy(new ElGamalMenezesVanstoneStringService());
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 100, m);
@@ -74,6 +77,9 @@ public class EncryptionStrategyTest {
 
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
         builder.withElGamalMenezesVanstoneKeyPair(keyPair);
+        Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey());
+        builder.withK(kAndKy.getKey());
+        builder.withKy(kAndKy.getValue());
         builder.withNumberBase(55296);
         builder.setData("Hello, World!");
 
@@ -111,7 +117,7 @@ public class EncryptionStrategyTest {
      * @expected: message parameters are equal after decryption
      */
     @Test
-    void testEncryptRsaStringStrategy() {
+    public void testEncryptRsaStringStrategy() {
         KeyPairRsa keyPairRsa = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(13));
 
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
@@ -149,7 +155,7 @@ public class EncryptionStrategyTest {
      * @expected: verification of the signature is successful
      */
     @Test
-    void testRsaSignStringStrategy() throws NoSuchAlgorithmException {
+    public void testRsaSignStringStrategy() throws NoSuchAlgorithmException {
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
         KeyPairRsa keyPairRsa = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(13));
         builder.withRsaKeyPair(keyPairRsa);
@@ -174,6 +180,4 @@ public class EncryptionStrategyTest {
 
         assert verified;
     }
-
-    //TODO: Test withK and withKy
 }

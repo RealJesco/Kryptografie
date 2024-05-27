@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RsaStringServiceTest {
     @Test
-    void fullEncryptDecryptString() {
+    public void fullEncryptDecryptString() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(256, 100, BigInteger.valueOf(13));
         String message = "Mathematik is spannend!";
         String encryptedMessage = RsaStringService.encrypt(keyPair.publicKeyRsa(), message, 55296);
@@ -22,7 +22,7 @@ class RsaStringServiceTest {
     }
 
     @Test
-    void sign() throws NoSuchAlgorithmException {
+    public void sign() throws NoSuchAlgorithmException {
         KeyPairRsa keyPair = RsaService.generateKeyPair(512, 100, BigInteger.valueOf(13));
         String message = "Høllå die Walȡféè ㆕";
         String signature = RsaStringService.sign(keyPair.privateKeyRsa(), message, 55296);
@@ -30,7 +30,7 @@ class RsaStringServiceTest {
     }
 
     @Test
-    void verify() throws NoSuchAlgorithmException {
+    public void verify() throws NoSuchAlgorithmException {
         KeyPairRsa keyPair = RsaService.generateKeyPair(512, 100, BigInteger.valueOf(13));
         String message = "Høllå die Walȡféè ㆕";
         String signature = RsaStringService.sign(keyPair.privateKeyRsa(), message, 55296);

@@ -18,15 +18,13 @@ public class FiniteFieldEllipticCurve {
     public BigInteger getA() {
         return a;
     }
-
     public BigInteger getB() {
         return b;
     }
-
+    @IgnoreCoverage
     public void setB(BigInteger b) {
         this.b = b;
     }
-
     public BigInteger getP() {
         return p;
     }

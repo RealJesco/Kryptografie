@@ -11,35 +11,35 @@ import static main.resource.Resource.ZERO;
 
 public class GaussianIntegerTests {
     @Test
-    void testIsZeroTrue() {
+    public void testIsZeroTrue() {
         GaussianInteger a = new GaussianInteger(ZERO, ZERO);
 
         assertTrue(a.isZero());
     }
 
     @Test
-    void testIsZeroOnlyRealZero() {
+    public void testIsZeroOnlyRealZero() {
         GaussianInteger a = new GaussianInteger(ZERO, new BigInteger("7"));
 
         assertFalse(a.isZero());
     }
 
     @Test
-    void testIsZeroOnlyImaginaryZero() {
+    public void testIsZeroOnlyImaginaryZero() {
         GaussianInteger a = new GaussianInteger(new BigInteger("6"), ZERO);
 
         assertFalse(a.isZero());
     }
 
     @Test
-    void testIsZeroNeitherZero() {
+    public void testIsZeroNeitherZero() {
         GaussianInteger a = new GaussianInteger(new BigInteger("42"), new BigInteger("27"));
 
         assertFalse(a.isZero());
     }
 
     @Test
-    void testEqualsTrue() {
+    public void testEqualsTrue() {
         GaussianInteger a = new GaussianInteger(new BigInteger("42"), new BigInteger("27"));
         GaussianInteger b = new GaussianInteger(new BigInteger("42"), new BigInteger("27"));
 
@@ -47,7 +47,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testEqualsOnlyRealEquals() {
+    public void testEqualsOnlyRealEquals() {
         GaussianInteger a = new GaussianInteger(new BigInteger("42"), new BigInteger("27"));
         GaussianInteger b = new GaussianInteger(new BigInteger("42"), new BigInteger("317"));
 
@@ -55,7 +55,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testEqualsOnlyImaginaryEquals() {
+    public void testEqualsOnlyImaginaryEquals() {
         GaussianInteger a = new GaussianInteger(new BigInteger("93"), new BigInteger("27"));
         GaussianInteger b = new GaussianInteger(new BigInteger("42"), new BigInteger("27"));
 
@@ -63,7 +63,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testEqualsNeitherEquals() {
+    public void testEqualsNeitherEquals() {
         GaussianInteger a = new GaussianInteger(new BigInteger("217"), new BigInteger("27"));
         GaussianInteger b = new GaussianInteger(new BigInteger("42"), new BigInteger("97"));
 
@@ -71,7 +71,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testIsSymmetricallyEqualToTrue() {
+    public void testIsSymmetricallyEqualToTrue() {
         GaussianInteger a = new GaussianInteger(new BigInteger("54"), new BigInteger("65"));
         GaussianInteger b = new GaussianInteger(new BigInteger("65"), new BigInteger("54"));
 
@@ -79,7 +79,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testIsSymmetricallyEqualToOne() {
+    public void testIsSymmetricallyEqualToOne() {
         GaussianInteger a = new GaussianInteger(new BigInteger("54"), new BigInteger("65"));
         GaussianInteger b = new GaussianInteger(new BigInteger("65"), new BigInteger("9"));
 
@@ -87,7 +87,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testIsSymmetricallyEqualToTwo() {
+    public void testIsSymmetricallyEqualToTwo() {
         GaussianInteger a = new GaussianInteger(new BigInteger("54"), new BigInteger("65"));
         GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("54"));
 
@@ -95,7 +95,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testIsSymmetricallyEqualToThree() {
+    public void testIsSymmetricallyEqualToThree() {
         GaussianInteger a = new GaussianInteger(new BigInteger("48"), new BigInteger("65"));
         GaussianInteger b = new GaussianInteger(new BigInteger("73"), new BigInteger("54"));
 
@@ -103,7 +103,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testAbsoluteOne() {
+    public void testAbsoluteOne() {
         GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("4"));
 
         BigInteger expected = new BigInteger("5");
@@ -112,7 +112,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testAbsoluteTwo() {
+    public void testAbsoluteTwo() {
         GaussianInteger a = new GaussianInteger(new BigInteger("24652354"), new BigInteger("68435139"));
 
         BigInteger expected = new BigInteger("72739994");
@@ -121,7 +121,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testAbsoluteSymmetrical() {
+    public void testAbsoluteSymmetrical() {
         GaussianInteger a = new GaussianInteger(new BigInteger("68435139"), new BigInteger("24652354"));
 
         BigInteger expected = new BigInteger("72739994");
@@ -130,7 +130,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testIsMultipleBIsZero() {
+    public void testIsMultipleBIsZero() {
         GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
         GaussianInteger b = new GaussianInteger(ZERO, ZERO);
 
@@ -138,14 +138,14 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void isMultiple(){
+    public void isMultiple(){
         GaussianInteger a = new GaussianInteger(new BigInteger("2"), new BigInteger("2"));
         GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("4"));
 
         assertTrue(b.isMultiple(a));
     }
     @Test
-    void isNotMultiple() {
+    public void isNotMultiple() {
         GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
         GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("1"));
 
@@ -153,7 +153,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testDivideOne() {
+    public void testDivideOne() {
         GaussianInteger a = new GaussianInteger(new BigInteger("8"), new BigInteger("6"));
         GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("2"));
 
@@ -163,7 +163,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testDivideTwo() {
+    public void testDivideTwo() {
         GaussianInteger a = new GaussianInteger(new BigInteger("8564"), new BigInteger("6854"));
         GaussianInteger b = new GaussianInteger(new BigInteger("7712"), new BigInteger("4646"));
 
@@ -173,7 +173,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testDivideThree() {
+    public void testDivideThree() {
         GaussianInteger a = new GaussianInteger(new BigInteger("8"), new BigInteger("6"));
         GaussianInteger b = new GaussianInteger(new BigInteger("1"), new BigInteger("0"));
 
@@ -183,7 +183,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testMultiplyOne() {
+    public void testMultiplyOne() {
         GaussianInteger a = new GaussianInteger(new BigInteger("8"), new BigInteger("6"));
         GaussianInteger b = new GaussianInteger(new BigInteger("1"), new BigInteger("0"));
 
@@ -193,7 +193,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testMultiplyTwo() {
+    public void testMultiplyTwo() {
         GaussianInteger a = new GaussianInteger(new BigInteger("8"), new BigInteger("6"));
         GaussianInteger b = new GaussianInteger(new BigInteger("0"), new BigInteger("0"));
 
@@ -203,7 +203,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testMultiplyThree() {
+    public void testMultiplyThree() {
         GaussianInteger a = new GaussianInteger(new BigInteger("8"), new BigInteger("6"));
         GaussianInteger b = new GaussianInteger(new BigInteger("0"), new BigInteger("1"));
 
@@ -213,7 +213,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testMultiplyFour() {
+    public void testMultiplyFour() {
         GaussianInteger a = new GaussianInteger(new BigInteger("87486"), new BigInteger("34566"));
         GaussianInteger b = new GaussianInteger(new BigInteger("98962"), new BigInteger("588464"));
 
@@ -223,7 +223,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testSubstractOne() {
+    public void testSubstractOne() {
         GaussianInteger a = new GaussianInteger(new BigInteger("87486"), new BigInteger("34566"));
         GaussianInteger b = new GaussianInteger(new BigInteger("98962"), new BigInteger("588464"));
 
@@ -233,7 +233,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testSubstractTwo() {
+    public void testSubstractTwo() {
         GaussianInteger a = new GaussianInteger(new BigInteger("87486"), new BigInteger("34566"));
         GaussianInteger b = new GaussianInteger(new BigInteger("0"), new BigInteger("0"));
 
@@ -243,7 +243,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testSubstractThree() {
+    public void testSubstractThree() {
         GaussianInteger a = new GaussianInteger(new BigInteger("0"), new BigInteger("0"));
         GaussianInteger b = new GaussianInteger(new BigInteger("87486"), new BigInteger("34566"));
 
@@ -253,7 +253,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testSubstractFour() {
+    public void testSubstractFour() {
         GaussianInteger a = new GaussianInteger(new BigInteger("0"), new BigInteger("0"));
         GaussianInteger b = new GaussianInteger(new BigInteger("0"), new BigInteger("0"));
 
@@ -263,7 +263,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testAddOne() {
+    public void testAddOne() {
         GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
         GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("1"));
 
@@ -273,7 +273,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testAddTwo() {
+    public void testAddTwo() {
         GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
         GaussianInteger b = new GaussianInteger(new BigInteger("0"), new BigInteger("0"));
 
@@ -283,7 +283,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testAddThree() {
+    public void testAddThree() {
         GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
         GaussianInteger b = new GaussianInteger(new BigInteger("-4"), new BigInteger("-1"));
 
@@ -293,7 +293,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testAddFour() {
+    public void testAddFour() {
         GaussianInteger a = new GaussianInteger(new BigInteger("354584836"), new BigInteger("5364681"));
         GaussianInteger b = new GaussianInteger(new BigInteger("654516845"), new BigInteger("65484511"));
 
@@ -303,7 +303,7 @@ public class GaussianIntegerTests {
     }
 
     @Test
-    void testNormalizeGCD() {
+    public void testNormalizeGCD() {
         GaussianInteger input = new GaussianInteger(ZERO, ZERO);
 
         GaussianInteger expected = new GaussianInteger(ZERO, ZERO);

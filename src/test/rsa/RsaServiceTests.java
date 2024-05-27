@@ -11,7 +11,7 @@ class RsaServiceTests {
     //TODO: Test generateUniquePrime, calculateE
 
     @Test
-    void generateKeyPair() {
+    public void generateKeyPair() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(87));
         Assertions.assertNotNull(keyPair);
         Assertions.assertEquals(keyPair.privateKeyRsa().n(), keyPair.publicKeyRsa().n());
@@ -22,7 +22,7 @@ class RsaServiceTests {
     }
 
     @Test
-    void encrypt() {
+    public void encrypt() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(87));
         BigInteger message = BigInteger.valueOf(3213812);
         BigInteger encryptedMessage = RsaService.encrypt(keyPair.publicKeyRsa() ,message);
@@ -30,7 +30,7 @@ class RsaServiceTests {
     }
 
     @Test
-    void decrypt() {
+    public void decrypt() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(256, 100, BigInteger.valueOf(13));
         BigInteger message = BigInteger.valueOf(3213812);
         BigInteger encryptedMessage = RsaService.encrypt(keyPair.publicKeyRsa(), message);
@@ -39,7 +39,7 @@ class RsaServiceTests {
     }
 
     @Test
-    void sign() {
+    public void sign() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(256, 100, BigInteger.valueOf(13));
         BigInteger message = BigInteger.valueOf(3213812);
         BigInteger signedMessage = RsaService.sign(keyPair.privateKeyRsa(), message);
@@ -47,7 +47,7 @@ class RsaServiceTests {
     }
 
     @Test
-    void verify() {
+    public void verify() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(256, 100, BigInteger.valueOf(13));
         BigInteger message = BigInteger.valueOf(3213812);
         BigInteger signature = RsaService.sign(keyPair.privateKeyRsa(), message);

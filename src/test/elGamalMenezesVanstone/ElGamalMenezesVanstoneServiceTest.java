@@ -69,7 +69,7 @@ public class ElGamalMenezesVanstoneServiceTest {
     //TODO: Test encrypt, encrypt, decrypt, sign and verify independently
 
     @Test
-    void fullTextCycle() {
+    public void fullTextCycle() {
         BigInteger m = BigInteger.valueOf(13);
         BigInteger bitLengthP = BigInteger.valueOf(128);
         double time = System.currentTimeMillis();
@@ -99,7 +99,7 @@ public class ElGamalMenezesVanstoneServiceTest {
      * @expected: the signature is verified
      */
     @Test
-    void testSignAndVerify() {
+    public void testSignAndVerify() {
         BigInteger m = BigInteger.valueOf(13);
         SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 100,m);
         KeyPair keyPair = new KeyPair();

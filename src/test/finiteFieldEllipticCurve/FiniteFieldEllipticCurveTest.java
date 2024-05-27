@@ -27,7 +27,7 @@ public class FiniteFieldEllipticCurveTest {
      * @expected: the list of points has the correct size
      */
     @Test
-    void calculateAllPointsTest1() {
+    public void calculateAllPointsTest1() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3),  BigInteger.valueOf(11));
 
         List<EllipticCurvePoint> allPoints = ellipticCurve.calculateAllPoints();
@@ -39,7 +39,7 @@ public class FiniteFieldEllipticCurveTest {
      * @expected: false if the list of points is empty, true otherwise
      */
     @Test
-    void calculateAllPointsTest2() {
+    public void calculateAllPointsTest2() {
         BigInteger coefficientOfX = Resource.THREE;
         BigInteger moduleR = Resource.SEVEN;
         FiniteFieldEllipticCurve curve = new FiniteFieldEllipticCurve(coefficientOfX,  moduleR);
@@ -57,7 +57,7 @@ public class FiniteFieldEllipticCurveTest {
      * @expected: the order of the elliptic curve is equal to the expected value if n for order calculation is 2 (different curve)
      */
     @Test
-    void calculateOrder() {
+    public void calculateOrder() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(2), BigInteger.valueOf(17));
         BigInteger countOfElements = ellipticCurve.calculateOrder(TWO);
         assertEquals(16, countOfElements.intValue());

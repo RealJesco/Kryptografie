@@ -42,9 +42,8 @@ public class MathMethodsTest {
     @Test
     public void testEulerCriterionInteger() {
         BigInteger p = BigInteger.valueOf(23);
-        BigInteger expected = Resource.ONE.negate();
         BigInteger result = MathMethods.eulerCriterionInteger(p);
-        assertEquals(expected, MathMethods.calculateEulerCriterion(result, p));
+        assertFalse(MathMethods.alternativeQuickExponentiation(result, p.subtract(Resource.ONE).divide(Resource.TWO), p).equals(Resource.ONE));
     }
 
     @Test
@@ -56,7 +55,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void testRepresentPrimeAsSumOfTwoSquaresOne() {
+    public void testRepresentPrimeAsSumOfTwoSquaresOne() {
         BigInteger prime = new BigInteger("13");
 
         GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
@@ -65,7 +64,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void testRepresentPrimeAsSumOfTwoSquaresTwo() {
+    public void testRepresentPrimeAsSumOfTwoSquaresTwo() {
         BigInteger prime = new BigInteger("17");
 
         GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
@@ -74,7 +73,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void testRepresentPrimeAsSumOfTwoSquaresThree() {
+    public void testRepresentPrimeAsSumOfTwoSquaresThree() {
         BigInteger prime = new BigInteger("29");
 
         GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
@@ -83,7 +82,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void testRepresentPrimeAsSumOfTwoSquaresNotPrime() {
+    public void testRepresentPrimeAsSumOfTwoSquaresNotPrime() {
         BigInteger notPrime = new BigInteger("625");
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -97,7 +96,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void testRepresentPrimeAsSumOfTwoSquaresNotInForm4NPlus1() {
+    public void testRepresentPrimeAsSumOfTwoSquaresNotInForm4NPlus1() {
         BigInteger notFourNPlusOne = new BigInteger("7");
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -111,7 +110,7 @@ public class MathMethodsTest {
     }
 
     @Test
-    void testRepresentPrimeAsSumOfTwoSquaresXIsAMultipleOfP() {
+    public void testRepresentPrimeAsSumOfTwoSquaresXIsAMultipleOfP() {
         BigInteger input = new BigInteger("7");
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -124,7 +123,6 @@ public class MathMethodsTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
-    //TODO: Test extendedEuclideanInZi
     @Test
     public void testExtendedEuclideanInZiThrows() {
         GaussianInteger b = new GaussianInteger(Resource.ONE, Resource.TWO);

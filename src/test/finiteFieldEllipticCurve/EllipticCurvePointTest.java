@@ -13,13 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static main.resource.Resource.*;
 
 class EllipticCurvePointTest {
-
     /**
      * Test if the point is on the elliptic curve.
      * @expected: true if the point is on the elliptic curve, false otherwise
      */
     @Test
-    void normalize() {
+    public void normalize() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(ONE, BigInteger.valueOf(13));
         EllipticCurvePoint point = new FiniteFieldEcPoint(Resource.FIVE, Resource.FOUR);
         assertTrue(ellipticCurve.isValidPoint(point));
@@ -32,7 +31,7 @@ class EllipticCurvePointTest {
      * @expected: true if the point is on the elliptic curve, false otherwise
      */
     @Test
-    void add() {
+    public void add() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(Resource.FIVE, BigInteger.valueOf(13));
         FiniteFieldEcPoint point1 = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(2));
         FiniteFieldEcPoint point2 = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
@@ -49,7 +48,7 @@ class EllipticCurvePointTest {
      * @expected: y of point equals big integer 0
      */
     @Test
-    void doublePoint() {
+    public void doublePoint() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(TWO, BigInteger.valueOf(17));
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(BigInteger.valueOf(3), Resource.SEVEN);
         EllipticCurvePoint doubledPoint = point.doublePoint(ellipticCurve);
@@ -63,7 +62,7 @@ class EllipticCurvePointTest {
      * @expected: no modular inverse exists for these parameters
      */
     @Test
-    void doublePointForZero() {
+    public void doublePointForZero() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(ONE, BigInteger.valueOf(13));
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(ZERO, ZERO);
         ArithmeticException thrown = assertThrows(ArithmeticException.class, () -> point.doublePoint(ellipticCurve));
@@ -75,7 +74,7 @@ class EllipticCurvePointTest {
      * @expected: new point x = 16, new point y = 12
      */
     @Test
-    void multiply() {
+    public void multiply() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
         EllipticCurvePoint newPoint = point.multiply(Resource.FOUR, ellipticCurve);
@@ -88,9 +87,17 @@ class EllipticCurvePointTest {
      * @expected: the point is an instance of infinite point
      */
     @Test
-    void multiplyWithZero () {
+    public void multiplyWithZero () {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
+        EllipticCurvePoint newPoint = point.multiply(BigInteger.valueOf(0), ellipticCurve);
+        assertTrue(newPoint instanceof InfinitePoint);
+    }
+
+    @Test
+    public void multiplyInfinitePoint () {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
+        InfinitePoint point = new InfinitePoint();
         EllipticCurvePoint newPoint = point.multiply(BigInteger.valueOf(0), ellipticCurve);
         assertTrue(newPoint instanceof InfinitePoint);
     }
@@ -103,7 +110,7 @@ class EllipticCurvePointTest {
      * @expected: the point is not instance of finite field elliptic curve point
      */
     @Test
-    void reachInfinitePoint() {
+    public void reachInfinitePoint() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
         FiniteFieldEcPoint point = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
         EllipticCurvePoint newPoint = point.multiply(BigInteger.valueOf(9), ellipticCurve);
@@ -112,5 +119,19 @@ class EllipticCurvePointTest {
         newPoint = point.multiply(BigInteger.valueOf(10), ellipticCurve);
         assertTrue(newPoint instanceof InfinitePoint);
         assertFalse(newPoint instanceof FiniteFieldEcPoint);
+    }
+
+    @Test
+    public void testInfinitePointResturnInstanceOfInfinitePoint() {
+        InfinitePoint point = new InfinitePoint();
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(3), BigInteger.valueOf(17));
+        assertTrue(point.doublePoint(ellipticCurve) instanceof InfinitePoint);
+    }
+
+    @Test
+    public void testInfinitePointErrorsXYGetters() {
+        EllipticCurvePoint point = new InfinitePoint();
+        assertThrows(RuntimeException.class, () -> point.getX());
+        assertThrows(RuntimeException.class, () -> point.getY());
     }
 }

@@ -20,7 +20,7 @@ class BlockCipherTest {
      * @expected: the encrypted message is not null
      */
     @Test
-    void encrypt() {
+    public void encrypt() {
         int bitLength = 256;
         int numberSystemBase = 55296;
         int blockSize = (int) (bitLength * (Math.log(2) / Math.log(numberSystemBase)));
@@ -38,7 +38,7 @@ class BlockCipherTest {
      * @expected: the decrypted message equals the original message
      */
     @Test
-    void decryptToDecimal() {
+    public void decryptToDecimal() {
         int bitLength = 512;
         int numberSystemBase = 55296;
         int blockSize = (int) (bitLength * (Math.log(2) / Math.log(numberSystemBase)));
@@ -56,7 +56,7 @@ class BlockCipherTest {
      * @expected: the expected decimals are equal to the decrypted decimals
      */
     @Test
-    void decryptFromDecimal() {
+    public void decryptFromDecimal() {
         int bitLength = 512;
         int numberSystemBase = 55296;
         int blockSize = (int) (bitLength * (Math.log(2) / Math.log(numberSystemBase)));
@@ -76,7 +76,7 @@ class BlockCipherTest {
      * @expected: the decrypted message is not equal to the expected decrypted message
      */
     @Test
-    void decryptFromDecimalFail() {
+    public void decryptFromDecimalFail() {
         int bitLength = 512;
         int numberSystemBase = 55296;
         int blockSize = (int) (bitLength * (Math.log(2) / Math.log(numberSystemBase)));
