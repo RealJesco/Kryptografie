@@ -212,7 +212,6 @@ public class MathMethods {
      * @throws IllegalArgumentException if the exponent is negative or if 0^0 mod 1 is encountered
      */
     public static BigInteger alternativeQuickExponentiation(BigInteger base, BigInteger exp, BigInteger mod) {
-
         if (exp.signum() < 0) {
             throw new IllegalArgumentException("Exponent must be positive");
         }
@@ -236,15 +235,6 @@ public class MathMethods {
                 result = result.multiply(base).mod(mod);  // Multiply by base and mod if the bit is 1
             }
         }
-        //use modPow instead of multiply and mod
-//        while (!exp.equals(Resource.ZERO)) {
-//            if (exp.testBit(0)) { // If the exponent's least significant bit is 1
-//                result = result.multiply(base).mod(mod);
-//            }
-//            base = base.modPow(Resource.TWO, mod);  // Square the base for the next exponent bit
-//            exp = exp.shiftRight(1);  // Divide the exponent by 2
-//        }
-
         return result;
     }
 
@@ -287,7 +277,7 @@ public class MathMethods {
      * @param p the prime number
      * @return a random BigInteger satisfying Euler's criterion
      */
-    public static BigInteger eulerCriterion(BigInteger p) {
+    public static BigInteger eulerCriterionInteger(BigInteger p) {
         SecureRandom rand = new SecureRandom();
         BigInteger z;
         do {
@@ -297,7 +287,7 @@ public class MathMethods {
         return z;
     }
 
-    public static BigInteger verifyEulerCriterion(BigInteger c, BigInteger p) {
+    public static BigInteger calculateEulerCriterion(BigInteger c, BigInteger p) {
         if(alternativeQuickExponentiation(c, (p.subtract(Resource.ONE).divide(Resource.TWO)), p).equals(p.subtract(Resource.ONE))) {
             return Resource.ONE.negate();
         } else {
@@ -331,11 +321,11 @@ public class MathMethods {
             throw new IllegalArgumentException("The prime number " + p + " cannot be represented as a sum of two squares.");
         }
 
-        BigInteger randomZ = eulerCriterion(p);
+        BigInteger randomZ = eulerCriterionInteger(p);
         //Check if randomZ is a squared non-residue mod p
         while (alternativeQuickExponentiation(randomZ, p.subtract(Resource.ONE).divide(Resource.TWO), p).equals(Resource.ONE) || randomZ.compareTo(Resource.ONE) <= 0) {
             //If equal to or smaller than 1, it is not a squared non-residue mod p
-            randomZ = eulerCriterion(p);
+            randomZ = eulerCriterionInteger(p);
         }
 
         BigInteger four = Resource.FOUR;
@@ -390,6 +380,7 @@ public class MathMethods {
         return gk_minus1.normalizeGCD();
     }
 
+    //TODO: Delete
     /**
      * Returns the rounded value of the given array of BigIntegers.
      *
@@ -447,16 +438,6 @@ public class MathMethods {
         BigDecimal decimalN = new BigDecimal(n);
 
         BigDecimal range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(Resource.DECIMAL_ONE);
-//        BigDecimal mathContextRange = range.add(decimalN);
-//
-//         int decadicLogarithm = mathContextRange.precision() - mathContextRange.scale();
-//         MathContext context = new MathContext(decadicLogarithm);
-
-//         In this context, decimalM is always positive, and sqrt is always positive, so the remainder is always positive
-//         So this condition will never be true. We can comment/remove this condition
-//        if (randomElsnerDecimalM.sqrt(context).remainder(Resource.DECIMAL_ONE).equals(Resource.DECIMAL_ZERO)) {
-//            randomElsnerDecimalM = randomElsnerDecimalM.add(Resource.DECIMAL_ONE);
-//        }
 
         BigDecimal randomSeededNumber = decimalN.multiply(randomElsnerDecimalM.sqrt(context)).remainder(Resource.DECIMAL_ONE);
         BigDecimal randomSeedNumberOffset = randomSeededNumber.multiply(range);
@@ -472,8 +453,7 @@ public class MathMethods {
         return result;
     }
 
-    //TODO: Method is never called => Is it still needed?
-    @IgnoreCoverage
+    //TODO: Method is never called => Is it still needed? -> Try to use!
     public static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
         return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
                 primeCandidate.mod(smallPrime).equals(Resource.ZERO) || primeCandidate.equals(smallPrime));
@@ -635,6 +615,7 @@ public class MathMethods {
         }
     }
 
+    //TODO: Delete
     /**
      * This is part of the block cipher main.encryption method.
      * It takes a message and encrypts it using the RSA algorithm.
@@ -673,6 +654,7 @@ public class MathMethods {
         return encryptedBlocks;
     }
 
+    //TODO: Delete
     /**
      * This is the block cipher decryption method.
      * It also has been renamed to decryptMessage to avoid confusion, since it is not strictly speaking a pure block cipher decryption method.
@@ -706,6 +688,7 @@ public class MathMethods {
         return decryptedMessage;
     }
 
+    //TODO: Delete
     /**
      * Converts a given text into a list of unicode values.
      *
@@ -720,6 +703,7 @@ public class MathMethods {
         return unicode;
     }
 
+    //TODO: Delete
     /**
      * Converts a list of Unicode values representing characters into a corresponding text.
      *

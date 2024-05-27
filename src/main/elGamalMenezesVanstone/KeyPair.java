@@ -38,7 +38,7 @@ public class KeyPair {
             BigInteger y;
             BigInteger x = MathMethods.randomElsner(m, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, qSubtractONE);
             BigInteger r = x.pow(3).add(ellipticCurveA.multiply(x)).add(ellipticCurveB);
-            BigInteger legendreSign = MathMethods.verifyEulerCriterion(r, prime);
+            BigInteger legendreSign = MathMethods.calculateEulerCriterion(r, prime);
 
             if (legendreSign.equals(Resource.ONE.negate())){
                 continue;
@@ -67,7 +67,7 @@ public class KeyPair {
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         BigInteger q = secureFiniteFieldEllipticCurve.getQ();
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
-        assert MathMethods.verifyEulerCriterion(ellipticCurve.getP(), Resource.EIGHT).equals(Resource.ONE);
+        assert MathMethods.calculateEulerCriterion(ellipticCurve.getP(), Resource.EIGHT).equals(Resource.ONE);
 
         SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();

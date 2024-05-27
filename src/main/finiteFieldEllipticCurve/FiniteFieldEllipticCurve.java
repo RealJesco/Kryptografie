@@ -120,7 +120,7 @@ public class FiniteFieldEllipticCurve {
         }
 
         BigInteger realPartSign = y.mod(Resource.TWO).equals(Resource.ZERO) ? Resource.ONE : Resource.ONE.negate();
-        BigInteger legendreSign = MathMethods.verifyEulerCriterion(n, this.p);
+        BigInteger legendreSign = MathMethods.calculateEulerCriterion(n, this.p);
         if (legendreSign.equals(realPartSign)) {
             h = h.negate();
         }

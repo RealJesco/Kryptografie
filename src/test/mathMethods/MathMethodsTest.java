@@ -11,7 +11,50 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ExtraTaskTests {
+public class MathMethodsTest {
+    @Test
+    public void testAlternativeQuickExponentiation() {
+        BigInteger base = BigInteger.valueOf(42);
+        BigInteger exponent = BigInteger.valueOf(13);
+        BigInteger mod = BigInteger.valueOf(23);
+        BigInteger expected = BigInteger.valueOf(7);
+        assertEquals(expected, MathMethods.alternativeQuickExponentiation(base, exponent, mod));
+    }
+
+    @Test
+    public void testExtendedEuclidean() {
+        BigInteger a = BigInteger.TEN;
+        BigInteger b = BigInteger.valueOf(6);
+        BigInteger[] result = MathMethods.extendedEuclidean(a, b);
+        assertEquals(BigInteger.valueOf(2), result[0]);
+        assertEquals(BigInteger.valueOf(-1), result[1]);
+        assertEquals(BigInteger.valueOf(2), result[2]);
+    }
+
+    @Test
+    public void testModularInverse() {
+        BigInteger a = Resource.THREE;
+        BigInteger b = BigInteger.valueOf(11);
+        BigInteger result = MathMethods.modularInverse(a, b);
+        assertEquals(Resource.FOUR, result);
+    }
+
+    @Test
+    public void testEulerCriterionInteger() {
+        BigInteger p = BigInteger.valueOf(23);
+        BigInteger expected = Resource.ONE.negate();
+        BigInteger result = MathMethods.eulerCriterionInteger(p);
+        assertEquals(expected, MathMethods.calculateEulerCriterion(result, p));
+    }
+
+    @Test
+    public void testCalculateEulerCriterion() {
+        BigInteger c = BigInteger.valueOf(2);
+        BigInteger p = Resource.SEVEN;
+        BigInteger result = MathMethods.calculateEulerCriterion(c, p);
+        assertEquals(Resource.ONE, result);
+    }
+
     @Test
     void testRepresentPrimeAsSumOfTwoSquaresOne() {
         BigInteger prime = new BigInteger("13");
@@ -81,30 +124,12 @@ public class ExtraTaskTests {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    //TODO: Test extendedEuclideanInZi
     @Test
-    public void testExtendedEuclidean() {
-        BigInteger a = BigInteger.TEN;
-        BigInteger b = BigInteger.valueOf(6);
-        BigInteger[] result = MathMethods.extendedEuclidean(a, b);
-        assertEquals(BigInteger.valueOf(2), result[0]);
-        assertEquals(BigInteger.valueOf(-1), result[1]);
-        assertEquals(BigInteger.valueOf(2), result[2]);
-    }
-
-    @Test
-    public void testModularInverse() {
-        BigInteger a = Resource.THREE;
-        BigInteger b = BigInteger.valueOf(11);
-        BigInteger result = MathMethods.modularInverse(a, b);
-        assertEquals(Resource.FOUR, result);
-    }
-
-    @Test
-    public void testVerifyEulerCriterion() {
-        BigInteger c = BigInteger.valueOf(2);
-        BigInteger p = Resource.SEVEN;
-        BigInteger result = MathMethods.verifyEulerCriterion(c, p);
-        assertEquals(Resource.ONE, result);
+    public void testExtendedEuclideanInZiThrows() {
+        GaussianInteger b = new GaussianInteger(Resource.ONE, Resource.TWO);
+        GaussianInteger a = new GaussianInteger(Resource.THREE, Resource.FOUR);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.extendedEuclideanInZi(a, b));
     }
 
     @Test
@@ -113,6 +138,28 @@ public class ExtraTaskTests {
         BigInteger[] result = MathMethods.f(z);
         assertEquals(Resource.THREE, result[0]);
         assertEquals(Resource.FOUR, result[1]);
+    }
+
+    @Test
+    public void testRoundHalfUp() {
+        BigInteger number = BigInteger.valueOf(3);
+        BigInteger expected = BigInteger.valueOf(3);
+        assertEquals(expected, MathMethods.roundHalfUp(number));
+    }
+
+    //TODO: Test randomElsner?
+
+    //TODO: Test isCompositeAgainstSmallPrimes?
+    @Test
+    public void testIsCompositeAgainstSmallPrimesTrue() {
+        BigInteger primeCandidate = BigInteger.valueOf(7983);
+        assertTrue(MathMethods.isCompositeAgainstSmallPrimes(primeCandidate));
+    }
+
+    @Test
+    public void testIsCompositeAgainstSmallPrimesFalse() {
+        BigInteger primeCandidate = BigInteger.valueOf(7927);
+        assertFalse(MathMethods.isCompositeAgainstSmallPrimes(primeCandidate));
     }
 
     @Test
@@ -135,6 +182,8 @@ public class ExtraTaskTests {
         boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
         assertTrue(result);
     }
+
+    //TODO: Test parallelMillerRabinTest
 
     @Test
     public void testPrepareMessageForEncryption() {
