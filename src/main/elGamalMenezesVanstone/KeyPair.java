@@ -62,7 +62,7 @@ public class KeyPair {
             generator = new FiniteFieldEcPoint(x,y);
             EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
             if (qg instanceof InfinitePoint) {
-                System.out.println("Generator: " + generator);
+                //System.out.println("Generator: " + generator);
 
                 return generator;
             }

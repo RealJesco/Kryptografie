@@ -300,7 +300,6 @@ public class Communicator extends JFrame {
                 signings.setText(signature);
                 currentMessageIsSigned.set(true);
             } catch (NoSuchAlgorithmException exc) {
-                System.out.println("Error while Signing" + exc);
                 throw new RuntimeException(exc);
             }
         });

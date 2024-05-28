@@ -106,12 +106,12 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         List<BigInteger> receivedCipherMessageBs = FromDecimalBlockChiffre.decrypt(elGamalMenezesVanstoneCipherMessage.getCipherMessageString(), numberBase, blockSize + 1);
 
         if(receivedCipherMessageBs.size() % 2 != 0) {
-            System.out.println(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().size());
-            System.out.println(receivedCipherMessageBs.size());
+            //System.out.println(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().size());
+            //System.out.println(receivedCipherMessageBs.size());
             throw new IllegalArgumentException("The number of cipher points is not even, so the cipher message is either corrupted or not valid.");
         }
 
-        System.out.println(receivedCipherMessageBs.size());
+        //System.out.println(receivedCipherMessageBs.size());
 
         for (int i = 0; i < receivedCipherMessageBs.size(); i+=2) {
             CipherMessage cipherMessage = new CipherMessage(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().get(i/2), receivedCipherMessageBs.get(i), receivedCipherMessageBs.get(i+1));
@@ -176,7 +176,7 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
     public Object encrypt(String data, Map<String, Object> params) {
         KeyPair key = (KeyPair) params.get("KeyPair");
         if(params.get("k") != null || params.get("ky") != null) {
-            System.out.println("Encrypting with k and ky: " + params.get("k") + " " + params.get("ky"));
+            //System.out.println("Encrypting with k and ky: " + params.get("k") + " " + params.get("ky"));
             return encrypt(key.getPublicKey(), data, (BigInteger) params.get("k"), (EllipticCurvePoint) params.get("ky"), (int) params.get("numberBase"));
         } else {
             return encrypt(key.getPublicKey(), data, (int) params.get("numberBase"));

@@ -134,7 +134,6 @@ public class KlartextPanel {
                 return readStringOfFile(file);
             }
         });
-
         inputKlartext.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {

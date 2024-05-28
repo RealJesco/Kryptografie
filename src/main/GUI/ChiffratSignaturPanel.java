@@ -9,6 +9,8 @@ import main.encryption.EncryptionContext;
 import main.encryption.EncryptionContextParamBuilder;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -35,7 +37,6 @@ public class ChiffratSignaturPanel {
     private static JTextArea anzeige_public_key;
     private static JTextArea input_chiffrat;
     private static JTextArea input_signatur;
-    private static JButton decryptButton;
     private static JTextArea anzeige_dechiffrat;
     private static JTextArea anzeige_signatur_valid;
     private static ElGamalMenezesVanstoneMessage input_cipherMessage;
@@ -98,6 +99,28 @@ public class ChiffratSignaturPanel {
         JScrollPane inputScrollPane = new JScrollPane(input_chiffrat);
         inputScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         inputScrollPane.setPreferredSize(new Dimension(650, 150));
+        input_chiffrat.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                anzeige_dechiffrat.setText("");
+                anzeige_signatur_valid.setText("");
+                input_cipherMessage = null;
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                anzeige_dechiffrat.setText("");
+                anzeige_signatur_valid.setText("");
+                input_cipherMessage = null;
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                anzeige_dechiffrat.setText("");
+                anzeige_signatur_valid.setText("");
+                input_cipherMessage = null;
+            }
+        });
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 1;
@@ -105,6 +128,28 @@ public class ChiffratSignaturPanel {
 
         input_signatur = new JTextArea();
         input_signatur.setLineWrap(true);
+        input_signatur.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                anzeige_dechiffrat.setText("");
+                anzeige_signatur_valid.setText("");
+                input_cipherMessage = null;
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                anzeige_dechiffrat.setText("");
+                anzeige_signatur_valid.setText("");
+                input_cipherMessage = null;
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                anzeige_dechiffrat.setText("");
+                anzeige_signatur_valid.setText("");
+                input_cipherMessage = null;
+            }
+        });
         inputScrollPane = new JScrollPane(input_signatur);
         inputScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         inputScrollPane.setPreferredSize(new Dimension(650, 100));
@@ -113,7 +158,7 @@ public class ChiffratSignaturPanel {
         c.gridy = 2;
         panel.add(inputScrollPane, c);
 
-        decryptButton = new JButton("Entschlüsseln");
+        JButton decryptButton = new JButton("Entschlüsseln");
         decryptButton.addActionListener(e -> {
             try {
                 decrypt();
@@ -136,14 +181,15 @@ public class ChiffratSignaturPanel {
     private static void decrypt() throws NoSuchAlgorithmException {
         String decrypted = context.decrypt(input_chiffrat.getText(), contextParams);
         anzeige_dechiffrat.setText(decrypted);
-        //TODO Signaturvalidierung
-        System.out.println(input_signatur.getText());
+        //System.out.println(input_signatur.getText());
         anzeige_signatur_valid.setText("" + context.verify(anzeige_dechiffrat.getText(), input_signatur.getText(), contextParams));
     }
 
     public static void receiveSignaturAndChiffrat(String signatur, String chiffrat, ElGamalMenezesVanstoneMessage cipherMessage){
         input_signatur.setText(signatur);
         input_chiffrat.setText(chiffrat);
+        anzeige_dechiffrat.setText("");
+        anzeige_signatur_valid.setText("");
         input_cipherMessage = cipherMessage;
         contextBuilder.withElGamalMenezesVanstoneCipherMessage(input_cipherMessage);
         contextParams = contextBuilder.build();
