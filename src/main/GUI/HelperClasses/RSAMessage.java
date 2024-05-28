@@ -4,7 +4,7 @@ import main.GUI.Communicator;
 
 import java.math.BigInteger;
 
-public class Message {
+public class RSAMessage {
     private final Communicator sender;
 
     private final Communicator receiver;
@@ -13,7 +13,7 @@ public class Message {
     public boolean isEncrypted;
     public boolean isSigned;
 
-    String signature = null;
+    String signature;
 
     public BigInteger getE() {
         return e;
@@ -25,7 +25,7 @@ public class Message {
 
     final BigInteger e;
     final BigInteger n;
-    public Message(String message, String signature, BigInteger e, BigInteger n, boolean isEncrypted, boolean isSigned, Communicator sender, Communicator receiver, String clearMessage){
+    public RSAMessage(String message, String signature, BigInteger e, BigInteger n, boolean isEncrypted, boolean isSigned, Communicator sender, Communicator receiver, String clearMessage){
         this.message = message;
         this.signature = signature;
         this.e = e;

@@ -32,6 +32,10 @@ public class KeyPair {
         BigInteger yExponent = (prime).add(Resource.THREE).divide(Resource.EIGHT);
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
         BigInteger ellipticCurveA = ellipticCurve.getA();
+        assert MathMethods.verifyEulerCriterion(prime, Resource.EIGHT).equals(Resource.ONE);
+        assert MathMethods.verifyEulerCriterion(ellipticCurveA, prime).equals(Resource.ONE);
+        assert MathMethods.verifyEulerCriterion(ellipticCurve.getB(), prime).equals(Resource.ONE);
+
         BigInteger ellipticCurveB = ellipticCurve.getB();
         EllipticCurvePoint generator;
         while ( true ) {
@@ -58,6 +62,8 @@ public class KeyPair {
             generator = new FiniteFieldEcPoint(x,y);
             EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
             if (qg instanceof InfinitePoint) {
+                System.out.println("Generator: " + generator);
+
                 return generator;
             }
         }

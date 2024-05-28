@@ -1,6 +1,8 @@
 package main.GUI;
 
-import main.GUI.HelperClasses.Message;
+import main.GUI.HelperClasses.HeightEnum;
+import main.GUI.HelperClasses.RSAMessage;
+import main.GUI.HelperClasses.UISetUpMethods;
 import main.encryption.EncryptionContext;
 import main.rsa.PrivateKeyRsa;
 import main.rsa.PublicKeyRsa;
@@ -17,10 +19,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -28,10 +28,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.awt.datatransfer.DataFlavor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import main.rsa.RsaStringService;
+
+import static main.GUI.KlartextPanel.readStringOfFile;
 
 public class Communicator extends JFrame {
     public String name;
@@ -41,14 +40,14 @@ public class Communicator extends JFrame {
     private String signature;
     private static JPanel panel;
     private final JTextArea inputAndOutput;
-    private final DefaultListModel<Message> messageListModel;
-    private final JList<Message> messageListJ;
+    private final DefaultListModel<RSAMessage> messageListModel;
+    private final JList<RSAMessage> messageListJ;
     private final JTextField signings;
     private final JTextField signingValid;
     private final JTextField receivedSignature;
-    private static GridBagConstraints c;
+    private final GridBagConstraints c = new GridBagConstraints();
     private final Communicator thisInstance;
-    private final ArrayList<Message> messageList = new ArrayList<>();
+    private final ArrayList<RSAMessage> RSAMessageList = new ArrayList<>();
     private final EncryptionContext context = new EncryptionContext();
     Map<String, Object> contextParams;
 
@@ -72,7 +71,6 @@ public class Communicator extends JFrame {
         setVisible(true);
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
-        c = new GridBagConstraints();
 
         AtomicBoolean currentMessageIsEncrypted = new AtomicBoolean(false);
         AtomicBoolean currentMessageIsSigned = new AtomicBoolean(false);
@@ -94,7 +92,6 @@ public class Communicator extends JFrame {
         messageListScrollPane.setPreferredSize(new Dimension(450, 200));
 
         // Add the new components to the panel
-        GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 5;  // Adjust this as needed
@@ -143,7 +140,7 @@ public class Communicator extends JFrame {
         c.gridy = 0;
         buttons.setPreferredSize(new Dimension(300,200));
         panel.add(buttons,c);
-        signings = getNewTextfield(1, "Eigene Signatur");
+        signings = UISetUpMethods.getjTextField(panel, c, 1, "Eigene Signatur", false, HeightEnum.TINY);
 
         JButton signMessage = new JButton("Signieren der Nachricht");
         signMessage.setPreferredSize(new Dimension(250,25));
@@ -151,11 +148,11 @@ public class Communicator extends JFrame {
         JButton loadTextFileButton = new JButton("Load Text File");
 
         loadTextFileButton.setPreferredSize(new Dimension(250, 25));
-        c1.gridy = i++;
+        c1.gridy = i;
         buttons.add(loadTextFileButton, c1);
 
-        signingValid = getNewTextfield(2, "Empfangene Signatur gültig");
-        receivedSignature = getNewTextfield(3, "Empfangene Signatur");
+        signingValid = UISetUpMethods.getjTextField(panel, c, 2, "Empfangene Signatur gültig", false, HeightEnum.TINY);
+        receivedSignature = UISetUpMethods.getjTextField(panel, c, 3, "Empfangene Signatur", false, HeightEnum.TINY);
 
         JTextArea secretField = new JTextArea();
         secretField.setLineWrap(true);
@@ -195,7 +192,7 @@ public class Communicator extends JFrame {
                         for (File file : fileList) {
                             if (file.getName().toLowerCase().endsWith(".txt")) {
                                 // Handle .txt file content with UTF-8 encoding
-                                String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+                                String content = Files.readString(file.toPath());
                                 inputAndOutput.setText(content);
                         } else if (file.getName().toLowerCase().endsWith(".docx")) {
                                 // Handle .docx file content using Apache POI
@@ -205,7 +202,7 @@ public class Communicator extends JFrame {
                         }
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(Communicator.this, "Error occured: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -215,9 +212,9 @@ public class Communicator extends JFrame {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (value instanceof Message) {
-                    Message message = (Message) value;
-                    setText("Message from " + message.getSender().name + ": " + message.message);
+                if (value instanceof RSAMessage) {
+                    RSAMessage RSAMessage = (RSAMessage) value;
+                    setText("Message from " + RSAMessage.getSender().name + ": " + RSAMessage.message);
                 }
                 return renderer;
             }
@@ -228,13 +225,12 @@ public class Communicator extends JFrame {
                 JList list = (JList)evt.getSource();
                 if (evt.getClickCount() == 2) { // Double-click detected
                     int index = list.locationToIndex(evt.getPoint());
-                    Message selectedMessage = messageListJ.getModel().getElementAt(index);
-                    inputAndOutput.setText(selectedMessage.message);
+                    RSAMessage selectedRSAMessage = messageListJ.getModel().getElementAt(index);
+                    inputAndOutput.setText(selectedRSAMessage.message);
                 }
             }
         });
         startEncode.addActionListener(ex -> {
-            Communicator receiver = getReceiver(thisInstance);
             try{
                 String encryptedMessage = (String) context.encrypt(inputAndOutput.getText(), contextParams);
                 currentClearMessage.set(inputAndOutput.getText());
@@ -242,7 +238,6 @@ public class Communicator extends JFrame {
                 currentMessageIsEncrypted.set(true);
             } catch (Exception f){
                 JOptionPane.showMessageDialog(null, "Error while Encryption" + f);
-                return;
             }
         });
 
@@ -281,9 +276,9 @@ public class Communicator extends JFrame {
             }
         });
         sendMessage.addActionListener(ex -> {
-            Message message = new Message(inputAndOutput.getText(), signature, thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get(), thisInstance, getReceiver(thisInstance), currentClearMessage.get());
-            getReceiver(thisInstance).sendAMessage(message);
-            messageListModel.addElement(message);
+            RSAMessage RSAMessage = new RSAMessage(inputAndOutput.getText(), signature, thisInstance.e, thisInstance.n, currentMessageIsEncrypted.get(), currentMessageIsSigned.get(), thisInstance, getReceiver(thisInstance), currentClearMessage.get());
+            getReceiver(thisInstance).sendAMessage(RSAMessage);
+            messageListModel.addElement(RSAMessage);
             inputAndOutput.setText("");
         });
         clearEverything.addActionListener(new ActionListener() {
@@ -321,7 +316,7 @@ public class Communicator extends JFrame {
                 if (option == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     try {
-                        String content = new String(Files.readAllBytes(((File) selectedFile).toPath()), StandardCharsets.UTF_8);
+                        String content = Files.readString(((File) selectedFile).toPath());
                         inputAndOutput.setText(content);
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(Communicator.this, "Error reading file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -330,49 +325,47 @@ public class Communicator extends JFrame {
             }
         });
         startDecode.addActionListener(ex -> {
-            Message selectedMessage = messageListJ.getSelectedValue(); // Get selected message
+            RSAMessage selectedRSAMessage = messageListJ.getSelectedValue(); // Get selected message
             //If none are selected, get the last one
-            if(selectedMessage == null) {
-                if(messageList.size() != 0){
-                    selectedMessage = messageList.get(messageList.size()-1);
+            if(selectedRSAMessage == null) {
+                if(!RSAMessageList.isEmpty()){
+                    selectedRSAMessage = RSAMessageList.get(RSAMessageList.size()-1);
                 } else {
-                    selectedMessage = null;
+                    selectedRSAMessage = null;
                 }
             }
-            if (selectedMessage != null) { // Check if a message is selected
+            if (selectedRSAMessage != null) { // Check if a message is selected
                 String messageToUse;
-                if(selectedMessage.isEncrypted()){
+                if(selectedRSAMessage.isEncrypted()){
                     //If the message belongs to me, use my private key
-                    if(selectedMessage.getReceiver().equals(thisInstance)) {
+                    if(selectedRSAMessage.getReceiver().equals(thisInstance)) {
                         try {
-                            messageToUse = context.decrypt(selectedMessage.message, contextParams);
+                            messageToUse = context.decrypt(selectedRSAMessage.message, contextParams);
                         } catch (Exception f){
                             JOptionPane.showMessageDialog(null, "Error while Decryption" + f);
                             return;
                         }
                     } else {
-                        messageToUse = selectedMessage.getClearMessage(thisInstance);
+                        messageToUse = selectedRSAMessage.getClearMessage(thisInstance);
                     }
                 } else {
-                    messageToUse = selectedMessage.message;
+                    messageToUse = selectedRSAMessage.message;
                 }
                 inputAndOutput.setText(messageToUse);
-                if(selectedMessage.isSigned()){
+                if(selectedRSAMessage.isSigned()){
                     try {
-                        if(selectedMessage.isEncrypted){
-                            signingValid.setText("" + context.verify(selectedMessage.message, selectedMessage.getSignature(), contextParams));
+                        if(selectedRSAMessage.isEncrypted){
+                            signingValid.setText("" + context.verify(selectedRSAMessage.message, selectedRSAMessage.getSignature(), contextParams));
                         } else {
-                            signingValid.setText("" + context.verify(messageToUse, selectedMessage.getSignature(), contextParams));
+                            signingValid.setText("" + context.verify(messageToUse, selectedRSAMessage.getSignature(), contextParams));
                         }
-                        receivedSignature.setText(selectedMessage.getSignature());
+                        receivedSignature.setText(selectedRSAMessage.getSignature());
                     } catch (NoSuchAlgorithmException exc) {
                         throw new RuntimeException(exc);
                     }
                 } else {
                     signingValid.setText("");
                 }
-            } else {
-                // Optionally handle the case where no message is selected
             }
         });
 
@@ -380,8 +373,8 @@ public class Communicator extends JFrame {
         panel.updateUI();
     }
 
-    public void sendAMessage(Message m) {
-        messageList.add(m); // Add the message to the sender's list
+    public void sendAMessage(RSAMessage m) {
+        RSAMessageList.add(m); // Add the message to the sender's list
         Communicator sender = m.getSender();
         Communicator receiver = getReceiver(sender);
         SwingUtilities.invokeLater(() -> {
@@ -399,33 +392,7 @@ public class Communicator extends JFrame {
         }
     }
 
-    private static JTextField getNewTextfield(int row, String headline, boolean editable) {
-        JTextField field = new JTextField();
-        field.setEditable(editable);
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 0;
-        c.gridy = row;
-        JPanel j = new JPanel();
-        JTextField t = new JTextField(headline);
-        t.setPreferredSize(new Dimension(200,20));
-        t.setEditable(false);
-        j.add(t);
-        field.setPreferredSize(new Dimension(450, 20));
-        j.add(field);
-        panel.add(j,c);
-        return field;
-    }
     private String readDocxFile(File file) {
-        try (FileInputStream fis = new FileInputStream(file)) {
-            XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
-            XWPFWordExtractor extractor = new XWPFWordExtractor(document);
-            return extractor.getText();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-    private static JTextField getNewTextfield(int row, String headline) {
-        return getNewTextfield(row, headline,false);
+        return readStringOfFile(file);
     }
 }

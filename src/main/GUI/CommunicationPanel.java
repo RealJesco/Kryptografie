@@ -1,5 +1,6 @@
 package main.GUI;
 
+import main.GUI.HelperClasses.HeightEnum;
 import main.GUI.HelperClasses.UISetUpMethods;
 import main.encryption.StringEncryptionStrategy;
 import main.finiteFieldEllipticCurve.EllipticCurvePoint;
@@ -57,23 +58,23 @@ public class CommunicationPanel extends JFrame {
         int j = 0;
         JPanel RSAPanel = new JPanel();
         RSAPanel.setLayout(new GridBagLayout());
-        lengthField_n = getNewTextfield(RSAPanel, j++, "Bit-Länge von n");
-        alicePublicKeyField = UISetUpMethods.getjTextArea(RSAPanel, c, j++, "Öffentlicher Schlüssel e von Alice", false);
-        alicePublicNField = UISetUpMethods.getjTextArea(RSAPanel, c, j++, "Öffentlicher Schlüssel n von Alice", false);
-        bobPublicKeyField = UISetUpMethods.getjTextArea(RSAPanel, c, j++, "Öffentlicher Schlüssel e von Bob", false);
-        bobPublicNField = UISetUpMethods.getjTextArea(RSAPanel, c, j, "Öffentlicher Schlüssel n von Bob", false);
+        lengthField_n = UISetUpMethods.getjTextField(RSAPanel, c, j++, "Bit-Länge von n", true);
+        alicePublicKeyField = UISetUpMethods.getjTextArea(RSAPanel, c, j++, "Öffentlicher Schlüssel e von Alice", HeightEnum.NORMAL);
+        alicePublicNField = UISetUpMethods.getjTextArea(RSAPanel, c, j++, "Öffentlicher Schlüssel n von Alice", HeightEnum.NORMAL);
+        bobPublicKeyField = UISetUpMethods.getjTextArea(RSAPanel, c, j++, "Öffentlicher Schlüssel e von Bob", HeightEnum.NORMAL);
+        bobPublicNField = UISetUpMethods.getjTextArea(RSAPanel, c, j, "Öffentlicher Schlüssel n von Bob", HeightEnum.NORMAL);
         j = 0;
         JPanel ElGamalPanel = new JPanel();
         ElGamalPanel.setLayout(new GridBagLayout());
-        lengthField_P = getNewTextfield(ElGamalPanel, j++, "Bit-Länge von p");
-        parameterField_n = getNewTextfield(ElGamalPanel, j++, "Parameter n für ell. Kurve");
-        publicKeyField_Epqgy = UISetUpMethods.getjTextArea(ElGamalPanel, c, j++, "Public Key (E,p,q,g,y)", true);
+        lengthField_P = UISetUpMethods.getjTextField(ElGamalPanel, c, j++, "Bit-Länge von p", true);
+        parameterField_n = UISetUpMethods.getjTextField(ElGamalPanel, c, j++, "Parameter n für ell. Kurve", true);
+        publicKeyField_Epqgy = UISetUpMethods.getjTextArea(ElGamalPanel, c, j++, "Public Key (E,p,q,g,y)", HeightEnum.BIG);
         publicKeyField_Epqgy.setToolTipText("E = ellipticCurve, " +
                 "p = module prime, " +
                 "q = order, " +
                 "g = generator, " +
                 "y = groupElement");
-        privateKeyField_x = UISetUpMethods.getjTextArea(ElGamalPanel, c, j, "Zufallszahl x", false);
+        privateKeyField_x = UISetUpMethods.getjTextArea(ElGamalPanel, c, j, "Zufallszahl x", HeightEnum.NORMAL);
 
         JButton toggleEncryptionContext = new JButton("Change Encryptionmode - Current: RSA");
         toggleEncryptionContext.setBackground(Color.pink);
@@ -84,9 +85,9 @@ public class CommunicationPanel extends JFrame {
         c.gridx = 0;
         c.gridy = i++;
         panel.add(toggleEncryptionContext, c);
-        nonCubicNumberMField = getNewTextfield(panel, i++, "Nicht-Quadratzahl m");
-        millerRabinStepsField = getNewTextfield(panel, i++, "Miller-Rabin Schritte");
-        numberSystemBaseField = getNewTextfield(panel, i++, "g (g-Adisches System)");
+        nonCubicNumberMField = UISetUpMethods.getjTextField(panel, c, i++, "Nicht-Quadratzahl m", true);
+        millerRabinStepsField = UISetUpMethods.getjTextField(panel, c, i++, "Miller-Rabin Schritte", true);
+        numberSystemBaseField = UISetUpMethods.getjTextField(panel, c, i++, "g (g-Adisches System)", true);
 
 
         nonCubicNumberMField.setText("13");
@@ -184,7 +185,7 @@ public class CommunicationPanel extends JFrame {
                 builder.withK(kAndKy.getKey());
                 builder.withKy(kAndKy.getValue());
                 //Schlüssel übergeben
-                // builder erstmal übergeben, Werte überschreiben wo nötig TODO bessere Lösung finden
+                // builder erstmal übergeben, Werte überschreiben wo nötig
                 ChiffratSignaturPanel.open(builder, keyPair.getPublicKey());
                 KlartextPanel.open(builder.build());
             }
@@ -241,22 +242,6 @@ public class CommunicationPanel extends JFrame {
             Alice.dispose();
         } catch (Exception ignored) {
         }
-    }
-
-    private static JTextField getNewTextfield(JPanel p, int row, String headline) {
-        JTextField field = new JTextField();
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 0;
-        c.gridy = row;
-        JPanel j = new JPanel();
-        JTextField t = new JTextField(headline);
-        t.setPreferredSize(new Dimension(200, 20));
-        t.setEditable(false);
-        j.add(t);
-        field.setPreferredSize(new Dimension(450, 20));
-        j.add(field);
-        p.add(j, c);
-        return field;
     }
 
     public static CommunicationPanel getInstance() {
