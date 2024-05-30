@@ -179,6 +179,27 @@ public class MathMethodsTest {
     }
 
     //TODO: Test randomElsner?
+    @Test
+    public void testRandomElsnerIs6() {
+        BigInteger m = BigInteger.valueOf(2);
+        BigInteger n = BigInteger.valueOf(3);
+        BigInteger a = BigInteger.valueOf(2);
+        BigInteger b = BigInteger.valueOf(20);
+        BigInteger expected = BigInteger.valueOf(6);
+        BigInteger result = MathMethods.randomElsner(m, n, a, b);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void testRandomElsner() {
+        BigInteger m = BigInteger.valueOf(13);
+        BigInteger n = BigInteger.valueOf(213);
+        BigInteger a = BigInteger.valueOf(47);
+        BigInteger b = BigInteger.valueOf(63);
+        BigInteger expected = BigInteger.valueOf(6);
+        BigInteger result = MathMethods.randomElsner(m, n, a, b);
+        assertNotEquals(expected, result);
+    }
 
     //TODO: Test isCompositeAgainstSmallPrimes?
     @Test
@@ -275,6 +296,44 @@ public class MathMethodsTest {
     }
 
     //TODO: Test parallelMillerRabinTest
+    @Test
+    public  void testParallelMillerRabinTest() {
+        BigInteger possiblePrime = BigInteger.valueOf(17);
+        int numberOfTests = 5;
+        BigInteger m = BigInteger.valueOf(2);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.parallelMillerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertTrue(result);
+    }
+    @Test
+    public  void testParallelMillerRabinTestFalse() {
+        BigInteger possiblePrime = BigInteger.valueOf(296);
+        int numberOfTests = 10;
+        BigInteger m = BigInteger.valueOf(9);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.parallelMillerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertFalse(result);
+    }
+
+    @Test
+    public  void testParallelMillerRabinTestBigger() {
+        BigInteger possiblePrime = BigInteger.valueOf(1307);
+        int numberOfTests = 25;
+        BigInteger m = BigInteger.valueOf(16);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.parallelMillerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertTrue(result);
+    }
+
+    @Test
+    public  void testParallelMillerRabinTestBiggerFalse() {
+        BigInteger possiblePrime = BigInteger.valueOf(1024);
+        int numberOfTests = 25;
+        BigInteger m = BigInteger.valueOf(16);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.parallelMillerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertFalse(result);
+    }
 
     @Test
     public void testPrepareMessageForEncryption() {
