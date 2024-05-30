@@ -458,7 +458,11 @@ public class MathMethods {
         return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
                 primeCandidate.mod(smallPrime).equals(Resource.ZERO) || primeCandidate.equals(smallPrime));
     }
-
+    /*
+        method isCompositeAgainstSmallPrimes split into individual methods to actually return the boolean value
+        the original method led to an infinite loop in random prime generation even if the checked candidate
+        was one of the small primes
+    */
     public static boolean isOnlyCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
         return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
                 primeCandidate.mod(smallPrime).equals(Resource.ZERO));
