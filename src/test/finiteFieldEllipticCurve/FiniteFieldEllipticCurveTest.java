@@ -1,6 +1,7 @@
 package test.finiteFieldEllipticCurve;
 
 import main.finiteFieldEllipticCurve.EllipticCurvePoint;
+import main.finiteFieldEllipticCurve.FiniteFieldEcPoint;
 import main.finiteFieldEllipticCurve.FiniteFieldEllipticCurve;
 import main.resource.Resource;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,19 @@ import static main.resource.Resource.*;
 public class FiniteFieldEllipticCurveTest {
 
     //TODO: Test isValidPoint
+    @Test
+    public void isValidPointTestTrue() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(29),  BigInteger.valueOf(27));
+        EllipticCurvePoint point = new FiniteFieldEcPoint(BigInteger.valueOf(20), BigInteger.valueOf(12));
+        assertTrue(ellipticCurve.isValidPoint(point));
+    }
+
+    @Test
+    public void isValidPointTestFalse() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(29),  BigInteger.valueOf(11));
+        EllipticCurvePoint point = new FiniteFieldEcPoint(BigInteger.valueOf(23), BigInteger.valueOf(59));
+        assertFalse(ellipticCurve.isValidPoint(point));
+    }
 
     /**
      * Test the calculation of all points on the elliptic curve.
