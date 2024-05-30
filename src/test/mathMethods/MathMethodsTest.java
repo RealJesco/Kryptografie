@@ -215,6 +215,30 @@ public class MathMethodsTest {
     }
 
     @Test
+    public void testIsPrimeAgainstSmallPrimesTrue() {
+        BigInteger primeCandidate = BigInteger.valueOf(197);
+        assertTrue(MathMethods.isPrimeAgainstSmallPrimes(primeCandidate));
+    }
+
+    @Test
+    public void testIsPrimeAgainstSmallPrimesFalse() {
+        BigInteger primeCandidate = BigInteger.valueOf(7983);
+        assertFalse(MathMethods.isPrimeAgainstSmallPrimes(primeCandidate));
+    }
+
+    @Test
+    public void testIsOnlyCompositeAgainstSmallPrimesTrue() {
+        BigInteger primeCandidate = BigInteger.valueOf(7983);
+        assertTrue(MathMethods.isOnlyCompositeAgainstSmallPrimes(primeCandidate));
+    }
+
+    @Test
+    public void testIsOnlyCompositeAgainstSmallPrimesFalse() {
+        BigInteger primeCandidate = BigInteger.valueOf(7927);
+        assertFalse(MathMethods.isOnlyCompositeAgainstSmallPrimes(primeCandidate));
+    }
+
+    @Test
     public void testGenerateRandomPrime() {
         BigInteger m = BigInteger.valueOf(2);
         BigInteger a = BigInteger.TEN;
@@ -222,6 +246,17 @@ public class MathMethodsTest {
         int millerRabinSteps = 10;
         AtomicInteger counter = new AtomicInteger(0);
         BigInteger result = MathMethods.generateRandomPrime(m, a, b, millerRabinSteps, counter);
+        assertTrue(result.compareTo(a) >= 0 && result.compareTo(b) <= 0);
+    }
+
+    @Test
+    public void testGenerateRandomPrimeParallel() {
+        BigInteger m = BigInteger.valueOf(5);
+        BigInteger a = BigInteger.TEN;
+        BigInteger b = BigInteger.valueOf(20);
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        BigInteger result = MathMethods.generateRandomPrimeParallel(m, a, b, millerRabinSteps, counter);
         assertTrue(result.compareTo(a) >= 0 && result.compareTo(b) <= 0);
     }
 

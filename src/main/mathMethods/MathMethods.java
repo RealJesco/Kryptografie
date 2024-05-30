@@ -459,6 +459,15 @@ public class MathMethods {
                 primeCandidate.mod(smallPrime).equals(Resource.ZERO) || primeCandidate.equals(smallPrime));
     }
 
+    public static boolean isOnlyCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
+        return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
+                primeCandidate.mod(smallPrime).equals(Resource.ZERO));
+    }
+
+    public static boolean isPrimeAgainstSmallPrimes(BigInteger primeCandidate) {
+        return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(primeCandidate::equals);
+    }
+
     /**
      * Generates a random prime number within a specified range using the Elsner algorithm and the Miller-Rabin primality test.
      *
@@ -498,6 +507,45 @@ public class MathMethods {
                     break;
                 }
             }
+            if (isComposite) {
+                counter.incrementAndGet();
+                continue;
+            }
+            if (parallelMillerRabinTest(primeCandidate, millerRabinSteps, m, wrappedCounter)) {
+                break;
+            }
+            counter.incrementAndGet();
+        }
+        return primeCandidate;
+    }
+
+    public static BigInteger generateRandomPrimeParallel(BigInteger m, BigInteger a, BigInteger b, int millerRabinSteps, AtomicInteger counter) {
+        //Check that input values are valid
+        if (a.compareTo(b) > 0) {
+            throw new IllegalArgumentException("The lower bound must be smaller than the upper bound");
+        }
+        if (a.compareTo(Resource.ZERO) < 0) {
+            throw new IllegalArgumentException("The lower bound must be greater than or equal to 0");
+        }
+        //The additional condition, b >= 0, does not need to be verified here. It can never be false at this point because one of the cases above would have to be true if this additional condition was not fulfilled. Thus, an exception would be thrown before reaching this point.
+
+        if (m.compareTo(Resource.ZERO) <= 0) {
+            throw new IllegalArgumentException("The random seed must be greater than 0");
+        }
+
+        BigInteger primeCandidate;
+        while (true) {
+            // Generate a random odd BigInteger within the range
+            var wrappedCounter= BigInteger.valueOf(counter.incrementAndGet());
+            primeCandidate = randomElsner(m, wrappedCounter, a, b).setBit(0); // Ensure it's odd
+            // Fast check against small primes
+            boolean isComposite = false;
+            boolean isSmallPrime = false;
+            isSmallPrime = isPrimeAgainstSmallPrimes(primeCandidate);
+            if (isSmallPrime) {
+                return primeCandidate;
+            }
+            isComposite = isOnlyCompositeAgainstSmallPrimes(primeCandidate);
             if (isComposite) {
                 counter.incrementAndGet();
                 continue;
