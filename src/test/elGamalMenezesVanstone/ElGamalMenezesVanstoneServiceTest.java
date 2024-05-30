@@ -66,7 +66,64 @@ public class ElGamalMenezesVanstoneServiceTest {
      * @expected: encrypted text is not equal to the original text
      */
 
-    //TODO: Test encrypt, encrypt, decrypt, sign and verify independently
+    //TODO: Test encrypt, decrypt, sign and verify independently
+    @Test
+    public void testEncrypt() {
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 10, m);
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
+        String text = "Hello World!";
+        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.getPublicKey(), text, 55296);
+        String encryptedText = elGamalMenezesVanstoneCipherMessage.getCipherMessageString();
+        String decryptedText = ElGamalMenezesVanstoneStringService.decrypt(keyPair.getPrivateKey(), elGamalMenezesVanstoneCipherMessage, 55296);
+
+        assertNotEquals(text, encryptedText);
+        assertEquals(text, decryptedText);
+    }
+
+    @Test
+    public void testDecrypt() {
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 10, m);
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
+        String text = "Hello World!";
+        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.getPublicKey(), text, 55296);
+        String decryptedText = ElGamalMenezesVanstoneStringService.decrypt(keyPair.getPrivateKey(), elGamalMenezesVanstoneCipherMessage, 55296);
+
+        assertEquals(text, decryptedText);
+    }
+
+    @Test
+    public void testSigning() {
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 10, m);
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
+        BigInteger message = BigInteger.valueOf(123456789);
+
+        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
+
+        assertTrue(signature.r().compareTo(Resource.ZERO) > 0);
+        assertTrue(signature.s().compareTo(Resource.ZERO) > 0);
+    }
+
+    @Test
+    public void testVerification() {
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 10, m);
+        KeyPair keyPair = new KeyPair();
+        keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
+        BigInteger message = BigInteger.valueOf(123456789);
+
+        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
+
+        boolean verified = ElGamalMenezesVanstoneService.verify(keyPair.getPublicKey(), message, signature);
+
+        assertTrue(verified);
+    }
+
 
     @Test
     public void fullTextCycle() {
