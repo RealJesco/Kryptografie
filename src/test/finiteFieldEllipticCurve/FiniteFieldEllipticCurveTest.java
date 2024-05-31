@@ -20,8 +20,6 @@ import static main.resource.Resource.*;
  * ensuring its correctness given a variety of inputs.
  */
 public class FiniteFieldEllipticCurveTest {
-
-    //TODO: Test isValidPoint
     @Test
     public void isValidPointTestTrue() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(BigInteger.valueOf(29),  BigInteger.valueOf(27));

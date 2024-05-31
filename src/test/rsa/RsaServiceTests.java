@@ -5,11 +5,11 @@ import main.rsa.RsaService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RsaServiceTests {
-
-    //TODO: Test generateUniquePrime, calculateE
-
     @Test
     public void generateKeyPair() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(2048, 100, BigInteger.valueOf(87));

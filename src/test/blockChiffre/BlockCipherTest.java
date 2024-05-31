@@ -2,6 +2,7 @@ package test.blockChiffre;
 
 import main.blockChiffre.FromDecimalBlockChiffre;
 import main.blockChiffre.ToDecimalBlockChiffre;
+import main.resource.Resource;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -97,5 +98,26 @@ class BlockCipherTest {
         assertNotEquals(expectedDecryptedDecimal, decryptedBlockcipher);
     }
 
-    //TODO: Test unicodeGAdicDevelopment
+    @Test
+    public void testUnicodeGAdicDevelopmentBinary() {
+        BigInteger source = BigInteger.valueOf(23);
+        BigInteger targetBase = Resource.TWO;
+        StringBuilder expected = new StringBuilder();
+        expected.append((char) 1);
+        expected.append((char) 0);
+        expected.append((char) 1);
+        expected.append((char) 1);
+        expected.append((char) 1);
+        assertEquals(expected.toString(), FromDecimalBlockChiffre.unicodeGAdicDevelopment(source, targetBase));
+    }
+
+    @Test
+    public void testUnicodeGAdicDevelopmentSevenBase() {
+        BigInteger source = BigInteger.valueOf(23);
+        BigInteger targetBase = Resource.SEVEN;
+        StringBuilder expected = new StringBuilder();
+        expected.append((char) 3);
+        expected.append((char) 2);
+        assertEquals(expected.toString(), FromDecimalBlockChiffre.unicodeGAdicDevelopment(source, targetBase));
+    }
 }

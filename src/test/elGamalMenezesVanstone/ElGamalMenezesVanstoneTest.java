@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ElGamalMenezesVanstoneServiceTest {
+public class ElGamalMenezesVanstoneTest {
     @Test
     public void testGenerateUniquePrime() {
         BigInteger bitLength = BigInteger.valueOf(16);
@@ -60,13 +60,6 @@ public class ElGamalMenezesVanstoneServiceTest {
         assertFalse(result.getValue() instanceof InfinitePoint);
     }
 
-    /**
-     * test for entire encryption and decryption cycle
-     * @expected: decrypted text is equal to the original text
-     * @expected: encrypted text is not equal to the original text
-     */
-
-    //TODO: Test encrypt, decrypt, sign and verify independently
     @Test
     public void testEncrypt() {
         BigInteger m = BigInteger.valueOf(13);

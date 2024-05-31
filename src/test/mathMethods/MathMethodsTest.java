@@ -178,7 +178,6 @@ public class MathMethodsTest {
         assertEquals(expected, MathMethods.roundHalfUp(number));
     }
 
-    //TODO: Test randomElsner?
     @Test
     public void testRandomElsnerIs6() {
         BigInteger m = BigInteger.valueOf(2);
@@ -201,7 +200,6 @@ public class MathMethodsTest {
         assertNotEquals(expected, result);
     }
 
-    //TODO: Test isCompositeAgainstSmallPrimes?
     @Test
     public void testIsCompositeAgainstSmallPrimesTrue() {
         BigInteger primeCandidate = BigInteger.valueOf(7983);
@@ -330,7 +328,6 @@ public class MathMethodsTest {
         assertFalse(result);
     }
 
-    //TODO: Test parallelMillerRabinTest
     @Test
     public  void testParallelMillerRabinTest() {
         BigInteger possiblePrime = BigInteger.valueOf(17);
