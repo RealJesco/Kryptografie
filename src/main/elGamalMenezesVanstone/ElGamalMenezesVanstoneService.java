@@ -28,39 +28,6 @@ public class ElGamalMenezesVanstoneService {
         return possiblePrime;
     }
 
-//    /**
-//     * @param message   message to be encrypted
-//     * @param publicKey public key
-//     * @return cipher message
-//     */
-//    public static CipherMessage encrypt(Message message, PublicKey publicKey) {
-//        SecureRandom random = new SecureRandom();
-//        SecureRandom randomRangePicker = new SecureRandom();
-//        main.FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
-//        BigInteger prime = ellipticCurve.getP();
-//        BigInteger q = ellipticCurve.calculateOrder(ellipticCurve.getA().divide(ellipticCurve.getA()).negate()).divide(Resource.EIGHT);
-//        int primeBitLength = prime.bitLength();
-//        BigInteger qSubtractONE = q.subtract(Resource.ONE);
-//
-//        BigInteger k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
-//
-//        while (k.equals(Resource.ZERO)) {
-//            k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
-//        }
-//
-//        EllipticCurvePoint ky = publicKey.groupElement().multiply(k, ellipticCurve);
-//
-//        while (ky.getX().equals(Resource.ZERO) || ky.getY().equals(Resource.ZERO)) {
-//            k = MathMethods.randomElsner(new BigInteger(prime.bitLength(), random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);
-//            ky = publicKey.groupElement().multiply(k, ellipticCurve);
-//        }
-//
-//        assert !(ky instanceof InfinitePoint);
-//        EllipticCurvePoint a = publicKey.generator().multiply(k, publicKey.ellipticCurve());
-//
-//        return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
-//    }
-
     /**
      * Skript S.69-70
      * @param publicKey public key
@@ -109,6 +76,7 @@ public class ElGamalMenezesVanstoneService {
      * @return cipher message
      */
     public static CipherMessage encrypt(Message message, PublicKey publicKey) {
+        //TODO: Werden q und qSubstractOne überhaupt gebraucht?
         BigInteger q = publicKey.order();
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
         Pair<BigInteger, EllipticCurvePoint> kAndKy = generateKandKy(publicKey);
@@ -145,7 +113,6 @@ public class ElGamalMenezesVanstoneService {
         FiniteFieldEllipticCurve ellipticCurve = keyPair.publicKey.ellipticCurve();
         BigInteger prime = ellipticCurve.getP();
         BigInteger q = keyPair.publicKey.order();
-        BigInteger a = ellipticCurve.getA();
         int primeBitLength = prime.bitLength();
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
         BigInteger k = MathMethods.randomElsner(new BigInteger(primeBitLength, random), new BigInteger(primeBitLength, randomRangePicker), Resource.ONE, qSubtractONE);

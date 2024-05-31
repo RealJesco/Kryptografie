@@ -3,11 +3,8 @@ package main.finiteFieldEllipticCurve;
 import main.elGamalMenezesVanstone.ElGamalMenezesVanstoneService;
 import main.mathMethods.MathMethods;
 import main.resource.Resource;
-import test.IgnoreCoverage;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class SecureFiniteFieldEllipticCurve {
     private final BigInteger a;
@@ -67,7 +64,6 @@ public class SecureFiniteFieldEllipticCurve {
         return number;
     }
 
-
     /**
      * Skript S.78
      * Calculate q such that orderN = q*8
@@ -81,9 +77,9 @@ public class SecureFiniteFieldEllipticCurve {
     /**
      * Skript Satz 4.1 S.76-78
      * Calculate a prime p congruent to 5 mod 8 and a prime q such that orderN = q*8
-     * @param bitLengthOfP
-     * @param millerRabinIterations
-     * @param m
+     * @param bitLengthOfP bitlength of prime to be generated
+     * @param millerRabinIterations number of steps supposed to be done in millerRabin test
+     * @param m module that is being used
      */
     private void calculatePAndQ(BigInteger bitLengthOfP, int millerRabinIterations, BigInteger m) {
         BigInteger p;
@@ -94,6 +90,8 @@ public class SecureFiniteFieldEllipticCurve {
         while (true) {
             p = generatePrimeCongruentToFiveModEight(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve.setP(p);
+
+            //TODO: Is this ever going to be used?
             boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(Resource.counter.incrementAndGet()));
 
             orderN = ellipticCurve.calculateOrder(n);

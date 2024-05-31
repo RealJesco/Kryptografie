@@ -1,7 +1,6 @@
 package main.mathMethods;
 
 import main.resource.Resource;
-import test.IgnoreCoverage;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -198,6 +197,8 @@ public class MathMethods {
     private static BigDecimal randomElsnerDecimalA = Resource.DECIMAL_ZERO;
     private static BigDecimal randomElsnerDecimalB = Resource.DECIMAL_ZERO;
     private static BigDecimal randomElsnerDecimalM = Resource.DECIMAL_ZERO;
+
+    //TODO: Is this ever going to be used?
     private static BigDecimal range = Resource.DECIMAL_ZERO;
 
     private static final ForkJoinPool forkJoinPool = new ForkJoinPool();
@@ -726,6 +727,8 @@ public class MathMethods {
             blocks.add(message.mod(numberSystemToThePowerOfBlockSize));
             message = message.divide(numberSystemToThePowerOfBlockSize);
         }
+
+        //TODO: Is this ever going to be used?
         int counter = 0;
         for (BigInteger block : blocks) {
             counter++;

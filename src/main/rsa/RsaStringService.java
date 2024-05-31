@@ -63,9 +63,7 @@ public final class RsaStringService implements StringEncryptionStrategy {
             rsaEncryptedBlockCipherBlocks.add(RsaService.sign(key, encryptedBlockCipherBlocks.get(i)));
         }
 
-        String signature = FromDecimalBlockChiffre.encrypt(rsaEncryptedBlockCipherBlocks, numberBase, blockSize + 1);
-
-        return signature;
+        return FromDecimalBlockChiffre.encrypt(rsaEncryptedBlockCipherBlocks, numberBase, blockSize + 1);
     }
 
     public static boolean verify(final PublicKeyRsa key, final String message, final String signature, int numberBase) throws NoSuchAlgorithmException {

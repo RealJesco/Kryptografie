@@ -21,6 +21,7 @@ public class FiniteFieldEllipticCurve {
     public BigInteger getB() {
         return b;
     }
+    //TODO: Is this ever used?
     @IgnoreCoverage
     public void setB(BigInteger b) {
         this.b = b;
@@ -52,7 +53,7 @@ public class FiniteFieldEllipticCurve {
     /**
      * Skript S.54 Def. 3.1
      * checks if 4a^3 + 27b^2 != 0
-     * @param ellipticCurvePoint
+     * @param ellipticCurvePoint elliptic curve in question
      * @return true if the point is on the elliptic curve
      */
     public boolean isValidPoint(EllipticCurvePoint ellipticCurvePoint) {
@@ -87,7 +88,7 @@ public class FiniteFieldEllipticCurve {
 
     /**
      * Skript S.61 - 63
-     * @param n
+     * @param n element in question
      * @return biginteger representing the order of the elements of the elliptic curve
      */
     public BigInteger calculateOrder(BigInteger n) {

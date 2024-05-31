@@ -75,7 +75,6 @@ public class KeyPair {
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
         assert MathMethods.calculateEulerCriterion(ellipticCurve.getP(), Resource.EIGHT).equals(Resource.ONE);
 
-        SecureRandom random = new SecureRandom();
         SecureRandom randomRangePicker = new SecureRandom();
 
         EllipticCurvePoint generator = calculateSignatureSuitableGeneratorPoint(ellipticCurve, q, m);

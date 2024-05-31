@@ -13,6 +13,7 @@ import static main.mathMethods.MathMethods.generateRandomPrime;
  * Ein RSA Service für die Arbeit auf BigInteger.
  */
 public final class RsaService {
+    //TODO: Why is this able to be final?
     private static AtomicInteger counter = new AtomicInteger(1);
 
     @IgnoreCoverage
