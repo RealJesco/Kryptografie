@@ -97,7 +97,7 @@ public class ElGamalMenezesVanstoneTest {
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
         BigInteger message = BigInteger.valueOf(123456789);
 
-        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
+        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message, m);
 
         assertTrue(signature.r().compareTo(Resource.ZERO) > 0);
         assertTrue(signature.s().compareTo(Resource.ZERO) > 0);
@@ -111,7 +111,7 @@ public class ElGamalMenezesVanstoneTest {
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
         BigInteger message = BigInteger.valueOf(123456789);
 
-        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
+        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message, m);
 
         boolean verified = ElGamalMenezesVanstoneService.verify(keyPair.getPublicKey(), message, signature);
 
