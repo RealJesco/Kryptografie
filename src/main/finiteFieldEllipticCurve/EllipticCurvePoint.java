@@ -47,6 +47,12 @@ public abstract class EllipticCurvePoint {
         if (point2 instanceof InfinitePoint) {
             return this;
         }
+        if  (point2.x.equals(this.x) && point2.y.equals(this.y.negate())) {
+            return new InfinitePoint();
+        }
+        if (point2.x.equals(this.x) && point2.y.equals(this.y)) {
+            return this.doublePoint(ellipticCurve);
+        }
         BigInteger lambdaNumerator = point2.getY().subtract(this.getY());
         BigInteger lambdaModInverseDenominator = MathMethods.extendedEuclidean((point2.getX().subtract(this.getX())), ellipticCurve.p)[1];
         BigInteger lambda = lambdaNumerator.multiply(lambdaModInverseDenominator);
