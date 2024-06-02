@@ -40,6 +40,7 @@ public class EncryptionStrategyTest {
         builder.withElGamalMenezesVanstoneKeyPair(keyPair);
         builder.withNumberBase(55296);
         builder.setData("Hello, World!");
+        builder.withM(m);
 
         Map<String, Object> encryptionParams = builder.build();
         ElGamalMenezesVanstoneMessage encryptedMessage = (ElGamalMenezesVanstoneMessage) context.encrypt(builder.getData(), encryptionParams);

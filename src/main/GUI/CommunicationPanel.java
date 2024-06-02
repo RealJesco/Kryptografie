@@ -137,7 +137,7 @@ public class CommunicationPanel extends JFrame {
                 this.encryptionContext = new EncryptionContext();
                 this.encryptionContext.setStrategy(new ElGamalMenezesVanstoneStringService());
                 panel.add(ElGamalPanel, c);
-                toggleEncryptionContext.setText("Change Encryptionmode - Current: El Gamal");
+                toggleEncryptionContext.setText("Change Encryptionmode - Current: ElGamal - Menezes Vanstone");
             } else if(this.encryptionContext.getStrategy() instanceof ElGamalMenezesVanstoneStringService){
                 this.encryptionContext = new EncryptionContext();
                 this.encryptionContext.setStrategy(new RsaStringService());
