@@ -14,8 +14,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -281,18 +279,15 @@ public class Communicator extends JFrame {
             messageListModel.addElement(RSAMessage);
             inputAndOutput.setText("");
         });
-        clearEverything.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                inputAndOutput.setText("");
-                signings.setText("");
-                signingValid.setText("");
-                signature = null;
-                currentMessageIsEncrypted.set(false);
-                currentMessageIsSigned.set(false);
-                currentClearMessage.set("");
-                messageListModel.clear();
-            }
+        clearEverything.addActionListener(e -> {
+            inputAndOutput.setText("");
+            signings.setText("");
+            signingValid.setText("");
+            signature = null;
+            currentMessageIsEncrypted.set(false);
+            currentMessageIsSigned.set(false);
+            currentClearMessage.set("");
+            messageListModel.clear();
         });
         signMessage.addActionListener(ex -> {
             try {
@@ -303,23 +298,20 @@ public class Communicator extends JFrame {
                 throw new RuntimeException(exc);
             }
         });
-        loadTextFileButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                fileChooser.setAcceptAllFileFilterUsed(false);
-                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
+        loadTextFileButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
 
-                int option = fileChooser.showOpenDialog(Communicator.this);
-                if (option == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    try {
-                        String content = Files.readString(((File) selectedFile).toPath());
-                        inputAndOutput.setText(content);
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(Communicator.this, "Error reading file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+            int option = fileChooser.showOpenDialog(Communicator.this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                try {
+                    String content = Files.readString((selectedFile).toPath());
+                    inputAndOutput.setText(content);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(Communicator.this, "Error reading file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -328,9 +320,7 @@ public class Communicator extends JFrame {
             //If none are selected, get the last one
             if(selectedRSAMessage == null) {
                 if(!RSAMessageList.isEmpty()){
-                    selectedRSAMessage = RSAMessageList.get(RSAMessageList.size()-1);
-                } else {
-                    selectedRSAMessage = null;
+                    selectedRSAMessage = RSAMessageList.getLast();
                 }
             }
             if (selectedRSAMessage != null) { // Check if a message is selected

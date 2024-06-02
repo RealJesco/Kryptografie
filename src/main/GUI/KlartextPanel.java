@@ -89,7 +89,7 @@ public class KlartextPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new Dimension(700,800));
         frame.setSize(new Dimension(700,800));
-        frame.setLocation(new Point(350, 150));
+        frame.setLocation(new Point(350, 0));
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         frame.add(panel);
@@ -207,7 +207,7 @@ public class KlartextPanel {
         c.gridy = i;
         copyButton.addActionListener(e -> {
             if(KlartextPanel.getInput_cipherMessage() != null){
-                ChiffratSignaturPanel.receiveSignaturAndChiffrat(anzeige_signatur.getText(), anzeige_chiffrat.getText(), input_cipherMessage);
+                ChiffratSignaturPanel.receiveSignaturAndChiffrat(input_cipherMessage);
             }
         });
         panel.add(copyButton, c);
@@ -228,8 +228,9 @@ public class KlartextPanel {
 
     private static void encrypt() throws NoSuchAlgorithmException {
         ElGamalMenezesVanstoneMessage encryptedMessage = (ElGamalMenezesVanstoneMessage) context.encrypt(inputKlartext.getText(), contextParams);
+        encryptedMessage.addSignature(context.sign(inputKlartext.getText(), contextParams));
         anzeige_chiffrat.setText(encryptedMessage.getCipherMessageString());
-        anzeige_signatur.setText(context.sign(inputKlartext.getText(), contextParams));
+        anzeige_signatur.setText(encryptedMessage.getSignature());
         input_cipherMessage = encryptedMessage;
     }
 

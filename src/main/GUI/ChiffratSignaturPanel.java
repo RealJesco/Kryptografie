@@ -12,7 +12,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Map;
 /*
 - Ein Feld mit der Anzeige des öffentlichen Schlüssels aus der Maske 1
@@ -39,7 +42,9 @@ public class ChiffratSignaturPanel {
     private static JTextArea input_signatur;
     private static JTextArea anzeige_dechiffrat;
     private static JTextArea anzeige_signatur_valid;
-    private static ElGamalMenezesVanstoneMessage input_cipherMessage;
+    private static DefaultListModel<ElGamalMenezesVanstoneMessage> messageListModel;
+    private static JList<ElGamalMenezesVanstoneMessage> messageListJ;
+    private static final ArrayList<ElGamalMenezesVanstoneMessage> MessageList = new ArrayList<>();
 
     static EncryptionContext context = new EncryptionContext();
     private static Map<String, Object> contextParams;
@@ -74,15 +79,19 @@ public class ChiffratSignaturPanel {
         input_signatur.setText("");
         anzeige_dechiffrat.setText("");
         anzeige_signatur_valid.setText("");
-        input_cipherMessage = null;
+        try{
+            contextParams.remove("elGamalMenezesVanstoneCipherMessage");
+        }catch(Exception ignored){}
+        messageListModel.removeAllElements();
+        MessageList.clear();
     }
 
     private static void setupGraphics() {
         frame.setTitle("main.GUI.ChiffratSignaturPanel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(700,800));
-        frame.setSize(new Dimension(700,800));
-        frame.setLocation(new Point(1050, 150));
+        frame.setPreferredSize(new Dimension(700,1000));
+        frame.setSize(new Dimension(700,1000));
+        frame.setLocation(new Point(1050, 0));
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         frame.add(panel);
@@ -104,21 +113,18 @@ public class ChiffratSignaturPanel {
             public void insertUpdate(DocumentEvent e) {
                 anzeige_dechiffrat.setText("");
                 anzeige_signatur_valid.setText("");
-                input_cipherMessage = null;
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
                 anzeige_dechiffrat.setText("");
                 anzeige_signatur_valid.setText("");
-                input_cipherMessage = null;
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
                 anzeige_dechiffrat.setText("");
                 anzeige_signatur_valid.setText("");
-                input_cipherMessage = null;
             }
         });
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -133,21 +139,18 @@ public class ChiffratSignaturPanel {
             public void insertUpdate(DocumentEvent e) {
                 anzeige_dechiffrat.setText("");
                 anzeige_signatur_valid.setText("");
-                input_cipherMessage = null;
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
                 anzeige_dechiffrat.setText("");
                 anzeige_signatur_valid.setText("");
-                input_cipherMessage = null;
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
                 anzeige_dechiffrat.setText("");
                 anzeige_signatur_valid.setText("");
-                input_cipherMessage = null;
             }
         });
         inputScrollPane = new JScrollPane(input_signatur);
@@ -176,22 +179,55 @@ public class ChiffratSignaturPanel {
 
         anzeige_dechiffrat = UISetUpMethods.getjTextArea(panel, c, 4, "Entschlüsseltes Chiffrat", HeightEnum.BIG);
         anzeige_signatur_valid = UISetUpMethods.getjTextArea(panel, c, 5, "Signaturvalidierung", HeightEnum.NORMAL);
+
+
+        messageListModel = new DefaultListModel<>();
+        messageListJ = new JList<>(messageListModel);
+        JScrollPane messageListScrollPane = new JScrollPane(messageListJ);
+        messageListScrollPane.setPreferredSize(new Dimension(450, 150));
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 6;
+        panel.add(messageListScrollPane, c);
+
+        messageListJ.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof ElGamalMenezesVanstoneMessage message) {
+                    setText(message.getTime() + ": " + message.getCipherMessageString());
+                }
+                return renderer;
+            }
+        });
+        messageListJ.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                JList list = (JList)evt.getSource();
+                if (evt.getClickCount() == 2) { // Double-click detected
+                    int index = list.locationToIndex(evt.getPoint());
+                    ElGamalMenezesVanstoneMessage selectedMessage = messageListJ.getModel().getElementAt(index);
+                    contextBuilder.withElGamalMenezesVanstoneCipherMessage(selectedMessage);
+                    contextParams = contextBuilder.build();
+                    input_chiffrat.setText(selectedMessage.getCipherMessageString());
+                    input_signatur.setText(selectedMessage.getSignature());
+                }
+            }
+        });
     }
 
     private static void decrypt() throws NoSuchAlgorithmException {
-        String decrypted = context.decrypt(input_chiffrat.getText(), contextParams);
-        anzeige_dechiffrat.setText(decrypted);
-        //System.out.println(input_signatur.getText());
-        anzeige_signatur_valid.setText("" + context.verify(anzeige_dechiffrat.getText(), input_signatur.getText(), contextParams));
+        if(contextParams != null && contextParams.containsKey("elGamalMenezesVanstoneCipherMessage")){
+            String decrypted = context.decrypt(input_chiffrat.getText(), contextParams);
+            anzeige_dechiffrat.setText(decrypted);
+            //System.out.println(input_signatur.getText());
+            anzeige_signatur_valid.setText("" + context.verify(anzeige_dechiffrat.getText(), input_signatur.getText(), contextParams));
+        } else {
+            JOptionPane.showMessageDialog(frame, "No Message selected!");
+        }
     }
 
-    public static void receiveSignaturAndChiffrat(String signatur, String chiffrat, ElGamalMenezesVanstoneMessage cipherMessage){
-        input_signatur.setText(signatur);
-        input_chiffrat.setText(chiffrat);
-        anzeige_dechiffrat.setText("");
-        anzeige_signatur_valid.setText("");
-        input_cipherMessage = cipherMessage;
-        contextBuilder.withElGamalMenezesVanstoneCipherMessage(input_cipherMessage);
-        contextParams = contextBuilder.build();
+    public static void receiveSignaturAndChiffrat(ElGamalMenezesVanstoneMessage cipherMessage){
+        MessageList.add(cipherMessage);
+        SwingUtilities.invokeLater(() -> messageListModel.addElement(cipherMessage));
     }
 }
