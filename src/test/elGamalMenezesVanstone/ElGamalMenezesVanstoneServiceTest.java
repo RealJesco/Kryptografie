@@ -42,7 +42,8 @@ public class ElGamalMenezesVanstoneServiceTest {
      */
     @Test
     public void testGenerateKandKy() {
-        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 10, BigInteger.valueOf(13));
+        BigInteger m = BigInteger.valueOf(13);
+        SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(BigInteger.valueOf(128), Resource.FIVE, 10, m);
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, BigInteger.valueOf(13));
@@ -51,7 +52,7 @@ public class ElGamalMenezesVanstoneServiceTest {
         BigInteger q = keyPair.getPublicKey().order();
         PublicKey publicKey = keyPair.getPublicKey();
 
-        Pair<BigInteger, EllipticCurvePoint> result = ElGamalMenezesVanstoneService.generateKandKy(publicKey);
+        Pair<BigInteger, EllipticCurvePoint> result = ElGamalMenezesVanstoneService.generateKandKy(publicKey, m);
 
         assertNotNull(result.getKey());
         assertTrue(result.getKey().compareTo(Resource.ZERO) != 0);
@@ -106,7 +107,7 @@ public class ElGamalMenezesVanstoneServiceTest {
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
         BigInteger message = BigInteger.valueOf(123456789);
 
-        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message);
+        MenezesVanstoneSignature signature = ElGamalMenezesVanstoneService.sign(keyPair, message, m);
 
         assertTrue(signature.r().compareTo(Resource.ZERO) > 0);
         assertTrue(signature.s().compareTo(Resource.ZERO) > 0);

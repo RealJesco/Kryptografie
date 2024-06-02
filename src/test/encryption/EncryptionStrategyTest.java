@@ -77,11 +77,12 @@ public class EncryptionStrategyTest {
 
         EncryptionContextParamBuilder builder = new EncryptionContextParamBuilder();
         builder.withElGamalMenezesVanstoneKeyPair(keyPair);
-        Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey());
+        Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey(), m);
         builder.withK(kAndKy.getKey());
         builder.withKy(kAndKy.getValue());
         builder.withNumberBase(55296);
         builder.setData("Hello, World!");
+        builder.withM(m);
 
         Map<String, Object> encryptionParams = builder.build();
         String message = builder.getData();

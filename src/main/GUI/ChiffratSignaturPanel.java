@@ -203,7 +203,7 @@ public class ChiffratSignaturPanel {
         messageListJ.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 JList list = (JList)evt.getSource();
-                if (evt.getClickCount() == 2) { // Double-click detected
+                if (evt.getClickCount() == 1) { // Double-click detected
                     int index = list.locationToIndex(evt.getPoint());
                     ElGamalMenezesVanstoneMessage selectedMessage = messageListJ.getModel().getElementAt(index);
                     contextBuilder.withElGamalMenezesVanstoneCipherMessage(selectedMessage);

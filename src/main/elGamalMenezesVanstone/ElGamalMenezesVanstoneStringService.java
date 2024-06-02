@@ -140,10 +140,10 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
      * @return The signature of the message
      * @throws NoSuchAlgorithmException if the SHA3-256 algorithm is not available/applicable
      */
-    public static String sign(final KeyPair key, final String message, int numberBase) throws NoSuchAlgorithmException {
+    public static String sign(final KeyPair key, final String message, int numberBase, BigInteger m) throws NoSuchAlgorithmException {
         int blockSize = (int) (key.publicKey.ellipticCurve().getP().bitLength() * (Math.log(2) / Math.log(numberBase)));
         BigInteger hashedMessage = hashAndConvertMessageToBigInteger(message);
-        MenezesVanstoneSignature menezesVanstoneSignature = ElGamalMenezesVanstoneService.sign(key, hashedMessage);
+        MenezesVanstoneSignature menezesVanstoneSignature = ElGamalMenezesVanstoneService.sign(key, hashedMessage, m);
         return FromDecimalBlockChiffre.encrypt(List.of(menezesVanstoneSignature.r(), menezesVanstoneSignature.s()), numberBase, blockSize + 1);
     }
 
@@ -208,7 +208,7 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
     @Override
     public String sign(String data, Map<String, Object> params) {
         try {
-            return sign((KeyPair) params.get("KeyPair"), data, (int) params.get("numberBase"));
+            return sign((KeyPair) params.get("KeyPair"), data, (int) params.get("numberBase"), (BigInteger) params.get("m"));
         } catch (NoSuchAlgorithmException e) {
            throw new RuntimeException(e);
         }

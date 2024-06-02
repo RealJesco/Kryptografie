@@ -23,9 +23,7 @@ public class KeyPair {
     }
 
     public EllipticCurvePoint calculateSignatureSuitableGeneratorPoint (FiniteFieldEllipticCurve ellipticCurve, BigInteger q, BigInteger m) {
-        SecureRandom randomRangePicker = new SecureRandom();
 
-        BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
 
         BigInteger prime = ellipticCurve.getP();
         BigInteger inverseTwo = MathMethods.modularInverse(Resource.TWO, prime);
@@ -40,7 +38,7 @@ public class KeyPair {
         EllipticCurvePoint generator;
         while ( true ) {
             BigInteger y;
-            BigInteger x = MathMethods.randomElsner(m, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, qSubtractONE);
+            BigInteger x = MathMethods.randomElsner(m, BigInteger.valueOf(Resource.counter.incrementAndGet()), Resource.ONE, qSubtractONE);
             BigInteger r = x.pow(3).add(ellipticCurveA.multiply(x)).add(ellipticCurveB);
             BigInteger legendreSign = MathMethods.calculateEulerCriterion(r, prime);
 

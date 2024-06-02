@@ -81,6 +81,15 @@ public class EncryptionContextParamBuilder {
         return this;
     }
 
+    /**
+     * @param m - Random seed number
+     * @return
+     */
+    public EncryptionContextParamBuilder withM(BigInteger m) {
+        params.put("m", m);
+        return this;
+    }
+
     public Map<String, Object> build() {
         params.put("data", data);
         return params;
