@@ -4,6 +4,8 @@ import main.finiteFieldEllipticCurve.EllipticCurvePoint;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 public class ElGamalMenezesVanstoneMessage {
@@ -31,8 +33,8 @@ public class ElGamalMenezesVanstoneMessage {
     public BigInteger getK() {
         return k;
     }
-    public LocalDateTime getTime() {
-        return time;
+    public String getTime() {
+        return time.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
     }
 
     public void setK(BigInteger k) {
