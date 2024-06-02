@@ -3,17 +3,23 @@ package main.GUI.HelperClasses;
 import main.finiteFieldEllipticCurve.EllipticCurvePoint;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 public class ElGamalMenezesVanstoneMessage {
+    LocalDateTime time;
     BigInteger k;
     List<EllipticCurvePoint> cipherMessagePoints;
 
     String cipherMessageString;
+    String signature;
 
     public ElGamalMenezesVanstoneMessage(List<EllipticCurvePoint> cipherMessagePoints, String cipherMessageString) {
         this.cipherMessagePoints = cipherMessagePoints;
         this.cipherMessageString = cipherMessageString;
+        this.time = java.time.LocalDateTime.now();
     }
 
     public List<EllipticCurvePoint> getCipherMessagePoints() {
@@ -27,9 +33,18 @@ public class ElGamalMenezesVanstoneMessage {
     public BigInteger getK() {
         return k;
     }
+    public String getTime() {
+        return time.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
+    }
 
     public void setK(BigInteger k) {
         this.k = k;
     }
 
+    public void addSignature(String sign) {
+        signature = sign;
+    }
+    public String getSignature() {
+        return signature;
+    }
 }

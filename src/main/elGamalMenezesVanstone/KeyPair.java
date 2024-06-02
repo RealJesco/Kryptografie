@@ -23,9 +23,7 @@ public class KeyPair {
     }
 
     public EllipticCurvePoint calculateSignatureSuitableGeneratorPoint (FiniteFieldEllipticCurve ellipticCurve, BigInteger q, BigInteger m) {
-        SecureRandom randomRangePicker = new SecureRandom();
 
-        BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
 
         BigInteger prime = ellipticCurve.getP();
         BigInteger inverseTwo = MathMethods.modularInverse(Resource.TWO, prime);
@@ -40,7 +38,7 @@ public class KeyPair {
         EllipticCurvePoint generator;
         while ( true ) {
             BigInteger y;
-            BigInteger x = MathMethods.randomElsner(m, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, qSubtractONE);
+            BigInteger x = MathMethods.randomElsner(m, BigInteger.valueOf(Resource.counter.incrementAndGet()), Resource.ONE, qSubtractONE);
             BigInteger r = x.pow(3).add(ellipticCurveA.multiply(x)).add(ellipticCurveB);
             BigInteger legendreSign = MathMethods.calculateEulerCriterion(r, prime);
 
@@ -62,7 +60,7 @@ public class KeyPair {
             generator = new FiniteFieldEcPoint(x,y);
             EllipticCurvePoint qg = generator.multiply(q, ellipticCurve);
             if (qg instanceof InfinitePoint) {
-                System.out.println("Generator: " + generator);
+                //System.out.println("Generator: " + generator);
 
                 return generator;
             }
@@ -75,7 +73,6 @@ public class KeyPair {
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
         assert MathMethods.calculateEulerCriterion(ellipticCurve.getP(), Resource.EIGHT).equals(Resource.ONE);
 
-        SecureRandom randomRangePicker = new SecureRandom();
 
         EllipticCurvePoint generator = calculateSignatureSuitableGeneratorPoint(ellipticCurve, q, m);
         assert ellipticCurve.isValidPoint(generator);
@@ -83,7 +80,7 @@ public class KeyPair {
 
 
 
-        BigInteger secretMultiplierX  = MathMethods.randomElsner(m, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, q.subtract(Resource.ONE));
+        BigInteger secretMultiplierX  = MathMethods.randomElsner(m, BigInteger.valueOf(Resource.counter.incrementAndGet()), Resource.ONE, q.subtract(Resource.ONE));
 
         this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);
         this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()), q);

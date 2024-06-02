@@ -181,9 +181,10 @@ public class CommunicationPanel extends JFrame {
                 publicKeyField_Epqgy.setText(keyPair.getPublicKey().toString().replace("PublicKey[", "PublicKey[\n").replace("}, ", "}, \n"));
                 privateKeyField_x.setText(keyPair.getPrivateKey().secretMultiplierX().toString());
                 builder.withElGamalMenezesVanstoneKeyPair(keyPair);
-                Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey());
+                Pair<BigInteger, EllipticCurvePoint> kAndKy = ElGamalMenezesVanstoneService.generateKandKy(keyPair.getPublicKey(), getBigIntegerOfField(nonCubicNumberMField));
                 builder.withK(kAndKy.getKey());
                 builder.withKy(kAndKy.getValue());
+                builder.withM(getBigIntegerOfField(nonCubicNumberMField));
                 //Schlüssel übergeben
                 // builder erstmal übergeben, Werte überschreiben wo nötig
                 ChiffratSignaturPanel.open(builder, keyPair.getPublicKey());
