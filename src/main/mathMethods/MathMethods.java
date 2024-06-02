@@ -329,8 +329,7 @@ public class MathMethods {
             randomZ = eulerCriterionInteger(p);
         }
 
-        BigInteger four = Resource.FOUR;
-        BigInteger randomW = alternativeQuickExponentiation(randomZ, p.subtract(Resource.ONE).divide(four), p);
+        BigInteger randomW = alternativeQuickExponentiation(randomZ, p.subtract(Resource.ONE).divide(Resource.FOUR), p);
         GaussianInteger w_i = new GaussianInteger(randomW, Resource.ONE);
         GaussianInteger p_0 = new GaussianInteger(p, Resource.ZERO);
         GaussianInteger result = extendedEuclideanInZi(w_i, p_0);

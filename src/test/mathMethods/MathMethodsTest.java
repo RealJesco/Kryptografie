@@ -107,6 +107,13 @@ public class MathMethodsTest {
 
     @Test
     public void testRepresentPrimeAsSumOfTwoSquaresThree() {
+        BigInteger prime = new BigInteger("3");
+
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.representPrimeAsSumOfSquares(prime));
+    }
+
+    @Test
+    public void testRepresentPrimeAsSumOfTwoSquares() {
         BigInteger prime = new BigInteger("29");
 
         GaussianInteger result = MathMethods.representPrimeAsSumOfSquares(prime);
@@ -161,6 +168,36 @@ public class MathMethodsTest {
         GaussianInteger b = new GaussianInteger(Resource.ONE, Resource.TWO);
         GaussianInteger a = new GaussianInteger(Resource.THREE, Resource.FOUR);
         assertThrows(IllegalArgumentException.class, () -> MathMethods.extendedEuclideanInZi(a, b));
+    }
+
+    @Test
+    public void testExtendedEuclideanInZiOne() {
+        GaussianInteger a = new GaussianInteger(BigInteger.ONE, BigInteger.ONE);
+        GaussianInteger b = new GaussianInteger(BigInteger.valueOf(2), BigInteger.valueOf(2));
+        GaussianInteger result = MathMethods.extendedEuclideanInZi(a, b);
+        GaussianInteger expected = new GaussianInteger(BigInteger.ONE, BigInteger.ONE);
+        assertEquals(expected.real, result.real);
+        assertEquals(expected.imaginary, result.imaginary);
+    }
+
+    @Test
+    public void testExtendedEuclideanInZiTwo() {
+        GaussianInteger a = new GaussianInteger(Resource.ONE, Resource.ONE);
+        GaussianInteger b = new GaussianInteger(Resource.ONE, Resource.THREE);
+        GaussianInteger result = MathMethods.extendedEuclideanInZi(a, b);
+        GaussianInteger expected = new GaussianInteger(BigInteger.ONE, BigInteger.ONE);
+        assertEquals(expected.real, result.real);
+        assertEquals(expected.imaginary, result.imaginary);
+    }
+
+    @Test
+    public void testExtendedEuclideanInZiThree() {
+        GaussianInteger a = new GaussianInteger(Resource.ONE, Resource.ONE);
+        GaussianInteger b = new GaussianInteger(Resource.THREE, Resource.THREE);
+        GaussianInteger result = MathMethods.extendedEuclideanInZi(a, b);
+        GaussianInteger expected = new GaussianInteger(BigInteger.ONE, BigInteger.ONE);
+        assertEquals(expected.real, result.real);
+        assertEquals(expected.imaginary, result.imaginary);
     }
 
     @Test
@@ -248,17 +285,6 @@ public class MathMethodsTest {
     }
 
     @Test
-    public void testGenerateRandomPrimeParallel() {
-        BigInteger m = BigInteger.valueOf(5);
-        BigInteger a = BigInteger.TEN;
-        BigInteger b = BigInteger.valueOf(20);
-        int millerRabinSteps = 10;
-        AtomicInteger counter = new AtomicInteger(0);
-        BigInteger result = MathMethods.generateRandomPrimeParallel(m, a, b, millerRabinSteps, counter);
-        assertTrue(result.compareTo(a) >= 0 && result.compareTo(b) <= 0);
-    }
-
-    @Test
     public void testGenerateRandomPrimeThrows1() {
         BigInteger m = BigInteger.valueOf(2);
         BigInteger a = BigInteger.valueOf(20);
@@ -289,6 +315,47 @@ public class MathMethodsTest {
     }
 
     @Test
+    public void testGenerateRandomPrimeParallelOne() {
+        BigInteger m = Resource.FIVE;
+        BigInteger a = BigInteger.TEN;
+        BigInteger b = BigInteger.valueOf(20);
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        BigInteger result = MathMethods.generateRandomPrimeParallel(m, a, b, millerRabinSteps, counter);
+        assertTrue(result.compareTo(a) >= 0 && result.compareTo(b) <= 0);
+    }
+
+    @Test
+    public void testGenerateRandomPrimeParallelTwo() {
+        BigInteger m = Resource.FIVE;
+        BigInteger a = BigInteger.TEN;
+        BigInteger b = Resource.FIVE;
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.generateRandomPrimeParallel(m, a, b, millerRabinSteps, counter));
+    }
+
+    @Test
+    public void testGenerateRandomPrimeParallelThree() {
+        BigInteger m = Resource.FIVE;
+        BigInteger a = BigInteger.TEN.negate();
+        BigInteger b = Resource.FIVE;
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.generateRandomPrimeParallel(m, a, b, millerRabinSteps, counter));
+    }
+
+    @Test
+    public void testGenerateRandomPrimeParallelFour() {
+        BigInteger m = Resource.FIVE.negate();
+        BigInteger a = BigInteger.TEN;
+        BigInteger b = Resource.FIVE;
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.generateRandomPrimeParallel(m, a, b, millerRabinSteps, counter));
+    }
+
+    @Test
     public void testMillerRabinTest() {
         BigInteger possiblePrime = BigInteger.valueOf(17);
         int numberOfTests = 5;
@@ -316,6 +383,28 @@ public class MathMethodsTest {
         BigInteger countOfN = Resource.ZERO;
         boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
         assertTrue(result);
+    }
+
+    @Test
+    public void testMillerRabinTestThree() {
+        BigInteger possiblePrime = BigInteger.valueOf(9);
+        int numberOfTests = 5;
+        BigInteger m = BigInteger.valueOf(100);
+        BigInteger countOfN = BigInteger.ZERO;
+
+        boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertFalse(result);
+    }
+
+    @Test
+    public void testMillerRabinTestFour() {
+        BigInteger possiblePrime = BigInteger.valueOf(9);
+        int numberOfTests = 1;
+        BigInteger m = BigInteger.valueOf(100);
+        BigInteger countOfN = BigInteger.ZERO;
+
+        boolean result = MathMethods.millerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertFalse(result);
     }
 
     @Test
@@ -360,6 +449,26 @@ public class MathMethodsTest {
     @Test
     public  void testParallelMillerRabinTestBiggerFalse() {
         BigInteger possiblePrime = BigInteger.valueOf(1024);
+        int numberOfTests = 25;
+        BigInteger m = BigInteger.valueOf(16);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.parallelMillerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertFalse(result);
+    }
+
+    @Test
+    public  void testParallelMillerRabinTestTwo() {
+        BigInteger possiblePrime = Resource.TWO;
+        int numberOfTests = 25;
+        BigInteger m = BigInteger.valueOf(16);
+        BigInteger countOfN = Resource.ZERO;
+        boolean result = MathMethods.parallelMillerRabinTest(possiblePrime, numberOfTests, m, countOfN);
+        assertTrue(result);
+    }
+
+    @Test
+    public  void testParallelMillerRabinTestOne() {
+        BigInteger possiblePrime = Resource.ONE;
         int numberOfTests = 25;
         BigInteger m = BigInteger.valueOf(16);
         BigInteger countOfN = Resource.ZERO;

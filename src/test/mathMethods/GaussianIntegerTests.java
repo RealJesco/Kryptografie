@@ -153,6 +153,14 @@ public class GaussianIntegerTests {
     }
 
     @Test
+    public void testIsMultiple() {
+        GaussianInteger a = new GaussianInteger(new BigInteger("3"), new BigInteger("5"));
+        GaussianInteger b = new GaussianInteger(ZERO, new BigInteger("4"));
+
+        assertFalse(a.isMultiple(b));
+    }
+
+    @Test
     public void testDivideOne() {
         GaussianInteger a = new GaussianInteger(new BigInteger("8"), new BigInteger("6"));
         GaussianInteger b = new GaussianInteger(new BigInteger("4"), new BigInteger("2"));
