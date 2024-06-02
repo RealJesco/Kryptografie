@@ -23,8 +23,6 @@ public class KeyPair {
     }
 
     public EllipticCurvePoint calculateSignatureSuitableGeneratorPoint (FiniteFieldEllipticCurve ellipticCurve, BigInteger q, BigInteger m) {
-
-
         BigInteger prime = ellipticCurve.getP();
         BigInteger inverseTwo = MathMethods.modularInverse(Resource.TWO, prime);
         BigInteger yExponent = (prime).add(Resource.THREE).divide(Resource.EIGHT);
@@ -73,12 +71,8 @@ public class KeyPair {
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
         assert MathMethods.calculateEulerCriterion(ellipticCurve.getP(), Resource.EIGHT).equals(Resource.ONE);
 
-
         EllipticCurvePoint generator = calculateSignatureSuitableGeneratorPoint(ellipticCurve, q, m);
         assert ellipticCurve.isValidPoint(generator);
-
-
-
 
         BigInteger secretMultiplierX  = MathMethods.randomElsner(m, BigInteger.valueOf(Resource.counter.incrementAndGet()), Resource.ONE, q.subtract(Resource.ONE));
 

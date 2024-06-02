@@ -96,8 +96,6 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         }).collect(Collectors.toList())).join();
     }
 
-
-
     private static ElGamalMenezesVanstoneMessage constructElGamalMenezesVanstoneMessage(List<CipherMessage> encryptedBlocks, int numberBase, int blockSize) {
         List<EllipticCurvePoint> points = new ArrayList<>();
         List<BigInteger> messageComponents = new ArrayList<>();
@@ -135,13 +133,10 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
             receivedCipherMessagePoints.add(cipherMessage);
         }
 
-
-
         List<BigInteger> decryptedText = parallelDecryptBlocks(receivedCipherMessagePoints, key);
 
         return ToDecimalBlockChiffre.decrypt(decryptedText, numberBase);
     }
-
 
     private static List<BigInteger> parallelDecryptBlocks(List<CipherMessage> cipherMessages, PrivateKey key) {
         List<Message> decryptedBlocks = forkJoinPool.submit(() -> cipherMessages.parallelStream()
@@ -157,7 +152,6 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
 
         return decryptedText;
     }
-
 
     /**
      * @param key The key to sign the message with
