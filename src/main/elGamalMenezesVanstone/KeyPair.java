@@ -73,8 +73,6 @@ public class KeyPair {
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
         assert MathMethods.calculateEulerCriterion(ellipticCurve.getP(), Resource.EIGHT).equals(Resource.ONE);
 
-        SecureRandom random = new SecureRandom();
-        SecureRandom randomRangePicker = new SecureRandom();
 
         EllipticCurvePoint generator = calculateSignatureSuitableGeneratorPoint(ellipticCurve, q, m);
         assert ellipticCurve.isValidPoint(generator);
@@ -82,7 +80,7 @@ public class KeyPair {
 
 
 
-        BigInteger secretMultiplierX  = MathMethods.randomElsner(m, new BigInteger(bitLengthOfP.bitLength(), randomRangePicker), Resource.ONE, q.subtract(Resource.ONE));
+        BigInteger secretMultiplierX  = MathMethods.randomElsner(m, BigInteger.valueOf(Resource.counter.incrementAndGet()), Resource.ONE, q.subtract(Resource.ONE));
 
         this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);
         this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()), q);
