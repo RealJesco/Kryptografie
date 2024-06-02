@@ -380,7 +380,6 @@ public class MathMethods {
         return gk_minus1.normalizeGCD();
     }
 
-    //TODO: Delete
     /**
      * Returns the rounded value of the given array of BigIntegers.
      *
@@ -666,7 +665,6 @@ public class MathMethods {
         }
     }
 
-    //TODO: Delete
     /**
      * This is part of the block cipher main.encryption method.
      * It takes a message and encrypts it using the RSA algorithm.
@@ -705,7 +703,6 @@ public class MathMethods {
         return encryptedBlocks;
     }
 
-    //TODO: Delete
     /**
      * This is the block cipher decryption method.
      * It also has been renamed to decryptMessage to avoid confusion, since it is not strictly speaking a pure block cipher decryption method.
@@ -741,7 +738,6 @@ public class MathMethods {
         return decryptedMessage;
     }
 
-    //TODO: Delete
     /**
      * Converts a given text into a list of unicode values.
      *
@@ -756,7 +752,6 @@ public class MathMethods {
         return unicode;
     }
 
-    //TODO: Delete
     /**
      * Converts a list of Unicode values representing characters into a corresponding text.
      *
