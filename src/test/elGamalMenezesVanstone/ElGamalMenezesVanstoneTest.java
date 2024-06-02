@@ -68,7 +68,7 @@ public class ElGamalMenezesVanstoneTest {
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
         String text = "Hello World!";
-        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.getPublicKey(), text, 55296);
+        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.getPublicKey(), text, 55296, m);
         String encryptedText = elGamalMenezesVanstoneCipherMessage.getCipherMessageString();
         String decryptedText = ElGamalMenezesVanstoneStringService.decrypt(keyPair.getPrivateKey(), elGamalMenezesVanstoneCipherMessage, 55296);
 
@@ -83,7 +83,7 @@ public class ElGamalMenezesVanstoneTest {
         KeyPair keyPair = new KeyPair();
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, m);
         String text = "Hello World!";
-        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.getPublicKey(), text, 55296);
+        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.getPublicKey(), text, 55296, m);
         String decryptedText = ElGamalMenezesVanstoneStringService.decrypt(keyPair.getPrivateKey(), elGamalMenezesVanstoneCipherMessage, 55296);
 
         assertEquals(text, decryptedText);
