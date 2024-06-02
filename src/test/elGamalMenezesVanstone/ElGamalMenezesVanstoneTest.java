@@ -134,7 +134,7 @@ public class ElGamalMenezesVanstoneTest {
 
         String text = "Ao0WDF!M57XkWm%ysCw1dUw0FoJ31tChJ1ajJ&NN2N2HuektYRJ703q20PYBjkGf4Shw0@GH42$Qpf!C6&UMU6uh94wyVuaQpEdJ\n";
 
-        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.getPublicKey(), text, 55296);
+        ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = ElGamalMenezesVanstoneStringService.encrypt(keyPair.getPublicKey(), text, 55296, m);
         String encryptedText = elGamalMenezesVanstoneCipherMessage.getCipherMessageString();
 
         String decryptedText = ElGamalMenezesVanstoneStringService.decrypt(keyPair.getPrivateKey(), elGamalMenezesVanstoneCipherMessage, 55296);

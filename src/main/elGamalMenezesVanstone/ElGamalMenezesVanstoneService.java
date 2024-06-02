@@ -8,11 +8,15 @@ import main.resource.Resource;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static main.mathMethods.MathMethods.generateRandomPrime;
 
 public class ElGamalMenezesVanstoneService {
+
+
     /**
      * @param bitLength bit length of the prime
      * @param millerRabinSteps number of miller rabin steps
@@ -66,20 +70,22 @@ public class ElGamalMenezesVanstoneService {
         return new CipherMessage(a, ky.getX().multiply(message.m1()).mod(prime), ky.getY().multiply(message.m2()).mod(prime));
     }
 
+
+
     /**
      * Skript S. 71-72 Algorithm 3.3
      * @param message  message to be encrypted
      * @param publicKey public key
      * @return cipher message
      */
-    public static CipherMessage encrypt(Message message, PublicKey publicKey) {
-        //TODO: Werden q und qSubstractOne überhaupt gebraucht?
+    public static CipherMessage encrypt(Message message, PublicKey publicKey, BigInteger m) {
         BigInteger q = publicKey.order();
-        BigInteger m = BigInteger.valueOf(13);
-        BigInteger qSubtractONE = q.subtract(Resource.ONE);
         Pair<BigInteger, EllipticCurvePoint> kAndKy = generateKandKy(publicKey, m);
         return encrypt(message, publicKey, kAndKy.getKey(), kAndKy.getValue());
     }
+
+
+
 
     /**
      * Skript S. 72 Algorithm 3.3

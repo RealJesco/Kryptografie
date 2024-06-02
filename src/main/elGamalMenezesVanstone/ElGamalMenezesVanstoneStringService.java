@@ -15,8 +15,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ElGamalMenezesVanstoneStringService implements StringEncryptionStrategy {
+
+    private static final ForkJoinPool forkJoinPool = new ForkJoinPool();
+
     private static BigInteger hashAndConvertMessageToBigInteger(String message) throws NoSuchAlgorithmException {
         final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
         final byte[] hashbytes = digest.digest(message.getBytes(StandardCharsets.UTF_8));
@@ -32,8 +38,8 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
      * @param numberBase The number base to be used for the main.encryption.
      * @return The encrypted message as an ElGamalMenezesVanstoneMessage.
      */
-    public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, int numberBase) {
-        return encrypt(key, message, null, null, numberBase);
+    public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, int numberBase, BigInteger m) {
+        return encrypt(key, message, null, null, numberBase, m);
     }
 
     /**
@@ -46,13 +52,13 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
      * @param numberBase The number base to be used for the main.encryption.
      * @return The encrypted message as an ElGamalMenezesVanstoneMessage.
      */
-    public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, BigInteger k, EllipticCurvePoint ky, int numberBase) {
+    public static ElGamalMenezesVanstoneMessage encrypt(final PublicKey key, final String message, BigInteger k, EllipticCurvePoint ky, int numberBase, BigInteger m) {
         FiniteFieldEllipticCurve ellipticCurve = key.ellipticCurve();
         int blockSize = calculateBlockSize(ellipticCurve.getP(), numberBase);
         List<BigInteger> blocks = ToDecimalBlockChiffre.encrypt(message, numberBase, blockSize);
         normalizeBlocks(blocks);
 
-        List<CipherMessage> encryptedBlocks = encryptBlocks(blocks, key, k, ky);
+        List<CipherMessage> encryptedBlocks = parallelEncryptBlocks(blocks, key, k, ky, m);
         return constructElGamalMenezesVanstoneMessage(encryptedBlocks, numberBase, blockSize);
     }
 
@@ -66,17 +72,31 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         }
     }
 
-    private static List<CipherMessage> encryptBlocks(List<BigInteger> blocks, PublicKey key, BigInteger k, EllipticCurvePoint ky) {
+    private static List<CipherMessage> encryptBlocks(List<BigInteger> blocks, PublicKey key, BigInteger k, EllipticCurvePoint ky, BigInteger m) {
         List<CipherMessage> encryptedBlocks = new ArrayList<>();
         for (int i = 0; i < blocks.size(); i += 2) {
             Message clearMessage = new Message(blocks.get(i), blocks.get(i + 1));
             CipherMessage cipherMessage = (k == null || ky == null)
-                    ? ElGamalMenezesVanstoneService.encrypt(clearMessage, key)
+                    ? ElGamalMenezesVanstoneService.encrypt(clearMessage, key, m)
                     : ElGamalMenezesVanstoneService.encrypt(clearMessage, key, k, ky);
             encryptedBlocks.add(cipherMessage);
         }
         return encryptedBlocks;
     }
+
+    public static List<CipherMessage> parallelEncryptBlocks(List<BigInteger> blocks, PublicKey key, BigInteger k, EllipticCurvePoint ky, BigInteger m) {
+        int pairCount = blocks.size() / 2;
+
+        return forkJoinPool.submit(() -> IntStream.range(0, pairCount).parallel().mapToObj(i -> {
+            int index = i * 2;
+            Message clearMessage = new Message(blocks.get(index), blocks.get(index + 1));
+            return (k == null || ky == null)
+                    ? ElGamalMenezesVanstoneService.encrypt(clearMessage, key, m)
+                    : ElGamalMenezesVanstoneService.encrypt(clearMessage, key, k, ky);
+        }).collect(Collectors.toList())).join();
+    }
+
+
 
     private static ElGamalMenezesVanstoneMessage constructElGamalMenezesVanstoneMessage(List<CipherMessage> encryptedBlocks, int numberBase, int blockSize) {
         List<EllipticCurvePoint> points = new ArrayList<>();
@@ -106,32 +126,38 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         List<BigInteger> receivedCipherMessageBs = FromDecimalBlockChiffre.decrypt(elGamalMenezesVanstoneCipherMessage.getCipherMessageString(), numberBase, blockSize + 1);
 
         if(receivedCipherMessageBs.size() % 2 != 0) {
-            //System.out.println(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().size());
-            //System.out.println(receivedCipherMessageBs.size());
             throw new IllegalArgumentException("The number of cipher points is not even, so the cipher message is either corrupted or not valid.");
         }
 
-        //System.out.println(receivedCipherMessageBs.size());
 
         for (int i = 0; i < receivedCipherMessageBs.size(); i+=2) {
             CipherMessage cipherMessage = new CipherMessage(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints().get(i/2), receivedCipherMessageBs.get(i), receivedCipherMessageBs.get(i+1));
             receivedCipherMessagePoints.add(cipherMessage);
         }
 
-        List<Message> decryptedBlocks = new ArrayList<Message>();
-        for (int i = 0; i < receivedCipherMessagePoints.size(); i++) {
-            Message decryptedMessage = ElGamalMenezesVanstoneService.decrypt(receivedCipherMessagePoints.get(i), key);
-            decryptedBlocks.add(decryptedMessage);
-        }
 
-        List<BigInteger> decryptedText = new ArrayList<>();
-        for (int i = 0; i < decryptedBlocks.size(); i++) {
-            decryptedText.add(decryptedBlocks.get(i).m1());
-            decryptedText.add(decryptedBlocks.get(i).m2());
-        }
+
+        List<BigInteger> decryptedText = parallelDecryptBlocks(receivedCipherMessagePoints, key);
 
         return ToDecimalBlockChiffre.decrypt(decryptedText, numberBase);
     }
+
+
+    private static List<BigInteger> parallelDecryptBlocks(List<CipherMessage> cipherMessages, PrivateKey key) {
+        List<Message> decryptedBlocks = forkJoinPool.submit(() -> cipherMessages.parallelStream()
+                .map(cipherMessage -> ElGamalMenezesVanstoneService.decrypt(cipherMessage, key))
+                .collect(Collectors.toList())).join();
+
+        List<BigInteger> decryptedText = new ArrayList<>();
+
+        for (Message decryptedBlock : decryptedBlocks) {
+            decryptedText.add(decryptedBlock.m1());
+            decryptedText.add(decryptedBlock.m2());
+        }
+
+        return decryptedText;
+    }
+
 
     /**
      * @param key The key to sign the message with
@@ -177,9 +203,9 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         KeyPair key = (KeyPair) params.get("KeyPair");
         if(params.get("k") != null || params.get("ky") != null) {
             //System.out.println("Encrypting with k and ky: " + params.get("k") + " " + params.get("ky"));
-            return encrypt(key.getPublicKey(), data, (BigInteger) params.get("k"), (EllipticCurvePoint) params.get("ky"), (int) params.get("numberBase"));
+            return encrypt(key.getPublicKey(), data, (BigInteger) params.get("k"), (EllipticCurvePoint) params.get("ky"), (int) params.get("numberBase"), (BigInteger) params.get("m"));
         } else {
-            return encrypt(key.getPublicKey(), data, (int) params.get("numberBase"));
+            return encrypt(key.getPublicKey(), data, (int) params.get("numberBase"), (BigInteger) params.get("m"));
         }
     }
 
