@@ -212,10 +212,8 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
     @Override
     public String decrypt(String data, Map<String, Object> params) {
         ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneCipherMessage = (ElGamalMenezesVanstoneMessage) params.get("elGamalMenezesVanstoneCipherMessage");
-        assert elGamalMenezesVanstoneCipherMessage != null;
         ElGamalMenezesVanstoneMessage elGamalMenezesVanstoneMessage = new ElGamalMenezesVanstoneMessage(elGamalMenezesVanstoneCipherMessage.getCipherMessagePoints(), data);
         PrivateKey privateKey = (PrivateKey) params.get("PrivateKey");
-        assert privateKey != null;
         return decrypt((PrivateKey) params.get("PrivateKey"), elGamalMenezesVanstoneMessage, (int) params.get("numberBase"));
     }
 

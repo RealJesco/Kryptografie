@@ -109,17 +109,12 @@ public class SecureFiniteFieldEllipticCurve {
             }
         }
 
-        assert q.multiply(Resource.EIGHT).equals(orderN);
-        //Assert p is congruent to 5 mod 8
-        assert p.mod(Resource.EIGHT).equals(Resource.FIVE);
-
         this.safeEllipticCurve = ellipticCurve;
         this.q = q;
         this.safeEllipticCurve.setQ(q);
     }
 
     public SecureFiniteFieldEllipticCurve(BigInteger bitLengthOfP, BigInteger n, int millerRabinIterations, BigInteger m) {
-        assert n.compareTo(Resource.ZERO) > 0;
         this.a = n.multiply(n).negate();
         this.n = n;
         calculatePAndQ(bitLengthOfP, millerRabinIterations, m);

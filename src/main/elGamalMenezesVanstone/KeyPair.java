@@ -28,9 +28,6 @@ public class KeyPair {
         BigInteger yExponent = (prime).add(Resource.THREE).divide(Resource.EIGHT);
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
         BigInteger ellipticCurveA = ellipticCurve.getA();
-        assert MathMethods.calculateEulerCriterion(prime, Resource.EIGHT).equals(Resource.ONE);
-        assert MathMethods.calculateEulerCriterion(ellipticCurveA, prime).equals(Resource.ONE);
-        assert MathMethods.calculateEulerCriterion(ellipticCurve.getB(), prime).equals(Resource.ONE);
 
         BigInteger ellipticCurveB = ellipticCurve.getB();
         EllipticCurvePoint generator;
@@ -69,24 +66,13 @@ public class KeyPair {
         FiniteFieldEllipticCurve ellipticCurve = secureFiniteFieldEllipticCurve.getSafeEllipticCurve();
         BigInteger q = secureFiniteFieldEllipticCurve.getQ();
         BigInteger bitLengthOfP = BigInteger.valueOf(ellipticCurve.getP().bitLength());
-        assert MathMethods.calculateEulerCriterion(ellipticCurve.getP(), Resource.EIGHT).equals(Resource.ONE);
 
         EllipticCurvePoint generator = calculateSignatureSuitableGeneratorPoint(ellipticCurve, q, m);
-        assert ellipticCurve.isValidPoint(generator);
 
         BigInteger secretMultiplierX  = MathMethods.randomElsner(m, BigInteger.valueOf(Resource.counter.incrementAndGet()), Resource.ONE, q.subtract(Resource.ONE));
 
         this.privateKey = new PrivateKey(ellipticCurve, secretMultiplierX);
         this.publicKey = new PublicKey(ellipticCurve, generator, generator.multiply(privateKey.secretMultiplierX(), privateKey.ellipticCurve()), q);
-        assert ellipticCurve.isValidPoint(publicKey.groupElement());
-        assert ellipticCurve.isValidPoint(publicKey.generator());
-        assert privateKey.secretMultiplierX().compareTo(Resource.ZERO) > 0;
-        assert privateKey.secretMultiplierX().compareTo(q) < 0;
-        assert ellipticCurve.isValidPoint(generator);
-        assert ellipticCurve.isValidPoint(publicKey.groupElement());
-        assert ellipticCurve.isValidPoint(publicKey.generator());
-        assert publicKey.order().equals(q);
-        assert (publicKey.groupElement().multiply(q, ellipticCurve) instanceof InfinitePoint);
     }
 
     @Override

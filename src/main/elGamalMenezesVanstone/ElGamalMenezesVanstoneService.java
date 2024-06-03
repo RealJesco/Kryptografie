@@ -112,22 +112,13 @@ public class ElGamalMenezesVanstoneService {
 
         EllipticCurvePoint kg = keyPair.publicKey.generator().multiply(k, ellipticCurve);
 
-        assert !(kg instanceof InfinitePoint);
-        assert keyPair.publicKey.ellipticCurve().isValidPoint(kg);
-        assert keyPair.publicKey.ellipticCurve().isValidPoint(keyPair.publicKey.generator());
-        assert keyPair.publicKey.ellipticCurve().isValidPoint(keyPair.publicKey.groupElement());
-
         BigInteger r = kg.getX().mod(q);
         BigInteger x = keyPair.privateKey.secretMultiplierX();
         BigInteger xr = x.multiply(r).mod(q);
         BigInteger kInverse = MathMethods.modularInverse(k, q);
-        assert kInverse.equals(kInverse.mod(q));
         BigInteger hPlusXr = message.add(xr);
         BigInteger s = hPlusXr.multiply(kInverse).mod(q);
 
-        assert kg.getX().mod(q).equals(r);
-        assert r.mod(q).equals(r);
-        assert s.mod(q).equals(s);
         return new MenezesVanstoneSignature(r, s);
     }
 
