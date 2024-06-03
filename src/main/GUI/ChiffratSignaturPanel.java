@@ -165,8 +165,12 @@ public class ChiffratSignaturPanel {
         decryptButton.addActionListener(e -> {
             try {
                 decrypt();
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(frame, "Entschlüsselungsfehler: " + ex.getMessage());
+                anzeige_dechiffrat.setText("");
+                anzeige_signatur_valid.setText("");
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(frame, ex.getMessage());
+                JOptionPane.showMessageDialog(frame, "Entschlüsselungsfehler - Nachricht fehlerhaft: " + ex.getMessage());
                 anzeige_dechiffrat.setText("");
                 anzeige_signatur_valid.setText("");
             }
