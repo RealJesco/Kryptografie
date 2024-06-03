@@ -238,18 +238,6 @@ public class MathMethodsTest {
     }
 
     @Test
-    public void testIsCompositeAgainstSmallPrimesTrue() {
-        BigInteger primeCandidate = BigInteger.valueOf(7983);
-        assertTrue(MathMethods.isCompositeAgainstSmallPrimes(primeCandidate));
-    }
-
-    @Test
-    public void testIsCompositeAgainstSmallPrimesFalse() {
-        BigInteger primeCandidate = BigInteger.valueOf(7927);
-        assertFalse(MathMethods.isCompositeAgainstSmallPrimes(primeCandidate));
-    }
-
-    @Test
     public void testIsPrimeAgainstSmallPrimesTrue() {
         BigInteger primeCandidate = BigInteger.valueOf(197);
         assertTrue(MathMethods.isPrimeAgainstSmallPrimes(primeCandidate));

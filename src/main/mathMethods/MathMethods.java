@@ -188,6 +188,7 @@ public class MathMethods {
             BigInteger.valueOf(991),
             BigInteger.valueOf(997)
     };
+
     private static final BigInteger MINUSONE = BigInteger.valueOf(-1);
 
     private static MathContext context = new MathContext(10);
@@ -197,9 +198,6 @@ public class MathMethods {
     private static BigDecimal randomElsnerDecimalA = Resource.DECIMAL_ZERO;
     private static BigDecimal randomElsnerDecimalB = Resource.DECIMAL_ZERO;
     private static BigDecimal randomElsnerDecimalM = Resource.DECIMAL_ZERO;
-
-    //TODO: Is this ever going to be used?
-    private static BigDecimal range = Resource.DECIMAL_ZERO;
 
     private static final ForkJoinPool forkJoinPool = new ForkJoinPool();
 
@@ -432,7 +430,6 @@ public class MathMethods {
             randomElsnerM = m;
             randomElsnerA = a;
             randomElsnerB = b;
-            range = randomElsnerDecimalB.subtract(randomElsnerDecimalA).add(Resource.DECIMAL_ONE);
         }
         BigDecimal decimalN = new BigDecimal(n);
 
@@ -450,12 +447,6 @@ public class MathMethods {
             result =  a.add(randomSeedNumberOffset.toBigInteger());
         }
         return result;
-    }
-
-    //TODO: Method is never called => Is it still needed? -> Try to use!
-    public static boolean isCompositeAgainstSmallPrimes(BigInteger primeCandidate) {
-        return Arrays.stream(SMALL_PRIMES).parallel().anyMatch(smallPrime ->
-                primeCandidate.mod(smallPrime).equals(Resource.ZERO) || primeCandidate.equals(smallPrime));
     }
 
     /*
@@ -725,10 +716,7 @@ public class MathMethods {
             message = message.divide(numberSystemToThePowerOfBlockSize);
         }
 
-        //TODO: Is this ever going to be used?
-        int counter = 0;
         for (BigInteger block : blocks) {
-            counter++;
             for (int i = blockSize - 1; i >= 0; i--) {
                 BigInteger numberSystemToThePowerOfI = BigInteger.valueOf(numberSystem).pow(i);
                 BigInteger blockValue = block.divide(numberSystemToThePowerOfI);

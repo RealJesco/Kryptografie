@@ -18,22 +18,13 @@ public class FiniteFieldEllipticCurve {
     public BigInteger getA() {
         return a;
     }
+
     public BigInteger getB() {
         return b;
     }
-    //TODO: Is this ever used?
-    @IgnoreCoverage
-    public void setB(BigInteger b) {
-        this.b = b;
-    }
+
     public BigInteger getP() {
         return p;
-    }
-
-    //TODO: Is this ever used?
-    @IgnoreCoverage
-    public BigInteger getQ() {
-        return this.q;
     }
 
     public void setQ(BigInteger q) {

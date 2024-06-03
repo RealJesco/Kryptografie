@@ -91,9 +91,6 @@ public class SecureFiniteFieldEllipticCurve {
             p = generatePrimeCongruentToFiveModEight(bitLengthOfP, millerRabinIterations, m);
             ellipticCurve.setP(p);
 
-            //TODO: Is this ever going to be used?
-            boolean pIsPrime = MathMethods.parallelMillerRabinTest(p, millerRabinIterations, m, BigInteger.valueOf(Resource.counter.incrementAndGet()));
-
             orderN = ellipticCurve.calculateOrder(n);
 
             if (orderN.equals(n.multiply(Resource.TWO)) || !orderN.mod(Resource.EIGHT).equals(Resource.ZERO)) {
