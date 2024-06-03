@@ -344,6 +344,16 @@ public class MathMethodsTest {
     }
 
     @Test
+    public void testGenerateRandomPrimeParallelFive() {
+        BigInteger m = Resource.FIVE.negate();
+        BigInteger a = Resource.FIVE;
+        BigInteger b = Resource.SEVEN;
+        int millerRabinSteps = 10;
+        AtomicInteger counter = new AtomicInteger(0);
+        assertThrows(IllegalArgumentException.class, () -> MathMethods.generateRandomPrimeParallel(m, a, b, millerRabinSteps, counter));
+    }
+
+    @Test
     public void testMillerRabinTest() {
         BigInteger possiblePrime = BigInteger.valueOf(17);
         int numberOfTests = 5;

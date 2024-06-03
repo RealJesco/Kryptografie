@@ -31,13 +31,33 @@ class EllipticCurvePointTest {
      * @expected: true if the point is on the elliptic curve, false otherwise
      */
     @Test
-    public void add() {
+    public void addOne() {
         FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(Resource.FIVE, BigInteger.valueOf(13));
         FiniteFieldEcPoint point1 = new FiniteFieldEcPoint(BigInteger.valueOf(3), BigInteger.valueOf(2));
         FiniteFieldEcPoint point2 = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
         EllipticCurvePoint newPoint = point1.add(point2, ellipticCurve);
         assertEquals(BigInteger.valueOf(6), newPoint.getX());
         assertEquals(BigInteger.valueOf(12), newPoint.getY());
+        assertTrue(ellipticCurve.isValidPoint(newPoint));
+    }
+
+    @Test
+    public void addTwo() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(Resource.FIVE, BigInteger.valueOf(13));
+        FiniteFieldEcPoint point1 = new FiniteFieldEcPoint(SEVEN, FIVE.negate());
+        FiniteFieldEcPoint point2 = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
+        EllipticCurvePoint newPoint = point1.add(point2, ellipticCurve);
+        assertTrue(newPoint instanceof InfinitePoint);
+    }
+
+    @Test
+    public void addThree() {
+        FiniteFieldEllipticCurve ellipticCurve = new FiniteFieldEllipticCurve(Resource.FIVE, BigInteger.valueOf(13));
+        FiniteFieldEcPoint point1 = new FiniteFieldEcPoint(SEVEN, FIVE);
+        FiniteFieldEcPoint point2 = new FiniteFieldEcPoint(Resource.SEVEN, Resource.FIVE);
+        EllipticCurvePoint newPoint = point1.add(point2, ellipticCurve);
+        assertEquals(BigInteger.valueOf(9), newPoint.getX());
+        assertEquals(SEVEN, newPoint.getY());
         assertTrue(ellipticCurve.isValidPoint(newPoint));
     }
 
