@@ -15,6 +15,9 @@ import main.rsa.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
@@ -223,6 +226,43 @@ public class CommunicationPanel extends JFrame {
             @Override
             public void keyTyped(KeyEvent e) {
                 jTextFieldKeyTyped(e);
+            }
+        });
+        field.getDocument().addDocumentListener(new DocumentListener() {
+            private String lastValidText = field.getText();
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                handleUpdate(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                handleUpdate(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                handleUpdate(e);
+            }
+            private void handleUpdate(DocumentEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        String newText = e.getDocument().getText(0, e.getDocument().getLength());
+                        Integer.parseInt(newText);
+                        lastValidText = newText;
+                    } catch (BadLocationException | NumberFormatException ex) {
+                        SwingUtilities.invokeLater(() -> {
+                            try {
+                                e.getDocument().removeDocumentListener(this);
+                                e.getDocument().remove(0, e.getDocument().getLength());
+                                e.getDocument().insertString(0, lastValidText, null);
+                            } catch (BadLocationException ignore) {
+                            } finally {
+                                e.getDocument().addDocumentListener(this);
+                            }
+                        });
+                    }
+                });
             }
         });
     }
