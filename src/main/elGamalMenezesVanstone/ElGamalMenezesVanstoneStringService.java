@@ -72,18 +72,6 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
         }
     }
 
-    private static List<CipherMessage> encryptBlocks(List<BigInteger> blocks, PublicKey key, BigInteger k, EllipticCurvePoint ky, BigInteger m) {
-        List<CipherMessage> encryptedBlocks = new ArrayList<>();
-        for (int i = 0; i < blocks.size(); i += 2) {
-            Message clearMessage = new Message(blocks.get(i), blocks.get(i + 1));
-            CipherMessage cipherMessage = (k == null || ky == null)
-                    ? ElGamalMenezesVanstoneService.encrypt(clearMessage, key, m)
-                    : ElGamalMenezesVanstoneService.encrypt(clearMessage, key, k, ky);
-            encryptedBlocks.add(cipherMessage);
-        }
-        return encryptedBlocks;
-    }
-
     public static List<CipherMessage> parallelEncryptBlocks(List<BigInteger> blocks, PublicKey key, BigInteger k, EllipticCurvePoint ky, BigInteger m) {
         int pairCount = blocks.size() / 2;
 
