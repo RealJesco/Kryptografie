@@ -230,7 +230,7 @@ public class ChiffratSignaturPanel {
         }
     }
 
-    public static void receiveSignaturAndChiffrat(ElGamalMenezesVanstoneMessage cipherMessage){
+    public static void receiveMessage(ElGamalMenezesVanstoneMessage cipherMessage){
         MessageList.add(cipherMessage);
         SwingUtilities.invokeLater(() -> messageListModel.addElement(cipherMessage));
     }

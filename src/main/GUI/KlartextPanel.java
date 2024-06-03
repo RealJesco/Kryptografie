@@ -207,7 +207,7 @@ public class KlartextPanel {
         c.gridy = i;
         copyButton.addActionListener(e -> {
             if(KlartextPanel.getInput_cipherMessage() != null){
-                ChiffratSignaturPanel.receiveSignaturAndChiffrat(input_cipherMessage);
+                ChiffratSignaturPanel.receiveMessage(input_cipherMessage);
             }
         });
         panel.add(copyButton, c);
