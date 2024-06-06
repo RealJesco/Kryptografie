@@ -229,7 +229,7 @@ public class MathMethods {
 
         for (int i = 0; i < len; i++) {
             // Process the most significant bit first (left to right)
-            result = result.multiply(result).mod(mod);  // Square result and mod
+            result = result.pow(2).mod(mod);  // Square result and mod
             if (expBinary.charAt(i) == '1') {
                 result = result.multiply(base).mod(mod);  // Multiply by base and mod if the bit is 1
             }

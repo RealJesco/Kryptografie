@@ -21,6 +21,7 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 public class CommunicationPanel extends JFrame {
     private static JPanel panel;
@@ -74,7 +75,7 @@ public class CommunicationPanel extends JFrame {
         publicKeyField_Epqgy = UISetUpMethods.getjTextArea(ElGamalPanel, c, j++, "Public Key (E,p,q,g,y)", HeightEnum.BIG);
         publicKeyField_Epqgy.setToolTipText("E = ellipticCurve, " +
                 "p = module prime, " +
-                "q = order, " +
+                "q = q, " +
                 "g = generator, " +
                 "y = groupElement");
         privateKeyField_x = UISetUpMethods.getjTextArea(ElGamalPanel, c, j, "Zufallszahl x", HeightEnum.NORMAL);
@@ -176,11 +177,15 @@ public class CommunicationPanel extends JFrame {
                 bobPublicKeyField.setText(Bob.e.toString());
                 bobPublicNField.setText(Bob.n.toString());
             } else if(this.encryptionContext.getStrategy() instanceof ElGamalMenezesVanstoneStringService){
+                //time now in seconds
+                Long now = System.currentTimeMillis();
+
                 //Schlüssel erzeugen
                 SecureFiniteFieldEllipticCurve secureFiniteFieldEllipticCurve = new SecureFiniteFieldEllipticCurve(getBigIntegerOfField(lengthField_P), getBigIntegerOfField(parameterField_n), getIntOfField(millerRabinStepsField), getBigIntegerOfField(nonCubicNumberMField));
                 KeyPair keyPair = new KeyPair();
                 //Schlüssel setzen
                 keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, getBigIntegerOfField(nonCubicNumberMField));
+                System.out.println("Time to generate all components: " + (System.currentTimeMillis() - now)/ 1000.0 + " seconds");
                 publicKeyField_Epqgy.setText(keyPair.getPublicKey().toString().replace("PublicKey[", "PublicKey[\n").replace("}, ", "}, \n"));
                 privateKeyField_x.setText(keyPair.getPrivateKey().secretMultiplierX().toString());
                 builder.withElGamalMenezesVanstoneKeyPair(keyPair);

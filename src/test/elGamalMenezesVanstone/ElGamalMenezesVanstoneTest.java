@@ -49,7 +49,7 @@ public class ElGamalMenezesVanstoneTest {
         keyPair.generateKeyPair(secureFiniteFieldEllipticCurve, BigInteger.valueOf(13));
         EllipticCurvePoint generator = keyPair.getPublicKey().generator();
         EllipticCurvePoint groupElement = keyPair.getPublicKey().groupElement();
-        BigInteger q = keyPair.getPublicKey().order();
+        BigInteger q = keyPair.getPublicKey().q();
         PublicKey publicKey = keyPair.getPublicKey();
 
         Pair<BigInteger, EllipticCurvePoint> result = ElGamalMenezesVanstoneService.generateKandKy(publicKey, m);

@@ -80,7 +80,7 @@ public class FiniteFieldEllipticCurve {
     /**
      * Skript S.61 - 63
      * @param n element in question
-     * @return biginteger representing the order of the elements of the elliptic curve
+     * @return biginteger representing the q of the elements of the elliptic curve
      */
     public BigInteger calculateOrder(BigInteger n) {
         GaussianInteger quadraticDivisors = MathMethods.representPrimeAsSumOfSquares(this.p);

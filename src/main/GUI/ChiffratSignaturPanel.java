@@ -99,7 +99,7 @@ public class ChiffratSignaturPanel {
         anzeige_public_key = UISetUpMethods.getjTextArea(panel, c, 0, "Public Key (E,p,q,g,y)", HeightEnum.BIG);
         anzeige_public_key.setToolTipText("E = ellipticCurve, " +
                 "p = module prime, " +
-                "q = order, " +
+                "q = q, " +
                 "g = generator, " +
                 "y = groupElement");
 

@@ -67,7 +67,7 @@ public class SecureFiniteFieldEllipticCurve {
     /**
      * Skript S.78
      * Calculate q such that orderN = q*8
-     * @param orderN order of the elliptic curve (group of points)
+     * @param orderN q of the elliptic curve (group of points)
      * @return q
      */
     private BigInteger calculateQ(BigInteger orderN) {

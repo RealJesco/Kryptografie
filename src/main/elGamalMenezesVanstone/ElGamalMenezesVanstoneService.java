@@ -7,9 +7,6 @@ import org.apache.commons.math3.util.Pair;
 import main.resource.Resource;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static main.mathMethods.MathMethods.generateRandomPrime;
@@ -36,7 +33,7 @@ public class ElGamalMenezesVanstoneService {
      * @return random number k and public key generator point multiplied by k
      */
     public static Pair<BigInteger, EllipticCurvePoint> generateKandKy(PublicKey publicKey, BigInteger m) {
-        BigInteger qSubtractOne = publicKey.order().subtract(Resource.ONE);
+        BigInteger qSubtractOne = publicKey.q().subtract(Resource.ONE);
         FiniteFieldEllipticCurve ellipticCurve = publicKey.ellipticCurve();
         BigInteger prime = ellipticCurve.getP();
         BigInteger k;
@@ -75,7 +72,7 @@ public class ElGamalMenezesVanstoneService {
      * @return cipher message
      */
     public static CipherMessage encrypt(Message message, PublicKey publicKey, BigInteger m) {
-        BigInteger q = publicKey.order();
+        BigInteger q = publicKey.q();
         Pair<BigInteger, EllipticCurvePoint> kAndKy = generateKandKy(publicKey, m);
         return encrypt(message, publicKey, kAndKy.getKey(), kAndKy.getValue());
     }
@@ -106,7 +103,7 @@ public class ElGamalMenezesVanstoneService {
     //sign and verify methods
     public static MenezesVanstoneSignature sign(final KeyPair keyPair, final BigInteger message, BigInteger m) {
         FiniteFieldEllipticCurve ellipticCurve = keyPair.publicKey.ellipticCurve();
-        BigInteger q = keyPair.publicKey.order();
+        BigInteger q = keyPair.publicKey.q();
         BigInteger qSubtractONE = q.subtract(Resource.ONE);
         BigInteger k = MathMethods.randomElsner(m, BigInteger.valueOf(Resource.counter.incrementAndGet()), Resource.ONE, qSubtractONE);
 
@@ -130,7 +127,7 @@ public class ElGamalMenezesVanstoneService {
      * @return true if the signature is valid, false otherwise
      */
     public static boolean verify(final PublicKey publicKey, final BigInteger message, final MenezesVanstoneSignature signature) {
-        BigInteger q = publicKey.order();
+        BigInteger q = publicKey.q();
         BigInteger w = MathMethods.modularInverse(signature.s(), q);
         BigInteger u1 = w.multiply(message).mod(q);
         BigInteger u2 = signature.r().multiply(w).mod(q);
