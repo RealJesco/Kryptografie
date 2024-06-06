@@ -1,5 +1,6 @@
 package test.rsa;
 
+import main.resource.Resource;
 import main.rsa.KeyPairRsa;
 import main.rsa.RsaService;
 import org.junit.jupiter.api.Assertions;
@@ -24,6 +25,18 @@ class RsaServiceTests {
     @Test
     public void generateKeyPairOne() {
         KeyPairRsa keyPair = RsaService.generateKeyPair(2047, 100, BigInteger.valueOf(87));
+        Assertions.assertNotNull(keyPair);
+        Assertions.assertEquals(keyPair.privateKeyRsa().n(), keyPair.publicKeyRsa().n());
+        Assertions.assertNotEquals(keyPair.privateKeyRsa().d(), keyPair.publicKeyRsa().e());
+
+        KeyPairRsa keyPair2 = RsaService.generateKeyPair(2047, 100, BigInteger.valueOf(87));
+        Assertions.assertNotEquals(keyPair.privateKeyRsa().n(), keyPair2.privateKeyRsa().n());
+    }
+
+    @Test
+    public void generateKeyPairTwo() {
+        RsaService.getCounter().set(3625781);
+        KeyPairRsa keyPair = RsaService.generateKeyPair(256, 4, BigInteger.valueOf(12848));
         Assertions.assertNotNull(keyPair);
         Assertions.assertEquals(keyPair.privateKeyRsa().n(), keyPair.publicKeyRsa().n());
         Assertions.assertNotEquals(keyPair.privateKeyRsa().d(), keyPair.publicKeyRsa().e());

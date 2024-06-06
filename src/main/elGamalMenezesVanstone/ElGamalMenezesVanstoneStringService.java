@@ -184,7 +184,6 @@ public class ElGamalMenezesVanstoneStringService implements StringEncryptionStra
     public Object encrypt(String data, Map<String, Object> params) {
         KeyPair key = (KeyPair) params.get("KeyPair");
         if(params.get("k") != null || params.get("ky") != null) {
-            //System.out.println("Encrypting with k and ky: " + params.get("k") + " " + params.get("ky"));
             return encrypt(key.getPublicKey(), data, (BigInteger) params.get("k"), (EllipticCurvePoint) params.get("ky"), (int) params.get("numberBase"), (BigInteger) params.get("m"));
         } else {
             return encrypt(key.getPublicKey(), data, (int) params.get("numberBase"), (BigInteger) params.get("m"));
